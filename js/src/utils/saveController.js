@@ -45,6 +45,10 @@
             success: function(data, textStatus, request) {
               _this.currentConfig = data;
             },
+            error: function(xhr, textStatus, errorThrown) {
+              console.log('There was a problem getting the configuration from JSON Blob.');
+              _this.currentConfig = config;
+            },
             async: false
           });
         } 
@@ -54,7 +58,7 @@
         jQuery.ajax({
           type: 'POST',
           url: "https://jsonblob.com/api/jsonBlob", 
-          data: JSON.stringify(this.currentConfig), 
+          data: JSON.stringify(_this.currentConfig), 
           async: false,
           headers: { 
             'Accept': 'application/json',
