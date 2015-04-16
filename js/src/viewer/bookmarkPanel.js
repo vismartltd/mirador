@@ -27,9 +27,10 @@
       });
       
       jQuery.subscribe('saveControllerConfigUpdated', function() {
-        var ajaxType = 'POST',
-        ajaxURL = "https://jsonblob.com/api/jsonBlob";
-      
+        var ajaxType = 'PUT',
+        blobID = Mirador.saveController.sessionID,
+        ajaxURL = "https://jsonblob.com/api/jsonBlob/"+blobID;
+
         jQuery.ajax({
           type: ajaxType,
           url: ajaxURL, 
@@ -41,7 +42,7 @@
           success: function(data, textStatus, request) {
               var jsonblob = request.getResponseHeader('X-Jsonblob');
               
-              var bookmarkURL = window.location.href.replace(window.location.hash, '') + "?json="+jsonblob;
+              var bookmarkURL = window.location.href.replace(window.location.hash, '') + "#"+blobID;
               _this.element.find('#share-url').val(bookmarkURL).focus().select();
          }
         });

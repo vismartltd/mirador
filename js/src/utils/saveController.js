@@ -29,18 +29,12 @@
 
       if (sessionID) {
         this.sessionID =  sessionID;
-      } else {
-        this.sessionID = $.genUUID(); // might want a cleaner thing for the url.
-      }
 
-      if (localStorage.getItem(this.sessionID)) {
-        this.currentConfig = JSON.parse(localStorage.getItem(sessionID));
-      } else {
-        var paramURL = window.location.search.substring(1);
-        if (paramURL) {
-          var params = paramURL.split('=');
-          var jsonblob = params[1];
-          var ajaxURL = "https://jsonblob.com/api/jsonBlob/"+jsonblob;
+        if (localStorage.getItem(this.sessionID)) {
+          this.currentConfig = JSON.parse(localStorage.getItem(sessionID));
+        } else {
+          //get json from jsonblob and set currentConfig to it
+          var ajaxURL = "https://jsonblob.com/api/jsonBlob/"+sessionID;
           jQuery.ajax({
             type: 'GET',
             url: ajaxURL, 
@@ -53,11 +47,27 @@
             },
             async: false
           });
-          //get json from jsonblob and set currentConfig to it
-        } else {
-          this.currentConfig = config;
-        }
-      }        
+        } 
+      } else {
+        //this.sessionID = $.genUUID(); // might want a cleaner thing for the url.
+        this.currentConfig = config;
+        jQuery.ajax({
+          type: 'POST',
+          url: "https://jsonblob.com/api/jsonBlob", 
+          data: JSON.stringify(this.currentConfig), 
+          async: false,
+          headers: { 
+            'Accept': 'application/json',
+            'Content-Type': 'application/json' 
+          },
+          success: function(data, textStatus, request) {
+            _this.sessionID = request.getResponseHeader('X-Jsonblob');
+          },
+          error: function(xhr, textStatus, errorThrown) {
+            _this.sessionID = $.genUUID();
+          }
+        });
+      }       
       //remove empty hashes from config
       this.currentConfig.windowObjects = jQuery.map(this.currentConfig.windowObjects, function(value, index) {
         if (Object.keys(value).length === 0) return null;  
@@ -75,7 +85,6 @@
       // see: http://html5demos.com/history and http://diveintohtml5.info/history.html
       // put history stuff here, for a great cross-browser demo, see: http://browserstate.github.io/history.js/demo/
       //http://stackoverflow.com/questions/17801614/popstate-passing-popped-state-to-event-handler
-
       //also remove ?json bit so it's a clean URL
       var cleanURL = window.location.href.replace(window.location.search, "");
       if (window.location.hash) {
