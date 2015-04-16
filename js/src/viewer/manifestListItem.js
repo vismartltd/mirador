@@ -173,7 +173,7 @@
                                  '<img src="{{repoImage}}" alt="repoImg">',
                                  '</div>',
                                  '<div class="select-metadata">',
-                                 '<h3 class="manifest-title">{{label}}</h3>',
+                                 '<h3 class="manifest-title" title="{{label}}">{{label}}</h3>',
                                  '<h4>{{canvasCount}} items</h4>',
                                  '{{#if repository}}',
                                  '<h4 class="repository-label">{{repository}}</h4>',

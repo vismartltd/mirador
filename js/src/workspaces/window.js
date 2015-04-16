@@ -741,7 +741,7 @@
                                  '{{#if sidePanel}}',
                                  '<a href="javascript:;" class="mirador-btn mirador-icon-toc selected" title="View/Hide Table of Contents"><i class="fa fa-caret-down fa-lg fa-fw"></i></a>',
                                  '{{/if}}',
-                                 '<h3 class="window-manifest-title">{{title}}</h3>',
+                                 '<h3 class="window-manifest-title" title="{{title}}">{{title}}</h3>',
                                  '</div>',
                                  '<div class="content-container">',
                                  '{{#if sidePanel}}',
