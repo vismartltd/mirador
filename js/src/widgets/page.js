@@ -1,27 +1,26 @@
-/* global App, $ */
-(function() {
+(function($) {
 
     // ----------
-    var component = App.Page = function(config) {
-        this.label = config.label;
-        this.alternates = config.alternates;
-        this.pageIndex = config.pageIndex;
-        this.details = config.details;
+    $.Page = function(options) {
+        this.label = options.label;
+        this.alternates = options.alternates;
+        this.pageIndex = options.pageIndex;
+        this.details = options.details;
 
-        if (config.masterWidth && config.masterHeight) {
-            this.bounds = new OpenSeadragon.Rect(0, 0, config.masterWidth, config.masterHeight);
+        if (options.masterWidth && options.masterHeight) {
+            this.bounds = new OpenSeadragon.Rect(0, 0, options.masterWidth, options.masterHeight);
         }
 
         this.starter = {
-            x: config.x,
-            y: config.y,
-            width: config.width,
-            tileSource: config.tileSource
+            x: options.x,
+            y: options.y,
+            width: options.width,
+            tileSource: options.tileSource
         };
 
-        if (config.clip) {
-            this.starter.clip = new OpenSeadragon.Rect(config.clip.x, config.clip.y,
-                config.clip.width, config.clip.height);
+        if (options.clip) {
+            this.starter.clip = new OpenSeadragon.Rect(options.clip.x, options.clip.y,
+                options.clip.width, options.clip.height);
         }
 
         this.main = {};
@@ -30,7 +29,7 @@
     };
 
     // ----------
-    component.prototype = {
+   $.Page.prototype = {
         // ----------
         setTiledImage: function(tiledImage) {
             this.setDetail(this.main, this.starter, tiledImage);
@@ -170,4 +169,4 @@
         }
     };
 
-})();
+})(Mirador);

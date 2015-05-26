@@ -729,14 +729,19 @@ li.highlight {
 /* window views
 ---------------------------------------------------------------------------- */
 
-  .thumbnail-view, .image-view, .book-view, .scroll-view {
-    height: 100%;
-    width: 100%;
-    background-color: black;
-    display: none;
-    overflow-y: scroll;
+.thumbnail-view, .image-view, .book-view, .scroll-view {
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  display: none;
+  overflow-y: scroll;
 }
-.image-view, .book-view {
+.object-view {
+  height: 100%;
+  width: 100%;
+  background-color: black;
+}
+.image-view, .book-view, .object-view {
   overflow: hidden;
 }
 .scroll-view {

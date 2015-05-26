@@ -137,7 +137,7 @@
 
       //attach view and toggle view, which triggers the attachment of panels or overlays
       _this.bindNavigation();
-      switch(focusState) {
+      /*switch(focusState) {
         case 'ThumbnailsView':
           _this.toggleThumbnails(_this.currentCanvasID);
         break;
@@ -152,7 +152,8 @@
         break;
         default:
           break;
-      }
+      }*/
+      _this.toggleObjectView(_this.currentCanvasID);
 
       if ($.viewer.workspace.slots.length <= 1) {
         _this.element.find('.remove-object-option').hide();
@@ -453,6 +454,20 @@
         view.updateImage(canvasID);
       }
       this.toggleFocus('ImageView', 'ImageView');
+    },
+
+    toggleObjectView: function(canvasID) {
+        this.focusModules.ObjectView = new $.ObjectView({
+          manifest: this.manifest, 
+          appendTo: this.element.find('.view-container'), 
+          parent: this, 
+          windowId: this.id,
+          canvasID: canvasID, 
+          imagesList: this.imagesList,
+          osdOptions: this.focusOptions,
+          bottomPanelAvailable: this.bottomPanelAvailable,
+          annotationLayerAvailable: this.annotationLayerAvailable,
+          annoEndpointAvailable: this.annoEndpointAvailable} );
     },
 
     toggleBookView: function(canvasID) {

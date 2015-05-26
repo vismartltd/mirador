@@ -1,13 +1,45 @@
-/* globals $, App, d3 */
+(function($) {
+    
+    $.ObjectView = function(options) {
 
-(function() {
-    // ----------
-    window.App = {
+    jQuery.extend(this, {
+      currentImg:       null,
+      windowId:         null,
+      currentImgIndex:  0,
+      canvasID:          null,
+      imagesList:       [],
+      element:          null,
+      elemOsd:          null,
+      parent:           null,
+      manifest:         null,
+      osd:              null,
+      fullscreen:       null,
+      osdOptions: {
+        osdBounds:        null,
+        zoomLevel:        null
+      },
+      osdCls:          'mirador-osd',
+      elemAnno:         null,
+      annoCls:          'annotation-canvas',
+      annotationLayerAvailable: null 
+    }, options);
+
+    this.init();
+  };
+    $.ObjectView.prototype = {
         // ----------
         init: function() {
-            var self = this;
+            var _this = this,
+            uniqueID = $.genUUID(),
+            osdID = 'mirador-osd-' + uniqueID;
 
-            this.maxImages = 500;
+            this.element = jQuery(this.template()).appendTo(this.appendTo);
+            this.elemOsd =
+            jQuery('<div/>')
+            .addClass(this.osdCls)
+            .attr('id', osdID)
+            .appendTo(this.element);
+
             this.mode = 'none';
             this.pageBuffer = 0.05;
             this.bigBuffer = 0.2;
@@ -19,99 +51,99 @@
                 'page'
             ];
 
-            this.pages = this.createPages();
-
-            var tileSources = $.map(this.pages, function(v, i) {
-                return {
-                    tileSource: v.starter.tileSource,
-                    clip: v.starter.clip
-                };
+            this.tileSources = [];
+            jQuery.each(this.imagesList, function(index, value) {
+                _this.tileSources.push($.Iiif.getImageUrl(value) + '/info.json');
             });
+            console.log(this.tileSources);
+            this.pages = this.createPages();
+            console.log(this.pages);
 
-            this.viewer = OpenSeadragon({
-                id: "contentDiv",
-                prefixUrl: "../../../build/openseadragon/images/",
+            this.viewer = $.OpenSeadragon({
+                id: osdID,
                 autoResize: false,
                 showHomeControl: false,
-                tileSources: tileSources
+                tileSources: this.tileSources,
+                'uniqueID' : uniqueID
             });
+            console.log(this.viewer);
 
             this.viewer.addHandler('open', function() {
-                self.$el = $(self.viewer.element);
+                _this.el = jQuery(_this.viewer.element);
 
-                $.each(self.pages, function(i, v) {
-                    v.setTiledImage(self.viewer.world.getItemAt(i));
+                jQuery.each(_this.pages, function(i, v) {
+                    v.setTiledImage(_this.viewer.world.getItemAt(i));
                     v.addDetails();
                 });
 
-                self.setMode({
+                _this.setMode({
                     mode: 'thumbs',
                     immediately: true
                 });
             });
 
-            this.viewer.addHandler('canvas-drag', function() {
-                if (self.mode === 'scroll') {
-                    var result = self.hitTest(self.viewer.viewport.getCenter());
+            /*this.viewer.addHandler('canvas-drag', function() {
+                if (_this.mode === 'scroll') {
+                    var result = _this.hitTest(_this.viewer.viewport.getCenter());
                     if (result) {
-                        self.pageIndex = result.index;
-                        self.update();
+                        _this.pageIndex = result.index;
+                        _this.update();
                     }
                 }
             });
 
             this.viewer.addHandler('zoom', function(event) {
-                self.applyConstraints();
+                _this.applyConstraints();
             });
 
             this.viewer.addHandler('pan', function(event) {
-                self.applyConstraints();
-            });
+                _this.applyConstraints();
+            });*/
 
-            $.each(this.modeNames, function(i, v) {
-                $('.' + v).click(function() {
-                    self.setMode({
+            jQuery.each(this.modeNames, function(i, v) {
+                jQuery('.' + v).click(function() {
+                    _this.setMode({
                         mode: v
                     });
                 });
             });
 
-            $('.next').click(function() {
-                self.next();
+            jQuery('.next').click(function() {
+                _this.next();
             });
 
-            $('.previous').click(function() {
-                self.previous();
+            jQuery('.previous').click(function() {
+                _this.previous();
             });
 
-            this.$details = $('.details')
+            this.details = jQuery('.details')
                 .prop('checked', true)
                 .change(function() {
-                    if (self.$details.prop('checked')) {
-                        self.showDetails();
+                    if (_this.details.prop('checked')) {
+                        _this.showDetails();
                     } else {
-                        self.hideDetails();
+                        _this.hideDetails();
                     }
                 });
 
-            $(window).keyup(function(event) {
-                if (self.mode === 'thumbs') {
+            jQuery(window).keyup(function(event) {
+                if (_this.mode === 'thumbs') {
                     return;
                 }
 
                 if (event.which === 39) { // Right arrow
-                    self.next();
+                    _this.next();
                 } else if (event.which === 37) { // Left arrow
-                    self.previous();
+                    _this.previous();
                 }
             });
 
-            this.$scrollInner = $('.scroll-inner');
+            this.scrollInner = jQuery('.scroll-inner');
 
-            this.$scrollCover = $('.scroll-cover')
+            this.scrollCover = jQuery('.scroll-cover')
                 .scroll(function(event) {
-                    var info = self.getScrollInfo();
-                    if (!info || self.ignoreScroll) {
+                    var info = _this.getScrollInfo();
+                    if (!info || _this.ignoreScroll) {
                         return;
                     }
 
@@ -119,20 +151,20 @@
                         info.thumbBounds.y + (info.viewportHeight / 2) +
                         (info.viewportMax * info.scrollFactor));
 
-                    self.viewer.viewport.panTo(pos, true);
+                    _this.viewer.viewport.panTo(pos, true);
                 })
                 .mousemove(function(event) {
                     var pixel = new OpenSeadragon.Point(event.clientX, event.clientY);
-                    pixel.y -= self.$scrollCover.position().top;
-                    var result = self.hitTest(self.viewer.viewport.pointFromPixel(pixel));
-                    self.updateHover(result ? result.index : -1);
+                    pixel.y -= _this.scrollCover.position().top;
+                    var result = _this.hitTest(_this.viewer.viewport.pointFromPixel(pixel));
+                    _this.updateHover(result ? result.index : -1);
                 })
                 .click(function(event) {
                     var pixel = new OpenSeadragon.Point(event.clientX, event.clientY);
-                    pixel.y -= self.$scrollCover.position().top;
-                    var result = self.hitTest(self.viewer.viewport.pointFromPixel(pixel));
+                    pixel.y -= _this.scrollCover.position().top;
+                    var result = _this.hitTest(_this.viewer.viewport.pointFromPixel(pixel));
                     if (result) {
-                        self.setMode({
+                        _this.setMode({
                             mode: 'page',
                             pageIndex: result.index
                         });
@@ -155,21 +187,26 @@
                 .style('stroke-width', 0.05)
                 .attr("pointer-events", "none");
 
-            $(window).resize(function() {
-                var newSize = new OpenSeadragon.Point(self.$el.width(), self.$el.height());
-                self.viewer.viewport.resize(newSize, false);
-                self.setMode({
-                    mode: self.mode,
+            jQuery(window).resize(function() {
+                var newSize = new OpenSeadragon.Point(_this.el.width(), _this.el.height());
+                _this.viewer.viewport.resize(newSize, false);
+                _this.setMode({
+                    mode: _this.mode,
                     immediately: true
                 });
 
-                self.viewer.forceRedraw();
+                _this.viewer.forceRedraw();
 
-                self.viewer.svgOverlay('resize');
+                _this.viewer.svgOverlay('resize');
             });
 
             this.update();
         },
+
+        template: Handlebars.compile([
+           '<div class="object-view">',
+           '</div>'
+           ].join('')),
 
         // ----------
         next: function() {
@@ -197,14 +234,14 @@
 
         // ----------
         hideDetails: function() {
-            $.each(this.pages, function(i, v) {
+            jQuery.each(this.pages, function(i, v) {
                 v.removeDetails();
             });
         },
 
         // ----------
         showDetails: function() {
-            $.each(this.pages, function(i, v) {
+            jQuery.each(this.pages, function(i, v) {
                 v.addDetails();
             });
         },
@@ -236,10 +273,10 @@
 
             var output = {};
 
-            var viewerWidth = this.$el.width();
-            var viewerHeight = this.$el.height();
-            var scrollTop = this.$scrollCover.scrollTop();
-            output.scrollMax = this.$scrollInner.height() - this.$scrollCover.height();
+            var viewerWidth = this.el.width();
+            var viewerHeight = this.el.height();
+            var scrollTop = this.scrollCover.scrollTop();
+            output.scrollMax = this.scrollInner.height() - this.scrollCover.height();
             output.scrollFactor = (output.scrollMax > 0 ? scrollTop / output.scrollMax : 0);
 
             output.thumbBounds = this.thumbBounds;
@@ -252,43 +289,43 @@
         update: function() {
             var self = this;
 
-            $('.nav').toggle(this.mode === 'scroll' || this.mode === 'book' || this.mode === 'page');
-            $('.previous').toggleClass('hidden', this.pageIndex <= 0);
-            $('.next').toggleClass('hidden', this.pageIndex >= this.pages.length - 1);
+            jQuery('.nav').toggle(this.mode === 'scroll' || this.mode === 'book' || this.mode === 'page');
+            jQuery('.previous').toggleClass('hidden', this.pageIndex <= 0);
+            jQuery('.next').toggleClass('hidden', this.pageIndex >= this.pages.length - 1);
 
-            $.each(this.modeNames, function(i, v) {
-                $('.' + v).toggleClass('active', v === self.mode);
+            jQuery.each(this.modeNames, function(i, v) {
+                jQuery('.' + v).toggleClass('active', v === self.mode);
             });
 
             // alternates menu
-            if (this.$alternates) {
-                this.$alternates.remove();
-                this.$alternates = null;
+            if (this.alternates) {
+                this.alternates.remove();
+                this.alternates = null;
             }
 
             var page = this.pages[this.pageIndex];
             if (page && page.alternates && page.alternates.length) {
-                this.$alternates = $('<select>')
+                this.alternates = jQuery('<select>')
                     .change(function() {
-                        page.selectAlternate(parseInt(self.$alternates.val(), 10));
+                        page.selectAlternate(parseInt(self.alternates.val(), 10));
                     })
                     .appendTo('.nav');
 
-                $('<option>')
+                jQuery('<option>')
                     .attr('value', -1)
                     .text(page.label || 'Default')
-                    .appendTo(self.$alternates);
+                    .appendTo(self.alternates);
 
-                $.each(page.alternates, function(i, v) {
+                jQuery.each(page.alternates, function(i, v) {
                     if (v.label) {
-                        $('<option>')
+                        jQuery('<option>')
                             .attr('value', i)
                             .text(v.label)
-                            .appendTo(self.$alternates);
+                            .appendTo(self.alternates);
                     }
                 });
 
-                this.$alternates.val(page.alternateIndex);
+                this.alternates.val(page.alternateIndex);
             }
         },
 
@@ -352,7 +389,7 @@
                     maxZoom = this.viewer.maxZoomLevel;
                     if (!maxZoom) {
                         var imageWidth = tiledImage.getContentSize().x;
-                        var viewerWidth = this.$el.width();
+                        var viewerWidth = this.el.width();
                         maxZoom = imageWidth * this.viewer.maxZoomPixelRatio / viewerWidth;
                         maxZoom /= tiledImage.getBounds().width;
                     }
@@ -384,12 +421,12 @@
                 this.viewer.zoomPerClick = 1;
                 this.viewer.panHorizontal = false;
                 this.viewer.panVertical = false;
-                var viewerWidth = this.$el.width();
+                var viewerWidth = this.el.width();
                 var width = layout.bounds.width + (this.bigBuffer * 2);
                 var height = layout.bounds.height + (this.bigBuffer * 2);
                 var newHeight = viewerWidth * (height / width);
-                this.$scrollCover.show();
-                this.$scrollInner
+                this.scrollCover.show();
+                this.scrollInner
                     .css({
                         height: newHeight
                     });
@@ -398,7 +435,7 @@
                 this.viewer.zoomPerClick = 2;
                 this.viewer.panHorizontal = true;
                 this.viewer.panVertical = true;
-                this.$scrollCover.hide();
+                this.scrollCover.hide();
             }
 
             this.setLayout({
@@ -434,7 +471,7 @@
 
                 if (normalY !== undefined) {
                     var viewportFactor = normalY / info.viewportMax;
-                    this.$scrollCover.scrollTop(info.scrollMax * viewportFactor);
+                    this.scrollCover.scrollTop(info.scrollMax * viewportFactor);
                 }
             }
 
@@ -476,14 +513,14 @@
         updateHover: function(pageIndex) {
             if (pageIndex === -1 || this.mode !== 'thumbs') {
                 this.hover.style('opacity', 0);
-                this.$scrollCover.css({
+                this.scrollCover.css({
                     'cursor': 'default'
                 });
 
                 return;
             }
 
-            this.$scrollCover.css({
+            this.scrollCover.css({
                 'cursor': 'pointer'
             });
 
@@ -505,8 +542,8 @@
             var pageCount = this.pages.length;
             this.pageIndex = Math.max(0, Math.min(pageCount - 1, config.pageIndex));
 
-            var viewerWidth = this.$el.width();
-            var viewerHeight = this.$el.height();
+            var viewerWidth = this.el.width();
+            var viewerHeight = this.el.height();
             var bounds = this.pages[this.pageIndex].getBounds();
             var x = bounds.x;
             var y = bounds.y;
@@ -579,8 +616,8 @@
 
         // ----------
         createLayout: function() {
-            var viewerWidth = this.$el.width();
-            var viewerHeight = this.$el.height();
+            var viewerWidth = this.el.width();
+            var viewerHeight = this.el.height();
             var layoutConfig = {};
 
             if (this.mode === 'thumbs') {
@@ -594,7 +631,7 @@
                 var height = 1 + (this.pageBuffer * 2);
                 // Note that using window here is approximate, but that's close enough.
                 // We can't use viewer, because it may be stretched for the thumbs view.
-                layoutConfig.buffer = (height * ($(window).width() / $(window).height())) / 2;
+                layoutConfig.buffer = (height * (jQuery(window).width() / jQuery(window).height())) / 2;
             }
 
             var layout = {
@@ -675,8 +712,8 @@
 
         // ----------
         goHome: function(config) {
-            var viewerWidth = this.$el.width();
-            var viewerHeight = this.$el.height();
+            var viewerWidth = this.el.width();
+            var viewerHeight = this.el.height();
             var layoutConfig = {};
 
             if (this.mode === 'thumbs') {
@@ -698,158 +735,15 @@
             var self = this;
 
             if (this.tileSources) {
-                return $.map(this.tileSources.slice(0, this.maxImages), function(v, i) {
-                    return new self.Page($.extend({
-                        pageIndex: i
-                    }, v));
+                return jQuery.map(this.tileSources, function(v, i) {
+                    return new $.Page({
+                        pageIndex: i,
+                        tileSource: v
+                    });
                 });
             }
 
-            var highsmith = {
-                Image: {
-                    xmlns: "http://schemas.microsoft.com/deepzoom/2008",
-                    Url: "http://openseadragon.github.io/example-images/highsmith/highsmith_files/",
-                    Format: "jpg",
-                    Overlap: "2",
-                    TileSize: "256",
-                    Size: {
-                        Width:  "7026",
-                        Height: "9221"
-                    }
-                }
-            };
-
-            var duomo = {
-                Image: {
-                    xmlns: "http://schemas.microsoft.com/deepzoom/2008",
-                    Url: "http://openseadragon.github.io/example-images/duomo/duomo_files/",
-                    Format: "jpg",
-                    Overlap: "2",
-                    TileSize: "256",
-                    Size: {
-                        Width:  "13920",
-                        Height: "10200"
-                    }
-                }
-            };
-
-            var tall = {
-                Image: {
-                    xmlns: "http://schemas.microsoft.com/deepzoom/2008",
-                    Url: "../../data/tall_files/",
-                    Format: "jpg",
-                    Overlap: "1",
-                    TileSize: "254",
-                    Size: {
-                        Width:  "500",
-                        Height: "2000"
-                    }
-                }
-            };
-
-            var wide = {
-                Image: {
-                    xmlns: "http://schemas.microsoft.com/deepzoom/2008",
-                    Url: "../../data/wide_files/",
-                    Format: "jpg",
-                    Overlap: "1",
-                    TileSize: "254",
-                    Size: {
-                        Width:  "2000",
-                        Height: "500"
-                    }
-                }
-            };
-
-            var testpattern = {
-                Image: {
-                    xmlns: "http://schemas.microsoft.com/deepzoom/2008",
-                    Url: "../../data/testpattern_files/",
-                    Format: "jpg",
-                    Overlap: "1",
-                    TileSize: "254",
-                    Size: {
-                        Width:  "1000",
-                        Height: "1000"
-                    }
-                }
-            };
-
-            var pages = [];
-
-            pages.push(new this.Page({
-                masterWidth: 7026,
-                masterHeight: 9221,
-                x: 0,
-                y: 0,
-                width: 1,
-                label: 'highsmith',
-                tileSource: highsmith,
-                alternates: [
-                    {
-                        x: 0,
-                        y: 0.55,
-                        width: 1,
-                        label: 'duomo',
-                        tileSource: duomo
-                    },
-                    {
-                        x: 0.7,
-                        y: 0,
-                        width: 0.3,
-                        label: 'tall',
-                        tileSource: tall
-                    }
-                ]
-            }));
-
-            pages.push(new this.Page({
-                tileSource: highsmith,
-                details: [
-                    {
-                        x: 0.25,
-                        y: 0.15,
-                        width: 0.5,
-                        tileSource: testpattern
-                    },
-                    {
-                        x: 0.25,
-                        y: 0.8,
-                        width: 0.5,
-                        tileSource: wide
-                    }
-                ]
-            }));
-
-            pages.push(new this.Page({
-                tileSource: highsmith,
-                clip: {
-                    x: 1000,
-                    y: 1000,
-                    width: 5026,
-                    height: 7221
-                }
-            }));
-
-            var inputs = [
-                highsmith,
-                duomo,
-                testpattern
-            ];
-
-            for (var i = 0; i < this.maxImages; i++) {
-                pages.push(new this.Page({
-                    pageIndex: i,
-                    tileSource: inputs[Math.floor(Math.random() * inputs.length)]
-                }));
-            }
-
-            return pages;
+            return [];
         }
     };
-
-    // ----------
-    $(document).ready(function() {
-        App.init();
-    });
-})();
+})(Mirador);
