@@ -741,6 +741,18 @@ li.highlight {
   width: 100%;
   background-color: black;
 }
+.scroll-cover {
+  display: none;
+  overflow: scroll;
+  z-index: 100;
+}
+.viewer-position {
+  position: absolute;
+  left: 0;
+  top: 0px;
+  right: 0;
+  bottom: 0;
+}
 .image-view, .book-view, .object-view {
   overflow: hidden;
 }

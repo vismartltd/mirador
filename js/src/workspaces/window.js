@@ -100,6 +100,7 @@
           _this.focusOverlaysAvailable[key].bottomPanel = {'' : false};
         });
       }
+      this.sidePanelAvailable = false;
       if (typeof this.sidePanelAvailable !== 'undefined' && !this.sidePanelAvailable) {
         jQuery.each(this.focusOverlaysAvailable, function(key, value) {
           _this.focusOverlaysAvailable[key].sidePanel = {'' : false};

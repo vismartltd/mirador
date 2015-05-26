@@ -40,6 +40,9 @@
             .attr('id', osdID)
             .appendTo(this.element);
 
+            jQuery('<div/>').addClass('scroll-cover viewer-position').append(jQuery('<div/>').addClass('scroll-inner')).appendTo(this.element);
+
+
             this.mode = 'none';
             this.pageBuffer = 0.05;
             this.bigBuffer = 0.2;
@@ -80,25 +83,25 @@
                     mode: 'thumbs',
                     immediately: true
                 });
-            });
 
-            /*this.viewer.addHandler('canvas-drag', function() {
-                if (_this.mode === 'scroll') {
-                    var result = _this.hitTest(_this.viewer.viewport.getCenter());
-                    if (result) {
-                        _this.pageIndex = result.index;
-                        _this.update();
+                _this.viewer.addHandler('canvas-drag', function() {
+                    if (_this.mode === 'scroll') {
+                        var result = _this.hitTest(_this.viewer.viewport.getCenter());
+                        if (result) {
+                            _this.pageIndex = result.index;
+                            _this.update();
+                        }
                     }
-                }
-            });
+                });
 
-            this.viewer.addHandler('zoom', function(event) {
-                _this.applyConstraints();
-            });
+                _this.viewer.addHandler('zoom', function(event) {
+                    _this.applyConstraints();
+                });
 
-            this.viewer.addHandler('pan', function(event) {
-                _this.applyConstraints();
-            });*/
+                _this.viewer.addHandler('pan', function(event) {
+                    _this.applyConstraints();
+                });
+            });
 
             jQuery.each(this.modeNames, function(i, v) {
                 jQuery('.' + v).click(function() {
@@ -254,6 +257,12 @@
             for (var i = 0; i < count; i++) {
                 page = this.pages[i];
                 box = page.getBounds();
+                console.log(pos);
+                console.log(box);
+                console.log('pos.x > box.x');
+                console.log('pos.y > box.y');
+                console.log('pos.x < box.x + box.width');
+                console.log('pos.y < box.y + box.height');
                 if (pos.x > box.x && pos.y > box.y && pos.x < box.x + box.width &&
                         pos.y < box.y + box.height) {
                     return {
