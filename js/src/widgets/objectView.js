@@ -6,7 +6,8 @@
       currentImg:       null,
       windowId:         null,
       currentImgIndex:  0,
-      canvasID:          null,
+      canvasID:         null,
+      mode:             'ThumbnailsView',
       imagesList:       [],
       element:          null,
       elemOsd:          null,
@@ -42,8 +43,15 @@
 
             jQuery('<div/>').addClass('scroll-cover viewer-position').append(jQuery('<div/>').addClass('scroll-inner')).appendTo(this.element);
 
+            this.hud = new $.Hud({
+        parent: this,
+        element: this.element,
+        bottomPanelAvailable: this.bottomPanelAvailable,
+        windowId: this.windowId,
+        annotationLayerAvailable: this.annotationLayerAvailable,
+        annoEndpointAvailable: this.annoEndpointAvailable
+      });
 
-            this.mode = 'none';
             this.pageBuffer = 0.05;
             this.bigBuffer = 0.2;
             this.pageIndex = 0;
@@ -58,9 +66,7 @@
             jQuery.each(this.imagesList, function(index, value) {
                 _this.tileSources.push($.Iiif.getImageUrl(value) + '/info.json');
             });
-            console.log(this.tileSources);
             this.pages = this.createPages();
-            console.log(this.pages);
 
             this.viewer = $.OpenSeadragon({
                 id: osdID,
@@ -69,7 +75,6 @@
                 tileSources: this.tileSources,
                 'uniqueID' : uniqueID
             });
-            console.log(this.viewer);
 
             this.viewer.addHandler('open', function() {
                 _this.el = jQuery(_this.viewer.element);
@@ -80,12 +85,12 @@
                 });
 
                 _this.setMode({
-                    mode: 'thumbs',
+                    mode: _this.mode,
                     immediately: true
                 });
 
                 _this.viewer.addHandler('canvas-drag', function() {
-                    if (_this.mode === 'scroll') {
+                    if (_this.mode === 'ScrollView') {
                         var result = _this.hitTest(_this.viewer.viewport.getCenter());
                         if (result) {
                             _this.pageIndex = result.index;
@@ -103,21 +108,13 @@
                 });
             });
 
-            jQuery.each(this.modeNames, function(i, v) {
-                jQuery('.' + v).click(function() {
-                    _this.setMode({
-                        mode: v
-                    });
-                });
-            });
-
-            jQuery('.next').click(function() {
-                _this.next();
-            });
-
-            jQuery('.previous').click(function() {
-                _this.previous();
-            });
+            // jQuery.each(this.modeNames, function(i, v) {
+            //     jQuery('.' + v).click(function() {
+            //         _this.setMode({
+            //             mode: v
+            //         });
+            //     });
+            // });
 
             this.details = jQuery('.details')
                 .prop('checked', true)
@@ -130,7 +127,7 @@
                 });
 
             jQuery(window).keyup(function(event) {
-                if (_this.mode === 'thumbs') {
+                if (_this.mode === 'ThumbnailsView') {
                     return;
                 }
 
@@ -168,7 +165,7 @@
                     var result = _this.hitTest(_this.viewer.viewport.pointFromPixel(pixel));
                     if (result) {
                         _this.setMode({
-                            mode: 'page',
+                            mode: 'ImageView',
                             pageIndex: result.index
                         });
                     }
@@ -213,8 +210,8 @@
 
         // ----------
         next: function() {
-            var pageIndex = this.pageIndex + (this.mode === 'book' ? 2 : 1);
-            if (this.mode === 'book' && pageIndex % 2 === 0 && pageIndex !== 0) {
+            var pageIndex = this.pageIndex + (this.mode === 'BookView' ? 2 : 1);
+            if (this.mode === 'BookView' && pageIndex % 2 === 0 && pageIndex !== 0) {
                 pageIndex --;
             }
 
@@ -225,8 +222,8 @@
 
         // ----------
         previous: function() {
-            var pageIndex = this.pageIndex - (this.mode === 'book' ? 2 : 1);
-            if (this.mode === 'book' && pageIndex % 2 === 0 && pageIndex !== 0) {
+            var pageIndex = this.pageIndex - (this.mode === 'BookView' ? 2 : 1);
+            if (this.mode === 'BookView' && pageIndex % 2 === 0 && pageIndex !== 0) {
                 pageIndex --;
             }
 
@@ -257,12 +254,6 @@
             for (var i = 0; i < count; i++) {
                 page = this.pages[i];
                 box = page.getBounds();
-                console.log(pos);
-                console.log(box);
-                console.log('pos.x > box.x');
-                console.log('pos.y > box.y');
-                console.log('pos.x < box.x + box.width');
-                console.log('pos.y < box.y + box.height');
                 if (pos.x > box.x && pos.y > box.y && pos.x < box.x + box.width &&
                         pos.y < box.y + box.height) {
                     return {
@@ -298,7 +289,7 @@
         update: function() {
             var self = this;
 
-            jQuery('.nav').toggle(this.mode === 'scroll' || this.mode === 'book' || this.mode === 'page');
+            jQuery('.nav').toggle(this.mode === 'ScrollView' || this.mode === 'BookView' || this.mode === 'ImageView');
             jQuery('.previous').toggleClass('hidden', this.pageIndex <= 0);
             jQuery('.next').toggleClass('hidden', this.pageIndex >= this.pages.length - 1);
 
@@ -340,7 +331,7 @@
 
         // ----------
         applyConstraints: function() {
-            if (this.mode === 'thumbs') {
+            if (this.mode === 'ThumbnailsView') {
                 return;
             }
 
@@ -425,7 +416,7 @@
 
             var layout = this.createLayout();
 
-            if (this.mode === 'thumbs') {
+            if (this.mode === 'ThumbnailsView') {
                 this.viewer.gestureSettingsMouse.scrollToZoom = false;
                 this.viewer.zoomPerClick = 1;
                 this.viewer.panHorizontal = false;
@@ -452,7 +443,7 @@
                 immediately: config.immediately
             });
 
-            if (this.mode === 'thumbs') {
+            if (this.mode === 'ThumbnailsView') {
                 // Set up thumbBounds
                 this.thumbBounds = this.viewer.world.getHomeBounds();
                 this.thumbBounds.x -= this.bigBuffer;
@@ -502,7 +493,7 @@
 
         // ----------
         updateHighlight: function() {
-            if (this.mode !== 'thumbs') {
+            if (this.mode !== 'ThumbnailsView') {
                 this.highlight.style('opacity', 0);
                 return;
             }
@@ -520,7 +511,7 @@
 
         // ----------
         updateHover: function(pageIndex) {
-            if (pageIndex === -1 || this.mode !== 'thumbs') {
+            if (pageIndex === -1 || this.mode !== 'ThumbnailsView') {
                 this.hover.style('opacity', 0);
                 this.scrollCover.css({
                     'cursor': 'default'
@@ -560,7 +551,7 @@
             var height = bounds.height;
             var box;
 
-            if (this.mode === 'book') {
+            if (this.mode === 'BookView') {
                 var page;
                 if (this.pageIndex % 2) { // First in a pair
                     if (this.pageIndex < this.pages.length - 1) {
@@ -582,7 +573,7 @@
             width += (this.pageBuffer * 2);
             height += (this.pageBuffer * 2);
 
-            if (this.mode === 'scroll') {
+            if (this.mode === 'ScrollView') {
                 if (this.pageIndex === 0) {
                     x = bounds.x - this.pageBuffer;
                     width = height * (viewerWidth / viewerHeight);
@@ -598,9 +589,9 @@
             this.viewer.viewport.fitBounds(box, config.immediately);
 
             var setPanBounds = function() {
-                if (self.mode === 'page' || self.mode === 'book') {
+                if (self.mode === 'ImageView' || self.mode === 'BookView') {
                     self.panBounds = box;
-                } else if (self.mode === 'scroll') {
+                } else if (self.mode === 'ScrollView') {
                     self.panBounds = self.pages[0].getBounds()
                         .union(self.pages[pageCount - 1].getBounds());
 
@@ -629,14 +620,14 @@
             var viewerHeight = this.el.height();
             var layoutConfig = {};
 
-            if (this.mode === 'thumbs') {
+            if (this.mode === 'ThumbnailsView') {
                 layoutConfig.columns = Math.floor(viewerWidth / 150);
                 layoutConfig.buffer = this.bigBuffer;
                 layoutConfig.sameWidth = true;
-            } else if (this.mode === 'scroll') {
+            } else if (this.mode === 'ScrollView') {
                 layoutConfig.buffer = this.pageBuffer;
-            } else if (this.mode === 'book' || this.mode === 'page') {
-                layoutConfig.book = (this.mode === 'book');
+            } else if (this.mode === 'BookView' || this.mode === 'ImageView') {
+                layoutConfig.book = (this.mode === 'BookView');
                 var height = 1 + (this.pageBuffer * 2);
                 // Note that using window here is approximate, but that's close enough.
                 // We can't use viewer, because it may be stretched for the thumbs view.
@@ -725,7 +716,7 @@
             var viewerHeight = this.el.height();
             var layoutConfig = {};
 
-            if (this.mode === 'thumbs') {
+            if (this.mode === 'ThumbnailsView') {
                 var info = this.getScrollInfo();
                 var box = this.thumbBounds.clone();
                 box.height = box.width * (viewerHeight / viewerWidth);
