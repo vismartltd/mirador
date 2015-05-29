@@ -148,10 +148,11 @@
                     pixel.y -= _this.scrollCover.position().top;
                     var result = _this.hitTest(_this.osd.viewport.pointFromPixel(pixel));
                     if (result) {
-                        _this.setMode({
+                        _this.parent.toggleObjectView(_this.imagesList[result.index]['@id'], 'ImageView');
+                        /*_this.setMode({
                             mode: 'ImageView',
                             canvasIndex: result.index
-                        });
+                        });*/
                     }
                 });
 
@@ -459,6 +460,9 @@
 
             if (config.canvasIndex !== undefined) {
                 this.canvasIndex = config.canvasIndex; // Need to do this before layout
+            }
+            if (config.canvasID !== undefined) {
+                this.canvasIndex = $.getImageIndexById(this.imagesList, config.canvasID);
             }
 
             this.ignoreScroll = true;

@@ -285,6 +285,7 @@
             });
           }
 
+          /* COMMENT OUT FOR NOW, NEED TO INTEGRATE WITH OBJECTVIEW
           //refresh displayed in case TableOfContents module changed it
           displayed = _this.focusOverlaysAvailable[state][panelType][view];
 
@@ -302,6 +303,7 @@
           if (view === '') {
             _this.adjustFocusSize(panelType, displayed);
           }
+          */
 
           //update current image for all valid panels
         });
@@ -413,6 +415,7 @@
     toggleObjectView: function(canvasID, mode) {
       console.log(canvasID, mode);
       var _this = this;
+      this.currentCanvasID = canvasID;
       if (this.focusModules.ObjectView === null) {
         this.focusModules.ObjectView = new $.ObjectView({
           manifest: this.manifest, 
@@ -428,24 +431,25 @@
           annoEndpointAvailable: this.annoEndpointAvailable} );
       } else {
         this.currentFocus = mode;
-        /*if (imageMode && jQuery.inArray(imageMode, this.imageModes) > -1) {
-          this.currentImageMode = imageMode;
-        }*/
         this.focusModules.ObjectView.setMode({
           mode: mode,
-          immediately: true
-        });
-        this.updateManifestInfo();
-        //this.updatePanelsAndOverlay(mode);
-        jQuery.publish("windowUpdated", {
-          id: _this.id, 
-          viewType: _this.currentFocus, 
-          canvasID: _this.currentCanvasID, 
-          imageMode: _this.currentImageMode, 
-          loadedManifest: _this.manifest.jsonLd['@id'],
-          slotAddress: _this.slotAddress
+          immediately: true,
+          canvasID: canvasID
         });
       }
+      /*if (imageMode && jQuery.inArray(imageMode, this.imageModes) > -1) {
+      this.currentImageMode = imageMode;
+      }*/
+      this.updateManifestInfo();
+      this.updatePanelsAndOverlay(mode);
+      jQuery.publish("windowUpdated", {
+        id: _this.id, 
+        viewType: _this.currentFocus, 
+        canvasID: _this.currentCanvasID, 
+        imageMode: _this.currentImageMode, 
+        loadedManifest: _this.manifest.jsonLd['@id'],
+        slotAddress: _this.slotAddress
+      });
     },
 
     updateFocusImages: function(imageList) {
@@ -492,6 +496,7 @@
     updateManifestInfo: function() {
       var _this = this;
       this.element.find('.window-manifest-navigation').children().removeClass('selected');
+      console.log(this.currentFocus);
       switch(_this.currentFocus) {
         case 'ThumbnailsView':
           //hide thumbnails button and highlight currentImageMode?
