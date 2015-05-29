@@ -138,22 +138,7 @@
 
       //attach view and toggle view, which triggers the attachment of panels or overlays
       _this.bindNavigation();
-      /*switch(focusState) {
-        case 'ThumbnailsView':
-          _this.toggleThumbnails(_this.currentCanvasID);
-        break;
-        case 'ImageView':
-          _this.toggleImageView(_this.currentCanvasID);
-        break;
-        case 'BookView':
-          _this.toggleBookView(_this.currentCanvasID);
-        break;
-        case 'ScrollView':
-          _this.toggleScrollView(_this.currentCanvasID);
-        break;
-        default:
-          break;
-      }*/
+
       _this.toggleObjectView(_this.currentCanvasID, focusState);
 
       if ($.viewer.workspace.slots.length <= 1) {
@@ -425,38 +410,6 @@
       });
     },
 
-    toggleThumbnails: function(canvasID) {
-      this.currentCanvasID = canvasID;
-      if (this.focusModules.ThumbnailsView === null) {
-        this.focusModules.ThumbnailsView = new $.ThumbnailsView( {manifest: this.manifest, appendTo: this.element.find('.view-container'), parent: this, canvasID: this.currentCanvasID, imagesList: this.imagesList} );
-      } else {
-        var view = this.focusModules.ThumbnailsView;
-        view.updateImage(canvasID);
-      }
-      this.toggleFocus('ThumbnailsView', '');
-    },
-
-    toggleImageView: function(canvasID) {
-      this.currentCanvasID = canvasID;
-      if (this.focusModules.ImageView === null) {
-        this.focusModules.ImageView = new $.ImageView({
-          manifest: this.manifest, 
-          appendTo: this.element.find('.view-container'), 
-          parent: this, 
-          windowId: this.id,
-          canvasID: canvasID, 
-          imagesList: this.imagesList,
-          osdOptions: this.focusOptions,
-          bottomPanelAvailable: this.bottomPanelAvailable,
-          annotationLayerAvailable: this.annotationLayerAvailable,
-          annoEndpointAvailable: this.annoEndpointAvailable} );
-      } else {
-        var view = this.focusModules.ImageView;
-        view.updateImage(canvasID);
-      }
-      this.toggleFocus('ImageView', 'ImageView');
-    },
-
     toggleObjectView: function(canvasID, mode) {
       console.log(canvasID, mode);
       var _this = this;
@@ -493,45 +446,6 @@
           slotAddress: _this.slotAddress
         });
       }
-    },
-
-    toggleBookView: function(canvasID) {
-      this.currentCanvasID = canvasID;
-      if (this.focusModules.BookView === null) {
-        this.focusModules.BookView = new $.BookView({
-          manifest: this.manifest, 
-          appendTo: this.element.find('.view-container'), 
-          parent: this, 
-          windowId: this.id,
-          canvasID: canvasID, 
-          imagesList: this.imagesList,
-          osdOptions: this.focusOptions,
-          bottomPanelAvailable: this.bottomPanelAvailable
-        });
-      } else {
-        var view = this.focusModules.BookView;
-        view.updateImage(canvasID);
-      }
-      this.toggleFocus('BookView', 'BookView');
-    },
-
-    toggleScrollView: function(canvasID) {
-      this.currentCanvasID = canvasID;
-      if (this.focusModules.ScrollView === null) {
-        var containerHeight = this.element.find('.view-container').height();
-        this.focusModules.ScrollView = new $.ScrollView({
-          manifest: this.manifest, 
-          appendTo: this.element.find('.view-container'), 
-          parent: this, 
-          canvasID: this.currentCanvasID, 
-          imagesList: this.imagesList, 
-          thumbInfo: {thumbsHeight: Math.floor(containerHeight * this.scrollImageRatio), listingCssCls: 'scroll-listing-thumbs', thumbnailCls: 'scroll-view'}
-        });
-      } else {
-        var view = this.focusModules.ScrollView;
-        view.updateImage(canvasID);
-      }
-      this.toggleFocus('ScrollView', '');    
     },
 
     updateFocusImages: function(imageList) {
@@ -683,23 +597,19 @@
     });
 
     this.element.find('.single-image-option').on('click', function() {
-      //_this.toggleImageView(_this.currentCanvasID);
       _this.toggleObjectView(_this.currentCanvasID, 'ImageView');
     });
 
     this.element.find('.book-option').on('click', function() {
-      //_this.toggleBookView(_this.currentCanvasID);
       _this.toggleObjectView(_this.currentCanvasID, 'BookView');
     });
 
     this.element.find('.scroll-option').on('click', function() {
-      //_this.toggleScrollView(_this.currentCanvasID);
       console.log("triggered scroll clicking");
       _this.toggleObjectView(_this.currentCanvasID, 'ScrollView');
     });
 
     this.element.find('.thumbnails-option').on('click', function() {
-      //_this.toggleThumbnails(_this.currentCanvasID);
       _this.toggleObjectView(_this.currentCanvasID, 'ThumbnailsView');
     });
 

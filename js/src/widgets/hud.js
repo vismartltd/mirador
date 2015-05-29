@@ -7,7 +7,6 @@
       parent:    null,
       windowId:  null,
       annoState: null,
-      showAnnotations: true,
       annoEndpointAvailable: false
     }, options);
 
@@ -44,6 +43,63 @@
       }
     },
 
+    hideAll: function() {
+      this.hideAnnotations();
+      this.hidePrevious();
+      this.hideNext();
+      this.hidePanZoom();
+      this.hideFullScreen();
+      this.hideBottomPanel();
+    },
+
+    hideAnnotations: function() {
+      this.parent.element.find('.mirador-osd-annotations-layer').hide();
+    },
+
+    showAnnotations: function() {
+      this.parent.element.find('.mirador-osd-annotations-layer').show();
+    },
+
+    hidePrevious: function() {
+      this.parent.element.find('.mirador-osd-previous').hide();
+    },
+
+    showPrevious: function() {
+      this.parent.element.find('.mirador-osd-previous').show();
+    },
+
+    hideNext: function() {
+      this.parent.element.find('.mirador-osd-next').hide();
+    },
+
+    showNext: function() {
+      this.parent.element.find('.mirador-osd-next').show();
+    },
+
+    hidePanZoom: function() {
+      this.parent.element.find('.mirador-pan-zoom-controls').hide();
+    },
+
+    showPanZoom: function() {
+      this.parent.element.find('.mirador-pan-zoom-controls').show();
+    },
+
+    hideFullScreen: function() {
+      this.parent.element.find('.mirador-osd-fullscreen').hide();
+    },
+
+    showFullScreen: function() {
+      this.parent.element.find('.mirador-osd-fullscreen').show();
+    },
+
+    hideBottomPanel: function() {
+      this.parent.element.find('.mirador-osd-toggle-bottom-panel').hide();
+    },
+
+    showBottomPanel: function() {
+      this.parent.element.find('.mirador-osd-toggle-bottom-panel').show();
+    },
+
     bindEvents: function() {
       var _this = this,
       firstCanvasId = _this.parent.imagesList[0]['@id'],
@@ -72,22 +128,22 @@
       this.parent.element.find('.mirador-osd-up').on('click', function() {
         var osd = _this.parent.osd;
         osd.viewport.panBy(new OpenSeadragon.Point(0, -0.05));
-        osd.viewport.applyConstraints();
+        //osd.viewport.applyConstraints();
       });
       this.parent.element.find('.mirador-osd-right').on('click', function() {
         var osd = _this.parent.osd;
         osd.viewport.panBy(new OpenSeadragon.Point(0.05, 0));
-        osd.viewport.applyConstraints();
+        //osd.viewport.applyConstraints();
       });
       this.parent.element.find('.mirador-osd-down').on('click', function() {
         var osd = _this.parent.osd;
         osd.viewport.panBy(new OpenSeadragon.Point(0, 0.05));
-        osd.viewport.applyConstraints();
+        //osd.viewport.applyConstraints();
       });
       this.parent.element.find('.mirador-osd-left').on('click', function() {
         var osd = _this.parent.osd;
         osd.viewport.panBy(new OpenSeadragon.Point(-0.05, 0));
-        osd.viewport.applyConstraints();
+        //osd.viewport.applyConstraints();
       });
       this.parent.element.find('.mirador-osd-zoom-in').on('click', function() {
         var osd = _this.parent.osd;
@@ -95,7 +151,7 @@
           osd.viewport.zoomBy(
             osd.zoomPerClick / 1.0
           );
-          osd.viewport.applyConstraints();
+          //osd.viewport.applyConstraints();
         }
       });
       this.parent.element.find('.mirador-osd-zoom-out').on('click', function() {
@@ -104,7 +160,7 @@
           osd.viewport.zoomBy(
             1.0 / osd.zoomPerClick
           );
-          osd.viewport.applyConstraints();
+          //osd.viewport.applyConstraints();
         }
       });
 
@@ -137,7 +193,7 @@
         }
       });
 
-      jQuery.subscribe('currentCanvasIDUpdated.' + _this.windowId, function(event, canvasId) {
+      /*jQuery.subscribe('currentCanvasIDUpdated.' + _this.windowId, function(event, canvasId) {
         // console.log(canvasId);
         // console.log(lastCanvasId);
         // If it is the first canvas, hide the "go to previous" button, otherwise show it.
@@ -152,7 +208,7 @@
           _this.parent.element.find('.mirador-osd-previous').show();
         }
         // If it is the last canvas, hide the "go to previous" button, otherwise show it.
-      });
+      });*/
     },
 
     createStateMachine: function() {
