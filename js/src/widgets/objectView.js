@@ -3,10 +3,9 @@
     $.ObjectView = function(options) {
 
     jQuery.extend(this, {
-      currentImg:       null,
       windowId:         null,
-      currentImgIndex:  0,
       canvasID:         null,
+      canvasIndex:      0,
       mode:             'ThumbnailsView',
       imagesList:       [],
       element:          null,
@@ -15,7 +14,6 @@
       manifest:         null,
       osd:              null,
       fullscreen:       null,
-      pageIndex:        0,
       osdOptions: {
         osdBounds:      null,
         zoomLevel:      null
@@ -34,6 +32,10 @@
             var _this = this,
             uniqueID = $.genUUID(),
             osdID = 'mirador-osd-' + uniqueID;
+
+            if (this.canvasID !== null) {
+                this.canvasIndex = $.getImageIndexById(this.imagesList, this.canvasID);
+            }
 
             this.element = jQuery(this.template()).appendTo(this.appendTo);
             this.elemOsd = jQuery('<div/>').addClass(this.osdCls).attr('id', osdID).appendTo(this.element);
@@ -83,7 +85,7 @@
                     if (_this.mode === 'ScrollView') {
                         var result = _this.hitTest(_this.osd.viewport.getCenter());
                         if (result) {
-                            _this.pageIndex = result.index;
+                            _this.canvasIndex = result.index;
                             _this.update();
                         }
                     }
@@ -148,7 +150,7 @@
                     if (result) {
                         _this.setMode({
                             mode: 'ImageView',
-                            pageIndex: result.index
+                            canvasIndex: result.index
                         });
                     }
                 });
@@ -192,25 +194,25 @@
 
         // ----------
         next: function() {
-            var pageIndex = this.pageIndex + (this.mode === 'BookView' ? 2 : 1);
-            if (this.mode === 'BookView' && pageIndex % 2 === 0 && pageIndex !== 0) {
-                pageIndex --;
+            var canvasIndex = this.canvasIndex + (this.mode === 'BookView' ? 2 : 1);
+            if (this.mode === 'BookView' && canvasIndex % 2 === 0 && canvasIndex !== 0) {
+                canvasIndex --;
             }
 
             this.goToPage({
-                pageIndex: pageIndex
+                canvasIndex: canvasIndex
             });
         },
 
         // ----------
         previous: function() {
-            var pageIndex = this.pageIndex - (this.mode === 'BookView' ? 2 : 1);
-            if (this.mode === 'BookView' && pageIndex % 2 === 0 && pageIndex !== 0) {
-                pageIndex --;
+            var canvasIndex = this.canvasIndex - (this.mode === 'BookView' ? 2 : 1);
+            if (this.mode === 'BookView' && canvasIndex % 2 === 0 && canvasIndex !== 0) {
+                canvasIndex --;
             }
 
             this.goToPage({
-                pageIndex: pageIndex
+                canvasIndex: canvasIndex
             });
         },
 
@@ -304,10 +306,10 @@
                 this.hud.showFullScreen();
 
                 //show next/previous, if needed
-                if (this.pageIndex === 0) {
+                if (this.canvasIndex === 0) {
                     this.hud.hidePrevious();
                     this.hud.showNext();
-                } else if (this.pageIndex === this.imagesList.length-1) {
+                } else if (this.canvasIndex === this.imagesList.length-1) {
                     this.hud.hideNext();
                     this.hud.showPrevious();
                 } else {
@@ -330,10 +332,10 @@
                 this.hud.showFullScreen();
 
                 //show next/previous, if needed
-                if (this.pageIndex === 0) {
+                if (this.canvasIndex === 0) {
                     this.hud.hidePrevious();
                     this.hud.showNext();
-                } else if (this.pageIndex === this.imagesList.length-1) {
+                } else if (this.canvasIndex === this.imagesList.length-1) {
                     this.hud.hideNext();
                     this.hud.showPrevious();
                 } else {
@@ -351,7 +353,7 @@
                 this.alternates = null;
             }
 
-            var page = this.pages[this.pageIndex];
+            var page = this.pages[this.canvasIndex];
             if (page && page.alternates && page.alternates.length) {
                 this.alternates = jQuery('<select>')
                     .change(function() {
@@ -455,8 +457,8 @@
 
             this.mode = config.mode;
 
-            if (config.pageIndex !== undefined) {
-                this.pageIndex = config.pageIndex; // Need to do this before layout
+            if (config.canvasIndex !== undefined) {
+                this.canvasIndex = config.canvasIndex; // Need to do this before layout
             }
 
             this.ignoreScroll = true;
@@ -506,7 +508,7 @@
                 viewportBounds.y += info.viewportMax * info.scrollFactor;
                 viewportBounds.height = info.viewportHeight;
 
-                var pageBounds = this.pages[this.pageIndex].getBounds();
+                var pageBounds = this.pages[this.canvasIndex].getBounds();
                 var top = pageBounds.y - this.bigBuffer;
                 var bottom = top + pageBounds.height + (this.bigBuffer * 2);
 
@@ -546,7 +548,7 @@
                 return;
             }
 
-            var page = this.pages[this.pageIndex];
+            var page = this.pages[this.canvasIndex];
             var box = page.getBounds();
 
             this.highlight
@@ -558,8 +560,8 @@
         },
 
         // ----------
-        updateHover: function(pageIndex) {
-            if (pageIndex === -1 || this.mode !== 'ThumbnailsView') {
+        updateHover: function(canvasIndex) {
+            if (canvasIndex === -1 || this.mode !== 'ThumbnailsView') {
                 this.hover.style('opacity', 0);
                 this.scrollCover.css({
                     'cursor': 'default'
@@ -572,7 +574,7 @@
                 'cursor': 'pointer'
             });
 
-            var page = this.pages[pageIndex];
+            var page = this.pages[canvasIndex];
             var box = page.getBounds();
 
             this.hover
@@ -588,11 +590,11 @@
             var _this = this;
 
             var pageCount = this.pages.length;
-            this.pageIndex = Math.max(0, Math.min(pageCount - 1, config.pageIndex));
+            this.canvasIndex = Math.max(0, Math.min(pageCount - 1, config.canvasIndex));
 
             var viewerWidth = this.elemOsd.width();
             var viewerHeight = this.elemOsd.height();
-            var bounds = this.pages[this.pageIndex].getBounds();
+            var bounds = this.pages[this.canvasIndex].getBounds();
             var x = bounds.x;
             var y = bounds.y;
             var width = bounds.width;
@@ -602,14 +604,14 @@
             //TODO: needs to work for different combinations of pages (including r-to-l)
             if (this.mode === 'BookView') {
                 var page;
-                if (this.pageIndex % 2) { // First in a pair
-                    if (this.pageIndex < this.pages.length - 1) {
-                        page = this.pages[this.pageIndex + 1];
+                if (this.canvasIndex % 2) { // First in a pair
+                    if (this.canvasIndex < this.pages.length - 1) {
+                        page = this.pages[this.canvasIndex + 1];
                         width += page.getBounds().width;
                     }
                 } else {
-                    if (this.pageIndex > 0) {
-                        page = this.pages[this.pageIndex - 1];
+                    if (this.canvasIndex > 0) {
+                        page = this.pages[this.canvasIndex - 1];
                         box = page.getBounds();
                         x -= box.width;
                         width += box.width;
@@ -623,10 +625,10 @@
             height += (this.pageBuffer * 2);
 
             if (this.mode === 'ScrollView') {
-                if (this.pageIndex === 0) {
+                if (this.canvasIndex === 0) {
                     x = bounds.x - this.pageBuffer;
                     width = height * (viewerWidth / viewerHeight);
-                } else if (this.pageIndex === this.pages.length - 1) {
+                } else if (this.canvasIndex === this.pages.length - 1) {
                     width = height * (viewerWidth / viewerHeight);
                     x = (bounds.x + bounds.width + this.pageBuffer) - width;
                 }
@@ -698,7 +700,7 @@
                 page = this.pages[i];
                 box = page.getBounds();
 
-                if (i === this.pageIndex) {
+                if (i === this.canvasIndex) {
                     offset = box.getTopLeft().minus(new OpenSeadragon.Point(x, y));
                 }
 
@@ -773,7 +775,7 @@
                 this.osd.viewport.fitBounds(box, config.immediately);
             } else {
                 this.goToPage({
-                    pageIndex: this.pageIndex,
+                    canvasIndex: this.canvasIndex,
                     immediately: config.immediately
                 });
             }
@@ -784,7 +786,7 @@
             if (this.tileSources) {
                 return jQuery.map(this.tileSources, function(v, i) {
                     return new $.Page({
-                        pageIndex: i,
+                        canvasIndex: i,
                         tileSource: v
                     });
                 });
