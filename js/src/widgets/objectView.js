@@ -68,6 +68,41 @@
                 'uniqueID' : uniqueID
             });
 
+            /*this.details = jQuery('.details')
+                .prop('checked', true)
+                .change(function() {
+                    if (_this.details.prop('checked')) {
+                        _this.showDetails();
+                    } else {
+                        _this.hideDetails();
+                    }
+                });*/
+
+            this.scrollInner = jQuery('.scroll-inner');
+            this.scrollCover = jQuery('.scroll-cover');
+            this.bindEvents();
+
+            var svgNode = this.osd.svgOverlay();
+
+            this.highlight = d3.select(svgNode).append("rect")
+                .style('fill', 'none')
+                .style('stroke', '#08f')
+                .style('opacity', 0)
+                .style('stroke-width', 0.05)
+                .attr("pointer-events", "none");
+
+            this.hover = d3.select(svgNode).append("rect")
+                .style('fill', 'none')
+                .style('stroke', '#08f')
+                .style('opacity', 0)
+                .style('stroke-width', 0.05)
+                .attr("pointer-events", "none");
+
+            this.update();
+        },
+
+        bindEvents: function() {
+            var _this = this;
             this.osd.addHandler('open', function() {
                 _this.elemOsd = jQuery(_this.osd.element);
 
@@ -100,16 +135,6 @@
                 });
             });
 
-            this.details = jQuery('.details')
-                .prop('checked', true)
-                .change(function() {
-                    if (_this.details.prop('checked')) {
-                        _this.showDetails();
-                    } else {
-                        _this.hideDetails();
-                    }
-                });
-
             jQuery(window).keyup(function(event) {
                 if (_this.mode === 'ThumbnailsView') {
                     return;
@@ -122,10 +147,7 @@
                 }
             });
 
-            this.scrollInner = jQuery('.scroll-inner');
-
-            this.scrollCover = jQuery('.scroll-cover')
-                .scroll(function(event) {
+            this.scrollCover.scroll(function(event) {
                     var info = _this.getScrollInfo();
                     if (!info || _this.ignoreScroll) {
                         return;
@@ -156,36 +178,27 @@
                     }
                 });
 
-            var svgNode = this.osd.svgOverlay();
-
-            this.highlight = d3.select(svgNode).append("rect")
-                .style('fill', 'none')
-                .style('stroke', '#08f')
-                .style('opacity', 0)
-                .style('stroke-width', 0.05)
-                .attr("pointer-events", "none");
-
-            this.hover = d3.select(svgNode).append("rect")
-                .style('fill', 'none')
-                .style('stroke', '#08f')
-                .style('opacity', 0)
-                .style('stroke-width', 0.05)
-                .attr("pointer-events", "none");
-
             jQuery(window).resize(function() {
-                var newSize = new OpenSeadragon.Point(_this.elemOsd.width(), _this.elemOsd.height());
-                _this.osd.viewport.resize(newSize, false);
-                _this.setMode({
-                    mode: _this.mode,
-                    immediately: true
-                });
-
-                _this.osd.forceRedraw();
-
-                _this.osd.svgOverlay('resize');
+                _this.resize();
             });
 
-            this.update();
+            jQuery.subscribe('windowResized', function() {
+                _this.resize();
+            });
+        },
+
+        resize: function() {
+            var _this = this,
+            newSize = new OpenSeadragon.Point(_this.elemOsd.width(), _this.elemOsd.height());
+            _this.osd.viewport.resize(newSize, false);
+            _this.setMode({
+                mode: _this.mode,
+                immediately: true
+            });
+
+            _this.osd.forceRedraw();
+
+            _this.osd.svgOverlay('resize');
         },
 
         template: Handlebars.compile([

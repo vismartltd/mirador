@@ -6,37 +6,37 @@
       element:           null,
       scrollImageRatio:  0.9,
       manifest:          null,
-      currentCanvasID:    null,
+      currentCanvasID:   null,
       focusImages:       [],
       imagesList:        null,
       annotationsList:   [],
       endpoint:          null,
-      slotAddress:     null,
+      slotAddress:       null,
       currentImageMode:  'ImageView',
       imageModes:        ['ImageView', 'BookView'],
       currentFocus:      'ThumbnailsView',
       focusesOriginal:   ['ThumbnailsView', 'ImageView', 'ScrollView', 'BookView'],
       focuses:           ['ThumbnailsView', 'ImageView', 'ScrollView', 'BookView'],
-      focusModules:           {'ThumbnailsView': null, 'ImageView': null, 'ScrollView': null, 'BookView': null, 'ObjectView' : null},
+      objectView:        null,
       focusOverlaysAvailable: {
         'ThumbnailsView': {
-          'overlay' : {'MetadataView' : false}, 
-          'sidePanel' : {'TableOfContents' : true},
+          'overlay' :     {'MetadataView' : false}, 
+          'sidePanel' :   {'TableOfContents' : true},
           'bottomPanel' : {'' : false}
         },
         'ImageView': {
-          'overlay' : {'MetadataView' : false}, 
-          'sidePanel' : {'TableOfContents' : true},
+          'overlay' :     {'MetadataView' : false}, 
+          'sidePanel' :   {'TableOfContents' : true},
           'bottomPanel' : {'ThumbnailsView' : true}
         },
         'ScrollView': {
-          'overlay' : {'MetadataView' : false}, 
-          'sidePanel' : {'TableOfContents' : true},
+          'overlay' :     {'MetadataView' : false}, 
+          'sidePanel' :   {'TableOfContents' : true},
           'bottomPanel' : {'' : false}
         },
         'BookView': {
-          'overlay' : {'MetadataView' : false},
-          'sidePanel' : {'TableOfContents' : true},
+          'overlay' :     {'MetadataView' : false},
+          'sidePanel' :   {'TableOfContents' : true},
           'bottomPanel' : {'ThumbnailsView' : true}
         }
       },
@@ -100,6 +100,7 @@
           _this.focusOverlaysAvailable[key].bottomPanel = {'' : false};
         });
       }
+      //sidePanel disabled for now
       this.sidePanelAvailable = false;
       if (typeof this.sidePanelAvailable !== 'undefined' && !this.sidePanelAvailable) {
         jQuery.each(this.focusOverlaysAvailable, function(key, value) {
@@ -133,7 +134,7 @@
       _this.element = jQuery(this.template(templateData)).appendTo(_this.appendTo);
 
       //clear any existing objects
-      _this.clearViews();
+      _this.clearObjectView();
       _this.clearPanelsAndOverlay();
 
       //attach view and toggle view, which triggers the attachment of panels or overlays
@@ -178,18 +179,6 @@
 
     bindEvents: function() {
       var _this = this;
-
-      //this event should trigger from layout      
-      jQuery.subscribe('windowResize', $.debounce(function(){
-        if (_this.focusModules.ScrollView) {
-          var containerHeight = _this.element.find('.view-container').height();
-          var triggerShow = false;
-          if (_this.currentFocus === "ScrollView") {
-            triggerShow = true;
-          }
-          _this.focusModules.ScrollView.reloadImages(Math.floor(containerHeight * _this.scrollImageRatio), triggerShow);
-        }
-      }, 300));
 
       jQuery.subscribe('bottomPanelSet.' + _this.id, function(event, visible) {
         var panel = _this.element.find('.bottomPanel');
@@ -253,11 +242,8 @@
       });
     },
 
-    clearViews: function() {
-      var _this = this;
-      jQuery.each(_this.focusModules, function(key, value) {
-        _this.focusModules[key] = null;
-      });
+    clearObjectView: function() {
+      this.objectView = null;
     },
 
     clearPanelsAndOverlay: function() {
@@ -362,9 +348,9 @@
 
     adjustFocusSize: function(panelType, panelState) {
       if (panelType === 'bottomPanel') {
-        this.focusModules[this.currentFocus].adjustHeight('focus-max-height', panelState);
+        this.objectView.adjustHeight('focus-max-height', panelState);
       } else if (panelType === 'sidePanel') {
-        this.focusModules[this.currentFocus].adjustWidth('focus-max-width', panelState);
+        this.objectView.adjustWidth('focus-max-width', panelState);
       } else {}
     },
 
@@ -386,7 +372,7 @@
       this.togglePanels('overlay', !currentState, 'MetadataView', focusState);
     },
 
-    toggleFocus: function(focusState, imageMode) {
+    /*toggleFocus: function(focusState, imageMode) {
       var _this = this;
 
       this.currentFocus = focusState;
@@ -410,14 +396,14 @@
         loadedManifest: _this.manifest.jsonLd['@id'],
         slotAddress: _this.slotAddress
       });
-    },
+    },*/
 
     toggleObjectView: function(canvasID, mode) {
       console.log(canvasID, mode);
       var _this = this;
       this.currentCanvasID = canvasID;
-      if (this.focusModules.ObjectView === null) {
-        this.focusModules.ObjectView = new $.ObjectView({
+      if (this.objectView === null) {
+        this.objectView = new $.ObjectView({
           manifest: this.manifest, 
           appendTo: this.element.find('.view-container'), 
           parent: this, 
@@ -431,7 +417,7 @@
           annoEndpointAvailable: this.annoEndpointAvailable} );
       } else {
         this.currentFocus = mode;
-        this.focusModules.ObjectView.setMode({
+        this.objectView.setMode({
           mode: mode,
           immediately: true,
           canvasID: canvasID
@@ -593,6 +579,11 @@
       _this.element.find('.image-list').stop().slideFadeToggle(300);
     });
 
+    this.element.find('.manifest-info').on('mousemove',
+      function() {
+        console.log("moved on manifest-info");
+    });
+
     this.element.find('.mirador-icon-window-menu').on('mouseenter',
       function() {
       _this.element.find('.slot-controls').stop().slideFadeToggle(300);
@@ -632,22 +623,27 @@
 
     this.element.find('.remove-object-option').on('click', function() {
       $.viewer.workspace.removeNode(_this.parent);
+      jQuery.publish("windowResized");
     });
 
     this.element.find('.add-slot-right').on('click', function() {
       $.viewer.workspace.splitRight(_this.parent);
+      jQuery.publish("windowResized");
     });
 
     this.element.find('.add-slot-left').on('click', function() {
       $.viewer.workspace.splitLeft(_this.parent);
+      jQuery.publish("windowResized");
     });
 
     this.element.find('.add-slot-below').on('click', function() {
       $.viewer.workspace.splitDown(_this.parent);
+      jQuery.publish("windowResized");
     });
 
     this.element.find('.add-slot-above').on('click', function() {
       $.viewer.workspace.splitUp(_this.parent);
+      jQuery.publish("windowResized");
     });
     },
 
