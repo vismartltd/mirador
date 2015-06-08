@@ -30,20 +30,20 @@
       return regionArray;
     },
 
-    getOsdFrame: function(region) {
+    getOsdFrame: function(region, tiledImage) {
       var rectX = region[0],
       rectY = region[1],
       rectW = region[2],
       rectH = region[3];
-
-      return this.osdViewer.viewport.imageToViewportRectangle(rectX,rectY,rectW,rectH);
+      return tiledImage.imageToViewportRectangle(rectX,rectY,rectW,rectH);
 
     }, 
 
     render: function() {
       var _this = this;
       _this.hideAll(),
-      this.overlays = [];
+      this.overlays = [],
+      tiledImage = this.parent.parent.getCurrentTiledImage();
       this.list.forEach(function(annotation) {
         var region = _this.parseRegion(annotation.on),
         osdOverlay = document.createElement('div');
@@ -51,7 +51,7 @@
         osdOverlay.id = annotation['@id'];
         _this.osdViewer.addOverlay({
           element: osdOverlay,
-          location: _this.getOsdFrame(region)
+          location: _this.getOsdFrame(region, tiledImage)
         });
         _this.overlays.push(jQuery(osdOverlay));
       });

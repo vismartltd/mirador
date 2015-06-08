@@ -40,6 +40,7 @@
             this.element = jQuery(this.template()).appendTo(this.appendTo);
             this.elemOsd = jQuery('<div/>').addClass(this.osdCls).attr('id', osdID).appendTo(this.element);
             jQuery('<div/>').addClass('scroll-cover viewer-position').append(jQuery('<div/>').addClass('scroll-inner')).appendTo(this.element);
+            this.elemAnno = jQuery('<div/>').addClass(this.annoCls).appendTo(this.element);
 
             this.hud = new $.Hud({
                 parent: this,
@@ -110,6 +111,8 @@
                     v.setTiledImage(_this.osd.world.getItemAt(i));
                     v.addDetails();
                 });
+
+                _this.addAnnotationsLayer(_this.elemAnno);
 
                 _this.setMode({
                     mode: _this.mode,
@@ -185,6 +188,21 @@
             jQuery.subscribe('windowResized', function() {
                 _this.resize();
             });
+        },
+
+        addAnnotationsLayer: function(element) {
+            var _this = this;
+            _this.annotationsLayer = new $.AnnotationsLayer({
+                parent: _this,
+                annotationsList: _this.parent.annotationsList || [],
+                viewer: _this.osd,
+                windowId: _this.windowId,
+                element: element
+            });
+        },
+
+        getCurrentTiledImage: function() {
+            return this.pages[this.canvasIndex].main.tiledImage;
         },
 
         resize: function() {
@@ -365,6 +383,10 @@
             if (this.alternates) {
                 this.alternates.remove();
                 this.alternates = null;
+            }
+
+            if (this.mode !== 'ImageView') {
+                this.hud.turnAnnotationsOff();
             }
 
             var page = this.pages[this.canvasIndex];
@@ -679,6 +701,7 @@
 
             this.osd.viewport.minZoomLevel = this.osd.viewport.getZoom();
 
+            jQuery.publish('canvasIDChanged.' + this.windowId, this.imagesList[this.canvasIndex]['@id']);
             this.update();
         },
 

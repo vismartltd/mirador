@@ -100,6 +100,12 @@
       this.parent.element.find('.mirador-osd-toggle-bottom-panel').show();
     },
 
+    turnAnnotationsOff: function() {
+      if (this.annoState.current !== 'annoOff') {
+        this.annoState.displayOff();
+      }
+    },
+
     bindEvents: function() {
       var _this = this,
       firstCanvasId = _this.parent.imagesList[0]['@id'],

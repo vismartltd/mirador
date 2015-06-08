@@ -95,6 +95,8 @@
       _this.getAnnotations();
 
       //check config
+      //bottomPanel disabled for now
+      this.bottomPanelAvailable = false;
       if (typeof this.bottomPanelAvailable !== 'undefined' && !this.bottomPanelAvailable) {
         jQuery.each(this.focusOverlaysAvailable, function(key, value) {
           _this.focusOverlaysAvailable[key].bottomPanel = {'' : false};
@@ -195,6 +197,10 @@
         } else {
           _this.element.find('.remove-object-option').show();
         }
+      });
+
+      jQuery.subscribe('canvasIDChanged.' + _this.id, function(event, canvasID) {
+        _this.setCurrentCanvasID(canvasID);
       });
     },
     
@@ -445,13 +451,12 @@
     setCurrentCanvasID: function(canvasID) {
       var _this = this;
       this.currentCanvasID = canvasID;
-      jQuery.unsubscribe(('annotationListLoaded.' + _this.id));
       jQuery.publish('removeTooltips.' + _this.id);
       while(_this.annotationsList.length > 0) {
         _this.annotationsList.pop();
       }
       this.getAnnotations();
-      switch(this.currentImageMode) {
+      /*switch(this.currentImageMode) {
         case 'ImageView':
           this.toggleImageView(this.currentCanvasID);
         break;
@@ -460,7 +465,7 @@
         break;
         default:
           break;
-      }
+      }*/
       jQuery.publish(('currentCanvasIDUpdated.' + _this.id), canvasID);
     },
     
