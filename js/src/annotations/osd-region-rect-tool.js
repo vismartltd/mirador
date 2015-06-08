@@ -60,9 +60,10 @@
     },
 
     finishRectangle: function(event) {
-      var _this = this.userData.recttool; //osd userData
+      var _this = this.userData.recttool, //osd userData
+      tiledImage = _this.parent.parent.getCurrentTiledImage(); 
       _this.dragging = false;
-      var osdImageRect = _this.osdViewer.viewport.viewportToImageRectangle(_this.rectangle);
+      var osdImageRect = tiledImage.viewportToImageRectangle(_this.rectangle);
       var canvasRect = {
         x: parseInt(osdImageRect.x, 10),
         y: parseInt(osdImageRect.y, 10),
@@ -207,7 +208,8 @@
                   } 
 
                   var bounds = _this.osdViewer.viewport.getBounds(true);
-                  var scope = _this.osdViewer.viewport.viewportToImageRectangle(bounds);
+                  var tiledImage = _this.parent.parent.getCurrentTiledImage();
+                  var scope = tiledImage.viewportToImageRectangle(bounds);
                   //bounds is giving negative values?
                   
                   var motivation = [],
