@@ -51,7 +51,13 @@
                 annoEndpointAvailable: this.annoEndpointAvailable
             });
 
-            //TODO: should not be hardcoded
+            // TODO: should not be hardcoded
+            // This should be an integrated part of the 
+            // layout algorithm, and will be based on the 
+            // size of the viewport, the aspect ratio of the
+            // object, the viewing mode, and the other 
+            // ocluding instrumentation that is overlaid 
+            // onto the canvas.
             this.pageBuffer = 0.05;
             this.bigBuffer = 0.2;
 
@@ -78,12 +84,14 @@
                         _this.hideDetails();
                     }
                 });*/
-
-            this.scrollInner = jQuery('.scroll-inner');
-            this.scrollCover = jQuery('.scroll-cover');
+            // Marking this as Global State. It will need
+            // to be dealt with.
+            this.scrollInner = _this.element.find('.scroll-inner');
+            this.scrollCover = _this.element.find('.scroll-cover');
             this.bindEvents();
 
             var svgNode = this.osd.svgOverlay();
+            //No.
 
             this.highlight = d3.select(svgNode).append("rect")
                 .style('fill', 'none')
@@ -138,17 +146,22 @@
                 });
             });
 
-            jQuery(window).keyup(function(event) {
-                if (_this.mode === 'ThumbnailsView') {
-                    return;
-                }
+            // jQuery(window).keyup(function(event) {
+            // // Marking this as Global State that needs to 
+            // // be removed/dealt with. I have a strategy
+            // // called "control contexts" which should 
+            // // solve this, but it will take some time to 
+            // // explain.
+            //     if (_this.mode === 'ThumbnailsView') {
+            //         return;
+            //     }
 
-                if (event.which === 39) { // Right arrow
-                    _this.next();
-                } else if (event.which === 37) { // Left arrow
-                    _this.previous();
-                }
-            });
+            //     if (event.which === 39) { // Right arrow
+            //         _this.next();
+            //     } else if (event.which === 37) { // Left arrow
+            //         _this.previous();
+            //     }
+            // });
 
             this.scrollCover.scroll(function(event) {
                     var info = _this.getScrollInfo();
