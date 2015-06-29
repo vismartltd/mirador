@@ -92,7 +92,6 @@
       }
 
       this.annoEndpointAvailable = !jQuery.isEmptyObject($.viewer.annotationEndpoint);
-      _this.getAnnotations();
 
       //check config
       //bottomPanel disabled for now
@@ -412,9 +411,10 @@
     },*/
 
     toggleObjectView: function(canvasID, mode) {
-      console.log(canvasID, mode);
       var _this = this;
       this.currentCanvasID = canvasID;
+      this.currentFocus = mode;
+      this.updateAnnotations();
       if (this.objectView === null) {
         this.objectView = new $.ObjectView({
           manifest: this.manifest, 
@@ -429,7 +429,6 @@
           annotationLayerAvailable: this.annotationLayerAvailable,
           annoEndpointAvailable: this.annoEndpointAvailable} );
       } else {
-        this.currentFocus = mode;
         this.objectView.setMode({
           mode: mode,
           // immediately: true,
@@ -455,15 +454,22 @@
       this.focusImages = imageList;
     },
 
+    updateAnnotations: function() {
+      if (this.currentFocus === "ImageView") {
+        jQuery.publish('removeTooltips.' + this.id);
+        while(this.annotationsList.length > 0) {
+          this.annotationsList.pop();
+        }
+        this.getAnnotations();
+      }
+    },
+
     setCurrentCanvasID: function(canvasID) {
       var _this = this;
       this.currentCanvasID = canvasID;
-      jQuery.publish('removeTooltips.' + _this.id);
-      while(_this.annotationsList.length > 0) {
-        _this.annotationsList.pop();
-      }
-      this.getAnnotations();
-      /*switch(this.currentImageMode) {
+      this.updateAnnotations();
+      /* Probably no longer needed with ObjectView in place
+      switch(this.currentImageMode) {
         case 'ImageView':
           this.toggleImageView(this.currentCanvasID);
         break;
@@ -494,7 +500,6 @@
     updateManifestInfo: function() {
       var _this = this;
       this.element.find('.window-manifest-navigation').children().removeClass('selected');
-      console.log(this.currentFocus);
       switch(_this.currentFocus) {
         case 'ThumbnailsView':
           //hide thumbnails button and highlight currentImageMode?
@@ -510,7 +515,7 @@
         break;
         case 'ScrollView':
           //highlight Scroll View option
-          _this.element.find('.mirador-icon-thumbs-view').addClass('selected');
+          _this.element.find('.mirador-icon-image-view').addClass('selected');
         break;
         default:
           break;
@@ -583,7 +588,6 @@
 
     this.element.find('.mirador-icon-image-view').on('mouseenter',
       function() {
-        console.log("entered image-view choice");
       _this.element.find('.image-list').stop().slideFadeToggle(300);
     }).on('mouseleave',
     function() {
@@ -592,7 +596,6 @@
 
     this.element.find('.manifest-info').on('mousemove',
       function() {
-        console.log("moved on manifest-info");
     });
 
     this.element.find('.mirador-icon-window-menu').on('mouseenter',
@@ -612,7 +615,6 @@
     });
 
     this.element.find('.scroll-option').on('click', function() {
-      console.log("triggered scroll clicking");
       _this.toggleObjectView(_this.currentCanvasID, 'ScrollView');
     });
 

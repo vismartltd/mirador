@@ -132,6 +132,7 @@
                         var result = _this.hitTest(_this.osd.viewport.getCenter());
                         if (result) {
                             _this.canvasIndex = result.index;
+                            jQuery.publish('canvasIDChanged.' + _this.windowId, _this.imagesList[_this.canvasIndex]['@id']);
                             _this.update();
                         }
                     }
