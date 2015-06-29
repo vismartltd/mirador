@@ -744,7 +744,6 @@ li.highlight {
 .scroll-cover {
   display: none;
   overflow: scroll;
-  z-index: 100;
 }
 .viewer-position {
   position: absolute;
