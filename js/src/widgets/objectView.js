@@ -59,7 +59,7 @@
             // ocluding instrumentation that is overlaid 
             // onto the canvas.
             this.pageBuffer = 0.05;
-            this.bigBuffer = 0.2;
+            this.bigBuffer = 0.5;
 
             this.tileSources = [];
             jQuery.each(this.imagesList, function(index, value) {
@@ -187,10 +187,6 @@
                     var result = _this.hitTest(_this.osd.viewport.pointFromPixel(pixel));
                     if (result) {
                         _this.parent.toggleObjectView(_this.imagesList[result.index]['@id'], 'ImageView');
-                        /*_this.setMode({
-                            mode: 'ImageView',
-                            canvasIndex: result.index
-                        });*/
                     }
                 });
 
@@ -836,6 +832,7 @@
 
         // ----------
         createPages: function() {
+        
             if (this.tileSources) {
                 return jQuery.map(this.tileSources, function(v, i) {
                     return new $.Page({

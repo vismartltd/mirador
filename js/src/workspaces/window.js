@@ -432,7 +432,7 @@
         this.currentFocus = mode;
         this.objectView.setMode({
           mode: mode,
-          immediately: true,
+          // immediately: true,
           canvasID: canvasID
         });
       }
