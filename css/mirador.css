@@ -743,7 +743,7 @@ li.highlight {
 }
 .scroll-cover {
   display: none;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 .viewer-position {
   position: absolute;
