@@ -636,27 +636,22 @@
 
     this.element.find('.remove-object-option').on('click', function() {
       $.viewer.workspace.removeNode(_this.parent);
-      jQuery.publish("windowResized");
     });
 
     this.element.find('.add-slot-right').on('click', function() {
       $.viewer.workspace.splitRight(_this.parent);
-      jQuery.publish("windowResized");
     });
 
     this.element.find('.add-slot-left').on('click', function() {
       $.viewer.workspace.splitLeft(_this.parent);
-      jQuery.publish("windowResized");
     });
 
     this.element.find('.add-slot-below').on('click', function() {
       $.viewer.workspace.splitDown(_this.parent);
-      jQuery.publish("windowResized");
     });
 
     this.element.find('.add-slot-above').on('click', function() {
       $.viewer.workspace.splitUp(_this.parent);
-      jQuery.publish("windowResized");
     });
     },
 

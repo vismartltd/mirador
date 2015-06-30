@@ -191,11 +191,7 @@
                     }
                 });
 
-            jQuery(window).resize(function() {
-                _this.resize();
-            });
-
-            jQuery.subscribe('windowResized', function() {
+            jQuery.subscribe('layoutChanged', function() {
                 _this.resize();
             });
         },

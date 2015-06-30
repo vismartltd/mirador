@@ -34,7 +34,6 @@
       this.element.find('.addItemLink').on('click', function(){ _this.addItem(); });
       this.element.find('.remove-slot-option').on('click', function(){ 
         _this.parent.removeNode(_this); 
-        jQuery.publish("windowResized");
       });
       jQuery.subscribe('windowRemoved', function(event, id) {
         if (_this.window && _this.window.id === id) {
