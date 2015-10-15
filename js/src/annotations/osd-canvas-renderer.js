@@ -55,8 +55,8 @@
         osdOverlay.className = 'annotation';
         osdOverlay.id = annotation['@id'];
         _this.osdViewer.addHandler("add-overlay", function() {
-          deferred.resolve();
-        });
+          this.userData.deferredObject.resolve();
+        }, {deferredObject : deferred});
         _this.osdViewer.addOverlay({
           element: osdOverlay,
           location: _this.getOsdFrame(region)
