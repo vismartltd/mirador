@@ -36,6 +36,7 @@ module.exports = function(grunt) {
     'js/lib/URI.min.js',
     'js/lib/mousetrap.min.js',
     'js/lib/isfahan.js',
+    'js/lib/paper-full.min.js',
     'js/lib/i18next.min.js'
   ],
 

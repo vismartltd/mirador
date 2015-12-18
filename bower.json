@@ -24,6 +24,7 @@
     "jquery.scrollTo": "~1.4.12",
     "mousetrap": "~1.4.6",
     "URIjs": "https://github.com/medialize/URI.js.git#~1.13.2",
+    "paper.js": "https://github.com/paperjs/paper.js.git",
     "qTip2": "~2.2.1"
   },
   "devDependencies": {
