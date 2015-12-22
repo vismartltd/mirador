@@ -68,11 +68,15 @@
             overlay.mode = 'deform';
             overlay.segment = null;
             overlay.path = null;
+            document.body.style.cursor = "move";
           } else {
             overlay.mode = 'translate';
             overlay.segment = null;
             overlay.path = null;
+            document.body.style.cursor = "move";
           }
+        } else {
+          document.body.style.cursor = "default";
         }
       }
       if (overlay.mode == 'translate') {

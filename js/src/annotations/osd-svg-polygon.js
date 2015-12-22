@@ -52,7 +52,12 @@
           overlay.mode = 'edit';
           overlay.segment = null;
           overlay.path = null;
+          document.body.style.cursor = "move";
+        } else {
+          document.body.style.cursor = "default";
         }
+      } else {
+        document.body.style.cursor = "default";
       }
       if (overlay.mode === '') {
         overlay.path = this.createShape(event.point, overlay);
