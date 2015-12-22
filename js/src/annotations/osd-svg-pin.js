@@ -15,12 +15,13 @@
       overlay.mode = 'create';
       var _this = this;
       var pathData = '';
+      var size = 5 / overlay.currentPinSize;
       pathData += 'M' + initialPoint.x + ',' + initialPoint.y;
-      pathData += ' Q' + initialPoint.x + ',' + (initialPoint.y - 5);
-      pathData += ' ' + (initialPoint.x + 5) + ',' + (initialPoint.y - 10);
-      pathData += ' A5,5 0 1 0';
-      pathData += ' ' + (initialPoint.x - 5) + ',' + (initialPoint.y - 10);
-      pathData += ' Q' + initialPoint.x + ',' + (initialPoint.y - 5);
+      pathData += ' Q' + initialPoint.x + ',' + (initialPoint.y - size);
+      pathData += ' ' + (initialPoint.x + size) + ',' + (initialPoint.y - 2 * size);
+      pathData += ' A' + size + ',' + size + ' 0 1 0';
+      pathData += ' ' + (initialPoint.x - size) + ',' + (initialPoint.y - 2 * size);
+      pathData += ' Q' + initialPoint.x + ',' + (initialPoint.y - size);
       pathData += ' ' + initialPoint.x + ',' + initialPoint.y;
       var shape = new Path(pathData);
       shape.name = _this.idPrefix + (project.getItems({
@@ -30,7 +31,6 @@
       shape.fillColor = overlay.fillColor;
       shape.fullySelected = true;
       shape.closed = true;
-      shape.scale(1 / overlay.currentPinSize);
       return shape;
     },
 
