@@ -24,10 +24,11 @@
     });
 
     // Initialization of overlay object.
+    this.rectangleTool = new $.Rectangle();
     this.freehandTool = new $.Freehand();
     this.polygonTool = new $.Polygon();
     this.ellipseTool = new $.Ellipse();
-    this.rectangleTool = new $.Rectangle();
+    this.pinTool = new $.Pin();
     this.currentTool = null;
     // Default colors.
     this.strokeColor = 'red';
@@ -36,9 +37,10 @@
     this.canvas = document.createElement('canvas');
     this.canvas.id = 'canvas';
     // Drawing of overlay border during development.
-    this.canvas.style.border = '1px solid yellow';
+    // this.canvas.style.border = '1px solid yellow';
     this.viewer.canvas.appendChild(this.canvas);
     this.initialZoom = this.viewer.viewport.getZoom(true);
+    this.currentPinSize = this.viewer.viewport.getZoom(true);
 
     var _this = this;
     this.viewer.addHandler('animation', function() {
@@ -49,17 +51,20 @@
     });
     jQuery.subscribe('toggleDrawingTool', function(event, tool) {
       switch (tool) {
-        case 'fa-pencil':
+        case _this.freehandTool.logoClass:
           _this.currentTool = _this.freehandTool;
           break;
-        case 'fa-bookmark-o':
+        case _this.polygonTool.logoClass:
           _this.currentTool = _this.polygonTool;
           break;
-        case 'fa-circle-o':
+        case _this.ellipseTool.logoClass:
           _this.currentTool = _this.ellipseTool;
           break;
-        case 'fa-square-o':
+        case _this.rectangleTool.logoClass:
           _this.currentTool = _this.rectangleTool;
+          break;
+        case _this.pinTool.logoClass:
+          _this.currentTool = _this.pinTool;
           break;
         default:
           _this.currentTool = null;
@@ -144,6 +149,14 @@
         paper.view.zoom = this.viewer.viewport.getZoom(true) / this.initialZoom;
         paper.view.center = new Size(paper.view.bounds.width / 2, paper.view.bounds.height / 2);
         paper.view.update(true);
+        // Fit pins to the current zoom level.
+        var items = project.getItems({
+          name: /^pin_/
+        });
+        for (var i = 0; i < items.length; i++) {
+          items[i].scale(this.currentPinSize / paper.view.zoom);
+        }
+        this.currentPinSize = paper.view.zoom;
       }
     },
 

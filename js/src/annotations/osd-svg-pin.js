@@ -30,6 +30,7 @@
       shape.fillColor = overlay.fillColor;
       shape.fullySelected = true;
       shape.closed = true;
+      shape.scale(1 / overlay.currentPinSize);
       return shape;
     },
 
