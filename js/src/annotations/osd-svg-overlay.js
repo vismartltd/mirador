@@ -1,4 +1,12 @@
 (function($) {
+  $.getTools = function() {
+    if (this.svgOverlayTools) {
+      return this.svgOverlayTools;
+    }
+    this.svgOverlayTools = [new $.Rectangle(), new $.Freehand(), new $.Polygon(), new $.Ellipse(), new $.Pin()];
+    return this.svgOverlayTools;
+  };
+
   OpenSeadragon.Viewer.prototype.svgOverlay = function() {
     if (this.svgOverlayInfo) {
       return this.svgOverlayInfo;
@@ -24,7 +32,7 @@
     });
 
     // Initialization of overlay object.
-    this.tools = [new $.Rectangle(), new $.Freehand(), new $.Polygon(), new $.Ellipse(), new $.Pin()];
+    this.tools = $.getTools();
     this.currentTool = null;
     // Default colors.
     this.strokeColor = 'red';
