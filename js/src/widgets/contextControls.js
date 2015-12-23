@@ -87,8 +87,8 @@
           jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), shapeMode);
         };
       }
-      for(var value in this.tools) {
-        this.container.find('.' + this.tools[value]).on('click', make_handler(this.tools[value]));
+      for(var value in $.viewer.availableAnnotationDrawingTools) {
+        this.container.find('.' + $.viewer.availableAnnotationDrawingTools[value]).on('click', make_handler($.viewer.availableAnnotationDrawingTools[value]));
       }
 
       this.container.find('.mirador-osd-close').on('click', function() {
