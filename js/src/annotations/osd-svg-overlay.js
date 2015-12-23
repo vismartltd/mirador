@@ -24,11 +24,7 @@
     });
 
     // Initialization of overlay object.
-    this.rectangleTool = new $.Rectangle();
-    this.freehandTool = new $.Freehand();
-    this.polygonTool = new $.Polygon();
-    this.ellipseTool = new $.Ellipse();
-    this.pinTool = new $.Pin();
+    this.tools = [new $.Rectangle(), new $.Freehand(), new $.Polygon(), new $.Ellipse(), new $.Pin()];
     this.currentTool = null;
     // Default colors.
     this.strokeColor = 'red';
@@ -50,25 +46,11 @@
       _this.resize();
     });
     jQuery.subscribe('toggleDrawingTool.'+_this.viewer.id, function(event, tool) {
-      switch (tool) {
-        case _this.freehandTool.logoClass:
-          _this.currentTool = _this.freehandTool;
-          break;
-        case _this.polygonTool.logoClass:
-          _this.currentTool = _this.polygonTool;
-          break;
-        case _this.ellipseTool.logoClass:
-          _this.currentTool = _this.ellipseTool;
-          break;
-        case _this.rectangleTool.logoClass:
-          _this.currentTool = _this.rectangleTool;
-          break;
-        case _this.pinTool.logoClass:
-          _this.currentTool = _this.pinTool;
-          break;
-        default:
-          _this.currentTool = null;
-          break;
+      _this.currentTool = null;
+      for (var i = 0; i < _this.tools.length; i++) {
+        if (_this.tools[i].logoClass == tool) {
+          _this.currentTool = _this.tools[i];
+        }
       }
     });
 
