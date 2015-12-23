@@ -30,6 +30,7 @@
       }).length + 1);
       shape.strokeColor = overlay.strokeColor;
       shape.fillColor = overlay.fillColor;
+      shape.fillColor.alpha = overlay.fillColorAlpha;
       shape.fullySelected = true;
       shape.closed = true;
       return shape;

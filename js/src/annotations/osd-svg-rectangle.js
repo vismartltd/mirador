@@ -21,7 +21,7 @@
       });
       shape.strokeColor = overlay.strokeColor;
       shape.fillColor = overlay.fillColor;
-      shape.fillColor.alpha = 0.0;
+      shape.fillColor.alpha = overlay.fillColorAlpha;
       shape.name = _this.idPrefix + (project.getItems({
         name: /_/
       }).length + 1);
