@@ -23,7 +23,7 @@
         showEdit : this.annotationCreationAvailable
       })).appendTo(this.container);
       var _this = this;
-      jQuery("#borderColorPicker").spectrum({
+      _this.container.find(".borderColorPicker").spectrum({
         color: "#f00",
         showInput: true,
         showInitial: true,
@@ -38,7 +38,7 @@
           ["white", "cyan", "magenta", "yellow"]
         ]
       });
-      jQuery("#fillColorPicker").spectrum({
+      _this.container.find(".fillColorPicker").spectrum({
         color: "#f00",
         showInput: true,
         showInitial: true,
@@ -54,6 +54,11 @@
           ["black", "red", "green", "blue"],
           ["white", "cyan", "magenta", "yellow"]
         ]
+      });
+      jQuery.subscribe('disableFillColorPicker.'+_this.windowId, function(event, disablePicker) {
+        _this.container.find('.fillColorPicker').spectrum({
+          disabled: disablePicker
+        });
       });
       this.hide();
       this.bindEvents();
@@ -82,8 +87,8 @@
           jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), shapeMode);
         };
       }
-      for(var value in $.viewer.availableAnnotationDrawingTools) {
-        this.container.find('.' + $.viewer.availableAnnotationDrawingTools[value]).on('click', make_handler($.viewer.availableAnnotationDrawingTools[value]));
+      for(var value in this.tools) {
+        this.container.find('.' + this.tools[value]).on('click', make_handler(this.tools[value]));
       }
 
       this.container.find('.mirador-osd-close').on('click', function() {
@@ -120,10 +125,10 @@
                                    '<i class="fa fa-lg fa-edit"></i>',
                                    '</a>',
                                    '<a class="mirador-osd-edit-mode hud-control">',
-                                   '<input type="text" id="borderColorPicker"/>',
+                                   '<input type="text" class="borderColorPicker"/>',
                                    '</a>',
                                    '<a class="mirador-osd-edit-mode hud-control">',
-                                   '<input type="text" id="fillColorPicker"/>',
+                                   '<input type="text" class="fillColorPicker"/>',
                                    '</a>',
                                    '{{#each tools}}',
                                    '<a class="mirador-osd-{{this}}-mode hud-control">',
