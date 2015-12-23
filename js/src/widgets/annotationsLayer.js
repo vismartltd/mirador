@@ -7,7 +7,7 @@
       annotationsList:   null,
       viewer:            null,
       renderer:          null,
-      rectTool:          null,
+      drawTool:          null,
       selected:          null,
       hovered:           null,
       windowId:          null,
@@ -72,31 +72,31 @@
     enterDisplayAnnotations: function() {
       var _this = this;
       //console.log('triggering annotation loading and display');
-      if (this.rectTool) {
-        this.rectTool.exitEditMode();
+      if (this.drawTool) {
+        this.drawTool.exitEditMode();
       }
       this.renderer.render();
     },
 
     enterEditAnnotations: function() {
       var _this = this;
-      if (!this.rectTool) {
-        this.rectTool = new $.OsdRegionRectTool({
+      if (!this.drawTool) {
+        this.drawTool = new $.OsdRegiondrawTool({
           osd: OpenSeadragon,
           osdViewer: _this.viewer,
           rectType: 'oa', // does not do anything yet. 
           parent: _this
         });
       } else {
-        this.rectTool.reset(_this.viewer);
+        this.drawTool.reset(_this.viewer);
       }
       this.renderer.render();
-      this.rectTool.enterEditMode();
+      this.drawTool.enterEditMode();
     },
 
     enterDefault: function() {
-      if (this.rectTool) {
-        this.rectTool.exitEditMode();
+      if (this.drawTool) {
+        this.drawTool.exitEditMode();
       }
       this.renderer.hideAll();
     }
