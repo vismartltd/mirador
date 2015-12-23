@@ -18,11 +18,20 @@
   $.ContextControls.prototype = {
 
     init: function() {    
+      var allTools = $.getTools();
+      this.availableTools = [];
+      for ( var i = 0; i < $.viewer.availableAnnotationDrawingTools.length; i++) {
+        for ( var j = 0; j < allTools.length; j++) {
+          if ($.viewer.availableAnnotationDrawingTools[i] == allTools[j].name) {
+            this.availableTools.push(allTools[j].logoClass);
+          }
+        }
+      }
+      var _this = this;
       this.element = jQuery(this.template({
-        tools : $.viewer.availableAnnotationDrawingTools,
+        tools : _this.availableTools,
         showEdit : this.annotationCreationAvailable
       })).appendTo(this.container);
-      var _this = this;
       _this.container.find(".borderColorPicker").spectrum({
         color: "#f00",
         showInput: true,
@@ -87,8 +96,8 @@
           jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), shapeMode);
         };
       }
-      for(var value in $.viewer.availableAnnotationDrawingTools) {
-        this.container.find('.' + $.viewer.availableAnnotationDrawingTools[value]).on('click', make_handler($.viewer.availableAnnotationDrawingTools[value]));
+      for (var value in _this.availableTools) {
+        this.container.find('.' + _this.availableTools[value]).on('click', make_handler(_this.availableTools[value]));
       }
 
       this.container.find('.mirador-osd-close').on('click', function() {
