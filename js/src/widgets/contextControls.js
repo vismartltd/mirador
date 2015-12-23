@@ -19,8 +19,42 @@
 
     init: function() {    
       this.element = jQuery(this.template({
+        tools : $.viewer.availableAnnotationDrawingTools,
         showEdit : this.annotationCreationAvailable
       })).appendTo(this.container);
+      var _this = this;
+      jQuery("#borderColorPicker").spectrum({
+        color: "#f00",
+        showInput: true,
+        showInitial: true,
+        showPalette: true,
+        showSelectionPalette: true,
+        preferredFormat: "rgb",
+        change: function(color) {
+          jQuery.publish('changeBorderColor.'+_this.windowId, color.toHexString());
+        },
+        palette: [
+          ["black", "red", "green", "blue"],
+          ["white", "cyan", "magenta", "yellow"]
+        ]
+      });
+      jQuery("#fillColorPicker").spectrum({
+        color: "#f00",
+        showInput: true,
+        showInitial: true,
+        showAlpha: true,
+        allowEmpty: true,
+        showPalette: true,
+        showSelectionPalette: true,
+        preferredFormat: "rgb",
+        change: function(color) {
+          jQuery.publish('changeFillColor.'+_this.windowId, color.toHexString(), color.getAlpha());
+        },
+        palette: [
+          ["black", "red", "green", "blue"],
+          ["white", "cyan", "magenta", "yellow"]
+        ]
+      });
       this.hide();
       this.bindEvents();
     },
@@ -35,6 +69,22 @@
 
     bindEvents: function() {
       var _this = this;
+
+      this.container.find('.fa-times').on('click', function() {
+        jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), 'default');
+      });
+      this.container.find('.fa-arrows').on('click', function() {
+        jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), '');
+      });
+
+      function make_handler(shapeMode) {
+        return function () {
+          jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), shapeMode);
+        };
+      }
+      for(var value in $.viewer.availableAnnotationDrawingTools) {
+        this.container.find('.' + $.viewer.availableAnnotationDrawingTools[value]).on('click', make_handler($.viewer.availableAnnotationDrawingTools[value]));
+      }
 
       this.container.find('.mirador-osd-close').on('click', function() {
         _this.parent.annoState.displayOff();
@@ -69,10 +119,18 @@
                                    '<a class="mirador-osd-edit-mode hud-control">',
                                    '<i class="fa fa-lg fa-edit"></i>',
                                    '</a>',
-                                   '{{/if}}',
-                                   '<a class="mirador-osd-refresh-mode hud-control">',
-                                   '<i class="fa fa-lg fa-refresh"></i>',
+                                   '<a class="mirador-osd-edit-mode hud-control">',
+                                   '<input type="text" id="borderColorPicker"/>',
                                    '</a>',
+                                   '<a class="mirador-osd-edit-mode hud-control">',
+                                   '<input type="text" id="fillColorPicker"/>',
+                                   '</a>',
+                                   '{{#each tools}}',
+                                   '<a class="mirador-osd-{{this}}-mode hud-control">',
+                                   '<i class="fa fa-lg {{this}}"></i>',
+                                   '</a>',
+                                   '{{/each}}',
+                                   '{{/if}}',
                                    /*'<a class="mirador-osd-list hud-control">',
                                    '<i class="fa fa-lg fa-list"></i>',
                                    '</a>',*/
