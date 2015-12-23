@@ -40,7 +40,7 @@
         showSelectionPalette: true,
         preferredFormat: "rgb",
         change: function(color) {
-          jQuery.publish('changeBorderColor.'+_this.windowId, color.toHexString());
+          jQuery.publish('changeBorderColor.'+_this.container.find('.mirador-osd').attr('id'), color.toHexString());
         },
         palette: [
           ["black", "red", "green", "blue"],
@@ -57,14 +57,14 @@
         showSelectionPalette: true,
         preferredFormat: "rgb",
         change: function(color) {
-          jQuery.publish('changeFillColor.'+_this.windowId, color.toHexString(), color.getAlpha());
+          jQuery.publish('changeFillColor.'+_this.container.find('.mirador-osd').attr('id'), [color.toHexString(), color.getAlpha()]);
         },
         palette: [
           ["black", "red", "green", "blue"],
           ["white", "cyan", "magenta", "yellow"]
         ]
       });
-      jQuery.subscribe('disableFillColorPicker.'+_this.windowId, function(event, disablePicker) {
+      jQuery.subscribe('disableFillColorPicker.'+_this.container.find('.mirador-osd').attr('id'), function(event, disablePicker) {
         _this.container.find('.fillColorPicker').spectrum({
           disabled: disablePicker
         });
@@ -87,7 +87,7 @@
       this.container.find('.fa-times').on('click', function() {
         jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), 'default');
       });
-      this.container.find('.fa-arrows').on('click', function() {
+      this.container.find('.fa-edit').on('click', function() {
         jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), '');
       });
 

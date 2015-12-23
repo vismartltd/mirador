@@ -37,6 +37,7 @@
     // Default colors.
     this.strokeColor = 'red';
     this.fillColor = 'green';
+    this.fillColorAlpha = 0.0;
     this.viewer = viewer;
     this.canvas = document.createElement('canvas');
     this.canvas.id = 'canvas';
@@ -59,6 +60,22 @@
         if (_this.tools[i].logoClass == tool) {
           _this.currentTool = _this.tools[i];
         }
+      }
+    });
+    jQuery.subscribe('changeBorderColor.'+_this.viewer.id, function(event, color) {
+      _this.strokeColor = color;
+      if (_this.path) {
+        _this.path.strokeColor = color;
+        paper.view.draw();
+      }
+    });
+    jQuery.subscribe('changeFillColor.'+_this.viewer.id, function(event, color, alpha) {
+      _this.fillColor = color;
+      _this.fillColorAlpha = alpha;
+      if (_this.path) {
+        _this.path.fillColor = color;
+        _this.path.fillColor.alpha = alpha;
+        paper.view.draw();
       }
     });
 
