@@ -49,7 +49,7 @@
     this.viewer.addHandler('open', function() {
       _this.resize();
     });
-    jQuery.subscribe('toggleDrawingTool', function(event, tool) {
+    jQuery.subscribe('toggleDrawingTool.'+_this.viewer.id, function(event, tool) {
       switch (tool) {
         case _this.freehandTool.logoClass:
           _this.currentTool = _this.freehandTool;
