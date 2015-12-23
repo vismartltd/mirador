@@ -96,6 +96,7 @@ module.exports = function(grunt) {
         'css/jquery-ui.custom.min.css',
         'css/layout-default-latest.css',
         'css/jquery.qtip.min.css',
+        'css/spectrum.css',
         'css/mirador.css',
         '!css/mirador-combined.css'
         ],

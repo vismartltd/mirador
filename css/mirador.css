@@ -1017,6 +1017,20 @@ li.highlight {
   font-weight: normal;
 }
 
+/* color picker custom style
+---------------------------------------------------------------------------- */
+
+.mirador-osd-edit-mode .sp-preview {
+  height: 10px !important;
+}
+.mirador-osd-edit-mode .sp-dd {
+  height: 6px !important;
+  line-height: 6px !important;
+}
+.mirador-osd-edit-mode .sp-replacer {
+  border-radius: 5px !important;
+}
+
 /* image view
 ---------------------------------------------------------------------------- */
 
