@@ -1,6 +1,7 @@
 (function($) {
   $.Rectangle = function(options) {
     jQuery.extend(this, {
+      name: 'Rectangle',
       logoClass: 'fa-square-o',
       idPrefix: 'rectangle_'
     }, options);

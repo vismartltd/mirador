@@ -1,6 +1,7 @@
 (function($) {
   $.Freehand = function(options) {
     jQuery.extend(this, {
+      name: 'Freehand',
       logoClass: 'fa-pencil',
       idPrefix: 'smooth_path_'
     }, options);

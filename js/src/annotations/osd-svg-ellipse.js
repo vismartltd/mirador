@@ -1,6 +1,7 @@
 (function($) {
   $.Ellipse = function(options) {
     jQuery.extend(this, {
+      name: 'Ellipse',
       logoClass: 'fa-circle-o',
       idPrefix: 'circle_',
       ellipseSegments: []

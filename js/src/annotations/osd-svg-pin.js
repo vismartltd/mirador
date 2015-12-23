@@ -1,6 +1,7 @@
 (function($) {
   $.Pin = function(options) {
     jQuery.extend(this, {
+      name: 'Pin',
       logoClass: 'fa-map-marker',
       idPrefix: 'pin_'
     }, options);
