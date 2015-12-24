@@ -52,7 +52,6 @@
         showInput: true,
         showInitial: true,
         showAlpha: true,
-        allowEmpty: true,
         showPalette: true,
         showSelectionPalette: true,
         preferredFormat: "rgb",
