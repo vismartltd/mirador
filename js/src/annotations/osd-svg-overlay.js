@@ -7,16 +7,17 @@
     return this.svgOverlayTools;
   };
 
-  OpenSeadragon.Viewer.prototype.svgOverlay = function() {
+  OpenSeadragon.Viewer.prototype.svgOverlay = function(windowId) {
     if (this.svgOverlayInfo) {
       return this.svgOverlayInfo;
     }
-    this.svgOverlayInfo = new $.Overlay(this);
+    this.svgOverlayInfo = new $.Overlay(this, windowId);
     return this.svgOverlayInfo;
   };
 
-  $.Overlay = function(viewer) {
+  $.Overlay = function(viewer, windowId) {
     jQuery.extend(this, {
+      windowId: windowId,
       mode: '', // Possible modes: 'create', 'translate', 'deform', 'edit' and '' as default.
       hoveredPath: null,
       path: null,
@@ -54,7 +55,7 @@
     this.viewer.addHandler('open', function() {
       _this.resize();
     });
-    jQuery.subscribe('toggleDrawingTool.'+_this.viewer.id, function(event, tool) {
+    jQuery.subscribe('toggleDrawingTool.'+_this.windowId, function(event, tool) {
       _this.currentTool = null;
       for (var i = 0; i < _this.tools.length; i++) {
         if (_this.tools[i].logoClass == tool) {
@@ -62,14 +63,14 @@
         }
       }
     });
-    jQuery.subscribe('changeBorderColor.'+_this.viewer.id, function(event, color) {
+    jQuery.subscribe('changeBorderColor.'+_this.windowId, function(event, color) {
       _this.strokeColor = color;
       if (_this.path) {
         _this.path.strokeColor = color;
         paper.view.draw();
       }
     });
-    jQuery.subscribe('changeFillColor.'+_this.viewer.id, function(event, color, alpha) {
+    jQuery.subscribe('changeFillColor.'+_this.windowId, function(event, color, alpha) {
       _this.fillColor = color;
       _this.fillColorAlpha = alpha;
       if (_this.path) {

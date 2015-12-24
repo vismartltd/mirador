@@ -40,7 +40,7 @@
         showSelectionPalette: true,
         preferredFormat: "rgb",
         change: function(color) {
-          jQuery.publish('changeBorderColor.'+_this.container.find('.mirador-osd').attr('id'), color.toHexString());
+          jQuery.publish('changeBorderColor.'+_this.windowId, color.toHexString());
         },
         palette: [
           ["black", "red", "green", "blue"],
@@ -56,14 +56,14 @@
         showSelectionPalette: true,
         preferredFormat: "rgb",
         change: function(color) {
-          jQuery.publish('changeFillColor.'+_this.container.find('.mirador-osd').attr('id'), [color.toHexString(), color.getAlpha()]);
+          jQuery.publish('changeFillColor.'+_this.windowId, [color.toHexString(), color.getAlpha()]);
         },
         palette: [
           ["black", "red", "green", "blue"],
           ["white", "cyan", "magenta", "yellow"]
         ]
       });
-      jQuery.subscribe('disableFillColorPicker.'+_this.container.find('.mirador-osd').attr('id'), function(event, disablePicker) {
+      jQuery.subscribe('disableFillColorPicker.'+_this.windowId, function(event, disablePicker) {
         _this.container.find('.fillColorPicker').spectrum({
           disabled: disablePicker
         });
@@ -84,15 +84,15 @@
       var _this = this;
 
       this.container.find('.fa-times').on('click', function() {
-        jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), 'default');
+        jQuery.publish('toggleDrawingTool.'+_this.windowId, 'default');
       });
       this.container.find('.fa-edit').on('click', function() {
-        jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), '');
+        jQuery.publish('toggleDrawingTool.'+_this.windowId, '');
       });
 
       function make_handler(shapeMode) {
         return function () {
-          jQuery.publish('toggleDrawingTool.'+_this.container.find('.mirador-osd').attr('id'), shapeMode);
+          jQuery.publish('toggleDrawingTool.'+_this.windowId, shapeMode);
         };
       }
       for (var value in _this.availableTools) {
