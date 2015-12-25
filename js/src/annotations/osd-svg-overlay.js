@@ -17,6 +17,7 @@
 
   $.Overlay = function(viewer, windowId) {
     jQuery.extend(this, {
+      disabled: false,
       windowId: windowId,
       mode: '', // Possible modes: 'create', 'translate', 'deform', 'edit' and '' as default.
       hoveredPath: null,
@@ -55,7 +56,10 @@
     this.viewer.addHandler('open', function() {
       _this.resize();
     });
-    jQuery.subscribe('toggleDrawingTool.'+_this.windowId, function(event, tool) {
+    jQuery.subscribe('toggleDrawingTool.' + _this.windowId, function(event, tool) {
+      if (_this.disabled) {
+        return;
+      }
       _this.currentTool = null;
       for (var i = 0; i < _this.tools.length; i++) {
         if (_this.tools[i].logoClass == tool) {
@@ -63,14 +67,14 @@
         }
       }
     });
-    jQuery.subscribe('changeBorderColor.'+_this.windowId, function(event, color) {
+    jQuery.subscribe('changeBorderColor.' + _this.windowId, function(event, color) {
       _this.strokeColor = color;
       if (_this.path) {
         _this.path.strokeColor = color;
         paper.view.draw();
       }
     });
-    jQuery.subscribe('changeFillColor.'+_this.windowId, function(event, color, alpha) {
+    jQuery.subscribe('changeFillColor.' + _this.windowId, function(event, color, alpha) {
       _this.fillColor = color;
       _this.fillColorAlpha = alpha;
       if (_this.path) {
@@ -179,11 +183,31 @@
     },
 
     hide: function() {
+      this.disabled = true;
       this.canvas.style.display = 'none';
+      jQuery.publish('disableBorderColorPicker.' + this.windowId, true);
+      jQuery.publish('disableFillColorPicker.' + this.windowId, true);
+      this.currentTool = null;
     },
 
     show: function() {
+      this.disabled = false;
       this.canvas.style.display = 'block';
+      jQuery.publish('disableBorderColorPicker.' + this.windowId, false);
+      jQuery.publish('disableFillColorPicker.' + this.windowId, false);
+    },
+
+    disable: function() {
+      this.disabled = true;
+      jQuery.publish('disableBorderColorPicker.' + this.windowId, true);
+      jQuery.publish('disableFillColorPicker.' + this.windowId, true);
+      this.currentTool = null;
+    },
+
+    enable: function() {
+      this.disabled = false;
+      jQuery.publish('disableBorderColorPicker.' + this.windowId, false);
+      jQuery.publish('disableFillColorPicker.' + this.windowId, false);
     },
 
     refresh: function() {
