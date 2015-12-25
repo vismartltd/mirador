@@ -64,14 +64,18 @@
         ]
       });
       jQuery.subscribe('disableBorderColorPicker.'+_this.windowId, function(event, disablePicker) {
-        _this.container.find('.borderColorPicker').spectrum({
-          disabled: disablePicker
-        });
+        if(disablePicker) {
+          _this.container.find('.borderColorPicker').spectrum("disable");
+        }else{
+          _this.container.find('.borderColorPicker').spectrum("enable");
+        }
       });
       jQuery.subscribe('disableFillColorPicker.'+_this.windowId, function(event, disablePicker) {
-        _this.container.find('.fillColorPicker').spectrum({
-          disabled: disablePicker
-        });
+        if(disablePicker) {
+          _this.container.find('.fillColorPicker').spectrum("disable");
+        }else{
+          _this.container.find('.fillColorPicker').spectrum("enable");
+        }
       });
       this.hide();
       this.bindEvents();
