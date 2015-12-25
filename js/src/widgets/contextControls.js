@@ -63,6 +63,11 @@
           ["white", "cyan", "magenta", "yellow"]
         ]
       });
+      jQuery.subscribe('disableBorderColorPicker.'+_this.windowId, function(event, disablePicker) {
+        _this.container.find('.borderColorPicker').spectrum({
+          disabled: disablePicker
+        });
+      });
       jQuery.subscribe('disableFillColorPicker.'+_this.windowId, function(event, disablePicker) {
         _this.container.find('.fillColorPicker').spectrum({
           disabled: disablePicker
