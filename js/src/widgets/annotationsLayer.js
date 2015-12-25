@@ -82,9 +82,7 @@
       var _this = this;
       if (!this.drawTool) {
         this.drawTool = new $.OsdRegionDrawTool({
-          osd: OpenSeadragon,
           osdViewer: _this.viewer,
-          rectType: 'oa', // does not do anything yet. 
           parent: _this
         });
       } else {
