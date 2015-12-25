@@ -20,24 +20,25 @@
 
     reset: function(osdViewer) {
       this.osdViewer = osdViewer;
+      this.svgOverlay.show();
     },
 
     enterEditMode: function() {
       this.osdViewer.setMouseNavEnabled(false);
-      this.osdViewer.panHorizontal = false;
-      this.osdViewer.panVertical = false;
-      this.osdViewer.zoomPerClick = 1;
-      this.osdViewer.zoomPerScroll = 1;
       this.svgOverlay.enable();
     },
 
     exitEditMode: function() {
       this.osdViewer.setMouseNavEnabled(true);
-      this.osdViewer.panHorizontal = true;
-      this.osdViewer.panVertical = true;
-      this.osdViewer.zoomPerClick = 2;
-      this.osdViewer.zoomPerScroll = 1.2;
       this.svgOverlay.disable();
+    },
+
+    hideAnnotations: function() {
+      this.svgOverlay.hide();
+    },
+
+    showAnnotations: function() {
+      this.svgOverlay.show();
     }
   };
 }(Mirador));

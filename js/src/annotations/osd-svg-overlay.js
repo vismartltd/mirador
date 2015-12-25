@@ -182,12 +182,20 @@
       }
     },
 
+    deselectAll: function() {
+      if (paper && paper.view && paper.project) {
+        paper.project.deselectAll();
+        paper.view.update(true);
+      }
+    },
+
     hide: function() {
       this.disabled = true;
       this.canvas.style.display = 'none';
       jQuery.publish('disableBorderColorPicker.' + this.windowId, true);
       jQuery.publish('disableFillColorPicker.' + this.windowId, true);
       this.currentTool = null;
+      this.deselectAll();
     },
 
     show: function() {
@@ -202,6 +210,7 @@
       jQuery.publish('disableBorderColorPicker.' + this.windowId, true);
       jQuery.publish('disableFillColorPicker.' + this.windowId, true);
       this.currentTool = null;
+      this.deselectAll();
     },
 
     enable: function() {
@@ -212,6 +221,6 @@
 
     refresh: function() {
       paper.view.update(true);
-    },
+    }
   };
 }(Mirador));

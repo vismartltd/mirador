@@ -61,7 +61,6 @@
     },
     
     modeSwitch: function() {
-      //console.log(this.mode);
       if (this.mode === 'displayAnnotations') { this.enterDisplayAnnotations(); }
       else if (this.mode === 'editingAnnotations') { this.enterEditAnnotations(); }
       else if (this.mode === 'default') { this.enterDefault(); }
@@ -71,9 +70,9 @@
 
     enterDisplayAnnotations: function() {
       var _this = this;
-      //console.log('triggering annotation loading and display');
       if (this.drawTool) {
         this.drawTool.exitEditMode();
+        this.drawTool.showAnnotations();
       }
       this.renderer.render();
     },
@@ -95,6 +94,7 @@
     enterDefault: function() {
       if (this.drawTool) {
         this.drawTool.exitEditMode();
+        this.drawTool.hideAnnotations();
       }
       this.renderer.hideAll();
     }
