@@ -294,10 +294,10 @@
                   }
                   api.destroy();
 
+                  // clear draft data.
                   for (var idx = 0; idx < _this.draftPaths.length; idx++) {
                     _this.draftPaths[idx].remove();
                   }
-                  // clear draft data.
                   _this.draftPaths = [];
                   paper.view.update(true);
                   project.activeLayer.selected = false;
@@ -368,6 +368,16 @@
                 //reenable viewer tooltips
                 jQuery.publish('enableTooltips.'+_this.windowId);
                 _this.commentPanel = null;
+                // clear draft data.
+                for (var idx = 0; idx < _this.draftPaths.length; idx++) {
+                  _this.draftPaths[idx].remove();
+                }
+                _this.draftPaths = [];
+                paper.view.update(true);
+                project.activeLayer.selected = false;
+                _this.segment = null;
+                _this.path = null;
+                _this.mode = '';
                 });
               }
             }
