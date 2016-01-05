@@ -45,6 +45,10 @@
 
     createRenderer: function() {
       var _this = this;
+      this.drawTool = new $.OsdRegionDrawTool({
+        osdViewer: _this.viewer,
+        parent: _this
+      });
       this.renderer = new $.OsdCanvasRenderer({
         osd: $.OpenSeadragon,
         osdViewer: _this.viewer,
@@ -69,36 +73,21 @@
 
 
     enterDisplayAnnotations: function() {
-      var _this = this;
-      if (this.drawTool) {
-        this.drawTool.exitEditMode();
-        this.drawTool.showAnnotations();
-      }
+      this.drawTool.exitEditMode();
+      this.drawTool.showAnnotations();
       this.renderer.render();
     },
 
     enterEditAnnotations: function() {
-      var _this = this;
-      if (!this.drawTool) {
-        this.drawTool = new $.OsdRegionDrawTool({
-          osdViewer: _this.viewer,
-          parent: _this
-        });
-      } else {
-        this.drawTool.reset(_this.viewer);
-      }
-      this.renderer.render();
       this.drawTool.enterEditMode();
+      this.renderer.render();
     },
 
     enterDefault: function() {
-      if (this.drawTool) {
-        this.drawTool.exitEditMode();
-        this.drawTool.hideAnnotations();
-      }
+      this.drawTool.exitEditMode();
+      this.drawTool.hideAnnotations();
       this.renderer.hideAll();
     }
-
   };
 
 }(Mirador));

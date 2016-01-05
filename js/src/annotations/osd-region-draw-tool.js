@@ -18,11 +18,6 @@
       this.svgOverlay.disable();
     },
 
-    reset: function(osdViewer) {
-      this.osdViewer = osdViewer;
-      this.svgOverlay.show();
-    },
-
     enterEditMode: function() {
       this.osdViewer.setMouseNavEnabled(false);
       this.svgOverlay.enable();
