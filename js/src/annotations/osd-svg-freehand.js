@@ -66,6 +66,7 @@
       if (overlay.mode === '') {
         overlay.path = this.createShape(event.point, overlay);
       } else if (overlay.mode === 'create') {
+        overlay.onDrawFinish();
         project.activeLayer.selected = false;
         overlay.segment = null;
         overlay.path = null;

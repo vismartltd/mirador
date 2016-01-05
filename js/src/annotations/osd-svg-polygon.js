@@ -71,6 +71,7 @@
               hitResult.segment.remove();
             }
           } else if (overlay.path) {
+            overlay.onDrawFinish();
             project.activeLayer.selected = false;
             overlay.segment = null;
             overlay.path = null;
@@ -95,6 +96,7 @@
           overlay.path.fillColor.alpha = overlay.fillColorAlpha;
         }
       }
+      overlay.onDrawFinish();
       project.activeLayer.selected = false;
       overlay.segment = null;
       overlay.path = null;
