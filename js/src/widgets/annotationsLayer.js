@@ -6,7 +6,6 @@
       parent:            null,
       annotationsList:   null,
       viewer:            null,
-      renderer:          null,
       drawTool:          null,
       selected:          null,
       hovered:           null,
@@ -47,20 +46,16 @@
       var _this = this;
       this.drawTool = new $.OsdRegionDrawTool({
         osdViewer: _this.viewer,
-        parent: _this
-      });
-      this.renderer = new $.OsdCanvasRenderer({
+        parent: _this,
         osd: $.OpenSeadragon,
-        osdViewer: _this.viewer,
-        list: _this.annotationsList, // must be passed by reference.
-        visible: false,
-        parent: _this
+        list: _this.annotationsList,
+        visible: false
       });
       this.modeSwitch();
     },
     
     updateRenderer: function() {
-      this.renderer.list = this.annotationsList;
+      this.drawTool.list = this.annotationsList;
       this.modeSwitch();
     },
     
@@ -75,18 +70,18 @@
     enterDisplayAnnotations: function() {
       this.drawTool.exitEditMode();
       this.drawTool.showAnnotations();
-      this.renderer.render();
+      this.drawTool.render();
     },
 
     enterEditAnnotations: function() {
       this.drawTool.enterEditMode();
-      this.renderer.render();
+      this.drawTool.render();
     },
 
     enterDefault: function() {
       this.drawTool.exitEditMode();
       this.drawTool.hideAnnotations();
-      this.renderer.hideAll();
+      this.drawTool.hideAll();
     }
   };
 
