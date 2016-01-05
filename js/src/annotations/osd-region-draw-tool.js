@@ -44,24 +44,15 @@
       this.svgOverlay.show();
     },
 
-    parseRegion: function(url) {
+    getOsdFrame: function(url) {
       var regionString;
       if (typeof url === 'object') {
         regionString = url.selector.value;
       } else {
         regionString = url.split('#')[1];
       }
-      var regionArray = regionString.split('=')[1].split(',');
-      return regionArray;
-    },
-
-    getOsdFrame: function(region) {
-      var rectX = region[0],
-      rectY = region[1],
-      rectW = region[2],
-      rectH = region[3];
-
-      return this.osdViewer.viewport.imageToViewportRectangle(rectX,rectY,rectW,rectH);
+      var region = regionString.split('=')[1].split(',');
+      return this.osdViewer.viewport.imageToViewportRectangle(region[0],region[1],region[2],region[3]);
 
     },
 
@@ -71,7 +62,6 @@
 
       var deferreds = jQuery.map(this.list, function(annotation) {
         var deferred = jQuery.Deferred(),
-        region = _this.parseRegion(annotation.on),
         osdOverlay = document.createElement('div');
         osdOverlay.className = 'annotation';
         osdOverlay.id = annotation['@id'];
@@ -80,7 +70,7 @@
         });
         _this.osdViewer.addOverlay({
           element: osdOverlay,
-          location: _this.getOsdFrame(region)
+          location: _this.getOsdFrame(annotation.on)
         });
         _this.overlays.push(jQuery(osdOverlay));
         return deferred;
@@ -204,14 +194,7 @@
       overlays = this.getOverlaysFromMousePosition(event);
       jQuery(_this.osdViewer.canvas).find('.annotation.hovered').removeClass('hovered');//.css('border-color', 'deepSkyBlue');
       overlays.addClass('hovered');
-      /*jQuery.each(overlays, function(index, value) {
-       jQuery(value).css('border-color', _this.getRandomColor());
-      });*/
       return overlays;
-    },
-
-    getRandomColor: function() {
-       return "#FF0000";
     },
 
     bindEvents: function() {
@@ -248,14 +231,6 @@
 
     hideVisibleTooltips: function() {
       jQuery('.qtip-viewer').qtip('hide');
-    },
-
-    getElements: function() {
-      this.elements = this.osdViewer.currentOverlays.reduce(function(result, currentOverlay) {
-        currentOverlay = jQuery(currentOverlay);
-        return result.add(currentOverlay);
-      });
-      return elements;
     },
 
     //change content of this tooltip, and disable hiding it, until user clicks save or cancel
