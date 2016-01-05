@@ -53,19 +53,18 @@
       });
       this.modeSwitch();
     },
-    
+
     updateRenderer: function() {
       this.drawTool.list = this.annotationsList;
       this.modeSwitch();
     },
-    
+
     modeSwitch: function() {
       if (this.mode === 'displayAnnotations') { this.enterDisplayAnnotations(); }
       else if (this.mode === 'editingAnnotations') { this.enterEditAnnotations(); }
       else if (this.mode === 'default') { this.enterDefault(); }
       else {}
     },
-
 
     enterDisplayAnnotations: function() {
       this.drawTool.exitEditMode();
