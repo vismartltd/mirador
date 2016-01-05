@@ -72,17 +72,17 @@
     });
     jQuery.subscribe('changeBorderColor.' + _this.windowId, function(event, color) {
       _this.strokeColor = color;
-      if (_this.path) {
-        _this.path.strokeColor = color;
+      if (_this.hoveredPath) {
+        _this.hoveredPath.strokeColor = color;
         paper.view.draw();
       }
     });
     jQuery.subscribe('changeFillColor.' + _this.windowId, function(event, color, alpha) {
       _this.fillColor = color;
       _this.fillColorAlpha = alpha;
-      if (_this.path) {
-        _this.path.fillColor = color;
-        _this.path.fillColor.alpha = alpha;
+      if (_this.hoveredPath) {
+        _this.hoveredPath.fillColor = color;
+        _this.hoveredPath.fillColor.alpha = alpha;
         paper.view.draw();
       }
     });
