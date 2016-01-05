@@ -80,7 +80,6 @@
     enterDefault: function() {
       this.drawTool.exitEditMode();
       this.drawTool.hideAnnotations();
-      this.drawTool.hideAll();
     }
   };
 
