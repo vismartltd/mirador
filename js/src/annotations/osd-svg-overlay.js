@@ -238,7 +238,7 @@
       var _this = this;
       var annoTooltip = new $.AnnotationTooltip({"windowId" : _this.windowId});
       if (!_this.commentPanel) {
-        _this.commentPanel = jQuery(_this.canvas).qtip({
+        _this.commentPanel = jQuery(_this.canvas.parentNode).qtip({
             content: {
               text : annoTooltip.getEditor({})
             },
