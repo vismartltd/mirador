@@ -228,13 +228,10 @@
 
     onDrawFinish: function() {
       var shape = this.path;
+      if (!shape) {
+        return;
+      }
       this.draftPaths.push(shape);
-      var canvasRect = {
-        x: shape.bounds.x,
-        y: shape.bounds.y,
-        width: shape.bounds.width,
-        height: shape.bounds.height
-      };
       var _this = this;
       var annoTooltip = new $.AnnotationTooltip({"windowId" : _this.windowId});
       if (!_this.commentPanel) {
@@ -327,6 +324,18 @@
                   resource = [],
                   on;
 
+                  var svg = "<svg xmlns='http://www.w3.org/2000/svg'>";
+                  if (_this.draftPaths.length > 1) {
+                    svg+= "<g>";
+                    for (var i = 0; i < _this.draftPaths.length; i++) {
+                      svg+= _this.draftPaths[i].exportSVG({"asString":true});
+                    }
+                    svg+= "</g>";
+                  } else {
+                    svg+= _this.draftPaths[0].exportSVG({"asString":true});
+                  }
+                  svg+= "</svg>";
+
                   if (tags && tags.length > 0) {
                    motivation.push("oa:tagging");
                    jQuery.each(tags, function(index, value) {
@@ -340,8 +349,8 @@
                   on = { "@type" : "oa:SpecificResource",
                   "source" : _this.window.parent.canvasID, 
                   "selector" : {
-                    "@type" : "oa:FragmentSelector",
-                    "value" : "xywh="+canvasRect.x+","+canvasRect.y+","+canvasRect.width+","+canvasRect.height
+                    "@type" : "oa:SvgSelector",
+                    "value" : svg
                   },
                   "scope": {
                     "@context" : "http://www.harvard.edu/catch/oa.json",

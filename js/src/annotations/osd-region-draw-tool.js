@@ -51,7 +51,31 @@
       } else {
         regionString = url.split('#')[1];
       }
-      var region = regionString.split('=')[1].split(',');
+      var region = [0, 0, 0, 0];
+
+      var svgTag = project.importSVG(regionString);
+      var body = svgTag.removeChildren();
+      body = body[0];
+      project.addChild(body);
+      svgTag.remove();
+      if (body.className == 'Group') {
+        var items = body.removeChildren();
+        for (var itemIdx = 0; itemIdx < items.length; itemIdx++) {
+          project.addChild(items[itemIdx]);
+          region[0] = items[itemIdx].bounds.x;
+          region[1] = items[itemIdx].bounds.y;
+          region[2] = items[itemIdx].bounds.width;
+          region[3] = items[itemIdx].bounds.height;
+        }
+        body.remove();
+      } else {
+        region[0] = body.bounds.x;
+        region[1] = body.bounds.y;
+        region[2] = body.bounds.width;
+        region[3] = body.bounds.height;
+      }
+      paper.view.update(true);
+
       return this.osdViewer.viewport.imageToViewportRectangle(region[0],region[1],region[2],region[3]);
 
     },
@@ -94,11 +118,6 @@
                 mouse: false,
                 method: 'shift'
               },
-              //when the side panel is active and visible, it messes up the offset for the qtip
-              //which means that qtips will disappear for annotations that are on the far right side of the canvas
-              //so we need the container and viewport to be the element that encompasses everything,
-              //which can be the window or slot.  we need a better way of getting this element
-              //because this is brittle
               container: _this.parent.parent.parent.element, //window's element
               viewport: _this.parent.parent.parent.element //window's element
              },
