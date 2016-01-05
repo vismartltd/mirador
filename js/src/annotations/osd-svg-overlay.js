@@ -7,19 +7,22 @@
     return this.svgOverlayTools;
   };
 
-  OpenSeadragon.Viewer.prototype.svgOverlay = function(windowId) {
+  OpenSeadragon.Viewer.prototype.svgOverlay = function(windowObj) {
     if (this.svgOverlayInfo) {
       return this.svgOverlayInfo;
     }
-    this.svgOverlayInfo = new $.Overlay(this, windowId);
+    this.svgOverlayInfo = new $.Overlay(this, windowObj);
     return this.svgOverlayInfo;
   };
 
-  $.Overlay = function(viewer, windowId) {
+  $.Overlay = function(viewer, windowObj) {
     jQuery.extend(this, {
       disabled: false,
-      windowId: windowId,
+      window: windowObj,
+      windowId: windowObj.windowId,
+      commentPanel: null,
       mode: '', // Possible modes: 'create', 'translate', 'deform', 'edit' and '' as default.
+      draftPaths: [],
       hoveredPath: null,
       path: null,
       segment: null,
@@ -42,7 +45,7 @@
     this.fillColorAlpha = 0.0;
     this.viewer = viewer;
     this.canvas = document.createElement('canvas');
-    this.canvas.id = 'canvas';
+    this.canvas.id = 'draw_canvas_' + this.windowId;
     // Drawing of overlay border during development.
     // this.canvas.style.border = '1px solid yellow';
     this.viewer.canvas.appendChild(this.canvas);
@@ -94,7 +97,7 @@
       // Initialization of Paper.js overlay.
       var _this = this;
       paper.install(window);
-      paper.setup('canvas');
+      paper.setup('draw_canvas_' + _this.windowId);
       var mouseTool = new Tool();
       mouseTool.overlay = this;
       mouseTool.onMouseUp = _this.onMouseUp;
@@ -221,6 +224,156 @@
 
     refresh: function() {
       paper.view.update(true);
+    },
+
+    onDrawFinish: function() {
+      var shape = this.path;
+      this.draftPaths.push(shape);
+      var canvasRect = {
+        x: shape.bounds.x,
+        y: shape.bounds.y,
+        width: shape.bounds.width,
+        height: shape.bounds.height
+      };
+      var _this = this;
+      var annoTooltip = new $.AnnotationTooltip({"windowId" : _this.windowId});
+      if (!_this.commentPanel) {
+        _this.commentPanel = jQuery(_this.canvas).qtip({
+            content: {
+              text : annoTooltip.getEditor({})
+            },
+            position: {
+              my: 'center',
+              at: 'center'
+            },
+            style : {
+              classes : 'qtip-bootstrap'
+            },
+            show: {
+              event: false
+            },
+            hide: {
+              fixed: true,
+              delay: 300,
+              event: false
+            },
+            events: {
+              render: function(event, api) {
+                jQuery.publish('annotationEditorAvailable.'+_this.windowId);
+                jQuery.publish('disableTooltips.'+_this.windowId);
+
+                var selector = '#annotation-editor-'+_this.windowId;
+                jQuery(selector).parent().parent().draggable();
+
+                tinymce.init({
+                  selector : selector+' textarea',
+                  plugins: "image link media",
+                  menubar: false,
+                  statusbar: false,
+                  toolbar_items_size: 'small',
+                  toolbar: "bold italic | bullist numlist | link image media | removeformat",
+                  setup : function(editor) {
+                    editor.on('init', function(args) {
+                      tinymce.execCommand('mceFocus', false, args.target.id);
+                    });
+                  }
+                });
+
+                jQuery(selector).on("submit", function(event) {
+                  event.preventDefault();
+                  jQuery(selector+' a.save').click();
+                });
+
+                jQuery(selector+' a.cancel').on("click", function(event) {
+                  event.preventDefault();
+                  var content = tinymce.activeEditor.getContent();
+                  if (content) {
+                    if (!window.confirm("Do you want to cancel this annotation?")) { 
+                      return false;
+                    }
+                  }
+                  api.destroy();
+
+                  for (var idx = 0; idx < _this.draftPaths.length; idx++) {
+                    _this.draftPaths[idx].remove();
+                  }
+                  // clear draft data.
+                  _this.draftPaths = [];
+                  paper.view.update(true);
+                  project.activeLayer.selected = false;
+                  _this.segment = null;
+                  _this.path = null;
+                  _this.mode = '';
+
+                  //reenable viewer tooltips
+                  jQuery.publish('enableTooltips.'+_this.windowId);
+                  _this.commentPanel = null;
+                });
+
+                jQuery(selector+' a.save').on("click", function(event) {
+                  event.preventDefault();
+                  var tagText = jQuery(this).parents('.annotation-editor').find('.tags-editor').val(),
+                  resourceText = tinymce.activeEditor.getContent(),
+                  tags = [];
+                  tagText = $.trimString(tagText);
+                  if (tagText) {
+                    tags = tagText.split(/\s+/);
+                  } 
+
+                  var bounds = _this.viewer.viewport.getBounds(true);
+                  var scope = _this.viewer.viewport.viewportToImageRectangle(bounds);
+                  
+                  var motivation = [],
+                  resource = [],
+                  on;
+
+                  if (tags && tags.length > 0) {
+                   motivation.push("oa:tagging");
+                   jQuery.each(tags, function(index, value) {
+                    resource.push({      
+                     "@type":"oa:Tag",
+                     "chars":value
+                    });
+                   });
+                  }
+                  motivation.push("oa:commenting");
+                  on = { "@type" : "oa:SpecificResource",
+                  "source" : _this.window.parent.canvasID, 
+                  "selector" : {
+                    "@type" : "oa:FragmentSelector",
+                    "value" : "xywh="+canvasRect.x+","+canvasRect.y+","+canvasRect.width+","+canvasRect.height
+                  },
+                  "scope": {
+                    "@context" : "http://www.harvard.edu/catch/oa.json",
+                    "@type" : "catch:Viewport",
+                    "value" : "xywh="+Math.round(scope.x)+","+Math.round(scope.y)+","+Math.round(scope.width)+","+Math.round(scope.height) //osd bounds
+                  }
+                };
+                resource.push( {
+                  "@type" : "dctypes:Text",
+                  "format" : "text/html",
+                  "chars" : resourceText
+                });
+                var oaAnno = {
+                 "@context" : "http://iiif.io/api/presentation/2/context.json",
+                 "@type" : "oa:Annotation",
+                 "motivation" : motivation,
+                 "resource" : resource,
+                 "on" : on
+                };
+                //save to endpoint
+                jQuery.publish('annotationCreated.'+_this.windowId, [oaAnno, shape]);
+
+                api.destroy();
+                //reenable viewer tooltips
+                jQuery.publish('enableTooltips.'+_this.windowId);
+                _this.commentPanel = null;
+                });
+              }
+            }
+        });
+        _this.commentPanel.qtip('show');
+      }
     }
   };
 }(Mirador));
