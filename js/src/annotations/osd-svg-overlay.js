@@ -225,6 +225,14 @@
       if (!shape) {
         return;
       }
+      if (this.hoveredPath) {
+        this.hoveredPath.selected = false;
+      }
+      this.hoveredPath = shape;
+      this.hoveredPath.selected = true;
+      this.segment = null;
+      this.path = null;
+      this.mode = '';
       this.draftPaths.push(shape);
       var _this = this;
       var annoTooltip = new $.AnnotationTooltip({"windowId" : _this.windowId});
