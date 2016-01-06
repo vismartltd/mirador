@@ -156,11 +156,14 @@
       var scale = this.viewer.viewport.containerSize.x * this.viewer.viewport.getZoom(true);
       this.canvas.width = scale;
       this.canvas.height = scale * (this.viewer.viewport.contentSize.y / this.viewer.viewport.contentSize.x);
-      var transform = 'translate(' + pointZero.x + 'px,' + pointZero.y + 'px)';
+      var transform = 'translate(0px,0px)';
       this.canvas.style.WebkitTransform = transform;
       this.canvas.style.msTransform = transform;
       this.canvas.style.transform = transform;
+      this.canvas.style.marginLeft = pointZero.x + "px";
+      this.canvas.style.marginTop = pointZero.y + "px";
       if (paper && paper.view) {
+        paper.view.viewSize = new Size(this.canvas.width, this.canvas.height);
         paper.view.zoom = this.viewer.viewport.getZoom(true) / this.initialZoom;
         paper.view.center = new Size(paper.view.bounds.width / 2, paper.view.bounds.height / 2);
         paper.view.update(true);
