@@ -81,6 +81,8 @@
       var _this = this;
       this.overlays = [];
 
+      project.clear();
+
       var deferreds = jQuery.map(this.list, function(annotation) {
         var deferred = jQuery.Deferred(),
         osdOverlay = document.createElement('div');
