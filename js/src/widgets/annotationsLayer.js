@@ -67,8 +67,7 @@
     },
 
     enterDisplayAnnotations: function() {
-      this.drawTool.exitEditMode();
-      this.drawTool.showAnnotations();
+      this.drawTool.exitEditMode(true);
       this.drawTool.render();
     },
 
@@ -78,8 +77,7 @@
     },
 
     enterDefault: function() {
-      this.drawTool.exitEditMode();
-      this.drawTool.hideAnnotations();
+      this.drawTool.exitEditMode(false);
     }
   };
 

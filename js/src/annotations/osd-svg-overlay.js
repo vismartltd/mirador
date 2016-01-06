@@ -193,33 +193,27 @@
     },
 
     hide: function() {
-      this.disabled = true;
       this.canvas.style.display = 'none';
-      jQuery.publish('disableBorderColorPicker.' + this.windowId, true);
-      jQuery.publish('disableFillColorPicker.' + this.windowId, true);
       this.currentTool = null;
       this.deselectAll();
     },
 
     show: function() {
-      this.disabled = false;
       this.canvas.style.display = 'block';
-      jQuery.publish('disableBorderColorPicker.' + this.windowId, false);
-      jQuery.publish('disableFillColorPicker.' + this.windowId, false);
     },
 
     disable: function() {
       this.disabled = true;
-      jQuery.publish('disableBorderColorPicker.' + this.windowId, true);
-      jQuery.publish('disableFillColorPicker.' + this.windowId, true);
+      jQuery.publish('disableBorderColorPicker.' + this.windowId, this.disabled);
+      jQuery.publish('disableFillColorPicker.' + this.windowId, this.disabled);
       this.currentTool = null;
       this.deselectAll();
     },
 
     enable: function() {
       this.disabled = false;
-      jQuery.publish('disableBorderColorPicker.' + this.windowId, false);
-      jQuery.publish('disableFillColorPicker.' + this.windowId, false);
+      jQuery.publish('disableBorderColorPicker.' + this.windowId, this.disabled);
+      jQuery.publish('disableFillColorPicker.' + this.windowId, this.disabled);
     },
 
     refresh: function() {

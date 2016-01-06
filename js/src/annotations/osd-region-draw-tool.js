@@ -31,17 +31,14 @@
       this.svgOverlay.enable();
     },
 
-    exitEditMode: function() {
+    exitEditMode: function(showAnnotations) {
       this.osdViewer.setMouseNavEnabled(true);
       this.svgOverlay.disable();
-    },
-
-    hideAnnotations: function() {
-      this.svgOverlay.hide();
-    },
-
-    showAnnotations: function() {
-      this.svgOverlay.show();
+      if (showAnnotations) {
+        this.svgOverlay.show();
+      } else {
+        this.svgOverlay.hide();
+      }
     },
 
     getOsdFrame: function(url) {
@@ -211,7 +208,7 @@
     getOverlaysFromElement: function(element, event) {
       var _this = this,
       overlays = this.getOverlaysFromMousePosition(event);
-      jQuery(_this.osdViewer.canvas).find('.annotation.hovered').removeClass('hovered');//.css('border-color', 'deepSkyBlue');
+      jQuery(_this.osdViewer.canvas).find('.annotation.hovered').removeClass('hovered');
       overlays.addClass('hovered');
       return overlays;
     },
@@ -242,7 +239,6 @@
       });
 
       jQuery.subscribe('removeOverlay.' + _this.parent.windowId, function(event, annoId) {
-        //remove this annotation's overlay from osd
         _this.osdViewer.removeOverlay(jQuery(_this.osdViewer.element).find(".annotation#"+annoId)[0]);
       });
 
@@ -315,12 +311,10 @@
 
         var display = jQuery(this).parents('.annotation-display'),
         id = display.attr('data-anno-id');
-        //oaAnno = _this.getAnnoFromRegion(id)[0];
         jQuery.publish('annotationDeleted.'+_this.parent.windowId, [id]);
         
-        //hide tooltip so event handlers don't get messed up
         api.hide();
-        display.remove(); //remove this annotation display from dom
+        display.remove();
       });
 
       jQuery(selector+' a.edit').on("click", function(event) {
@@ -350,8 +344,7 @@
         var display = jQuery(this).parents('.annotation-tooltip'),
         id = display.attr('data-anno-id'),
         oaAnno = _this.getAnnoFromRegion(id)[0];
-                  
-        //check if new resourceText is empty??
+
         var tagText = jQuery(this).parents('.annotation-editor').find('.tags-editor').val(),
         resourceText = tinymce.activeEditor.getContent(),
         tags = [];
