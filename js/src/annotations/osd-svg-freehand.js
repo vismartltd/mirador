@@ -66,11 +66,8 @@
       if (overlay.mode === '') {
         overlay.path = this.createShape(event.point, overlay);
       } else if (overlay.mode === 'create') {
-        overlay.onDrawFinish();
         project.activeLayer.selected = false;
-        overlay.segment = null;
-        overlay.path = null;
-        overlay.mode = '';
+        overlay.onDrawFinish();
       } else if (overlay.mode === 'edit') {
         if (hitResult) {
           if (event.modifiers.shift) {

@@ -132,10 +132,8 @@
           overlay.segment = hitResult.segment;
         }
       } else if (overlay.path) {
-        overlay.onDrawFinish();
         project.activeLayer.selected = false;
-        overlay.segment = null;
-        overlay.path = null;
+        overlay.onDrawFinish();
       } else {
         overlay.path = this.createShape(event.point, overlay);
       }

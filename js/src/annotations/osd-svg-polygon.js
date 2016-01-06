@@ -71,11 +71,8 @@
               hitResult.segment.remove();
             }
           } else if (overlay.path) {
-            overlay.onDrawFinish();
             project.activeLayer.selected = false;
-            overlay.segment = null;
-            overlay.path = null;
-            overlay.mode = '';
+            overlay.onDrawFinish();
           } else {
             overlay.path = hitResult.item;
             if (hitResult.type == 'segment') {
@@ -96,11 +93,8 @@
           overlay.path.fillColor.alpha = overlay.fillColorAlpha;
         }
       }
-      overlay.onDrawFinish();
       project.activeLayer.selected = false;
-      overlay.segment = null;
-      overlay.path = null;
-      overlay.mode = '';
+      overlay.onDrawFinish();
     }
   };
 }(Mirador));

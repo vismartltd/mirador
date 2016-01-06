@@ -69,11 +69,8 @@
       }
       if (overlay.mode === '') {
         overlay.path = this.createShape(event.point, overlay);
-        overlay.onDrawFinish();
         project.activeLayer.selected = false;
-        overlay.segment = null;
-        overlay.path = null;
-        overlay.mode = '';
+        overlay.onDrawFinish();
       } else if (overlay.mode === 'translate') {
         if (hitResult) {
           if (overlay.path) {
