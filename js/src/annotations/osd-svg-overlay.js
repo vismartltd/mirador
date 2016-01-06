@@ -80,7 +80,7 @@
     jQuery.subscribe('changeFillColor.' + _this.windowId, function(event, color, alpha) {
       _this.fillColor = color;
       _this.fillColorAlpha = alpha;
-      if (_this.hoveredPath) {
+      if (_this.hoveredPath && _this.hoveredPath.closed) {
         _this.hoveredPath.fillColor = color;
         _this.hoveredPath.fillColor.alpha = alpha;
         paper.view.draw();
