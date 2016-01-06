@@ -2,7 +2,7 @@
   $.Polygon = function(options) {
     jQuery.extend(this, {
       name: 'Polygon',
-      logoClass: 'fa-bookmark-o',
+      logoClass: 'fa-bolt',
       idPrefix: 'rough_path_'
     }, options);
 
