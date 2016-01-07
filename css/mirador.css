@@ -1020,6 +1020,20 @@ li.highlight {
 /* color picker custom style
 ---------------------------------------------------------------------------- */
 
+.borderColorPicker + div {
+  background-image: url('../images/border-color-picker.png');
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  padding-left: 1.5em;
+}
+
+.fillColorPicker + div {
+  background-image: url('../images/fill-color-picker.png');
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  padding-left: 1.5em;
+}
+
 .mirador-osd-edit-mode .sp-preview {
   height: 10px !important;
 }
