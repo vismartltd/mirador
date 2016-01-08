@@ -14,22 +14,35 @@
 
     createShape: function(initialPoint, overlay) {
       overlay.mode = 'create';
+      var segments = [];
+      // point indexes
+      // 0     1     2
+      //   ┌ ─ ─ ─ ┐  
+      // 7 │       │ 3
+      //   └ ─ ─ ─ ┘  
+      // 6     5     4
+      segments.push(new Point(initialPoint.x - 2, initialPoint.y - 2));
+      segments.push(new Point(initialPoint.x - 1, initialPoint.y - 2));
+      segments.push(new Point(initialPoint.x, initialPoint.y - 2));
+      segments.push(new Point(initialPoint.x, initialPoint.y - 1));
+      segments.push(new Point(initialPoint.x, initialPoint.y));
+      segments.push(new Point(initialPoint.x - 1, initialPoint.y));
+      segments.push(new Point(initialPoint.x - 2, initialPoint.y));
+      segments.push(new Point(initialPoint.x - 2, initialPoint.y - 1));
       var _this = this;
-      var shape = new Path.Rectangle({
-        point: [initialPoint.x - 1, initialPoint.y - 1],
-        size: [1, 1]
+      var shape = new Path({
+        segments: segments,
+        fullySelected: true,
+        name: _this.idPrefix + (project.getItems({
+          name: /_/
+        }).length + 1)
       });
       shape.strokeColor = overlay.strokeColor;
       shape.fillColor = overlay.fillColor;
       shape.fillColor.alpha = overlay.fillColorAlpha;
-      shape.name = _this.idPrefix + (project.getItems({
-        name: /_/
-      }).length + 1);
-      for (var i = 0; i < shape.segments.length; i++) {
-        if (shape.segments[i].point.x == initialPoint.x && shape.segments[i].point.y == initialPoint.y) {
-          overlay.segment = shape.segments[i];
-        }
-      }
+      shape.closed = true;
+      shape.data.rotation = 0;
+      overlay.segment = shape.segments[4];
       return shape;
     },
 
@@ -43,16 +56,33 @@
           overlay.path.segments[i].point.x += event.delta.x;
           overlay.path.segments[i].point.y += event.delta.y;
         }
-      } else if (overlay.mode == 'deform' || overlay.mode == 'create') {
-        var x = overlay.segment.point.x;
-        var y = overlay.segment.point.y;
-        for (var k = 0; k < overlay.path.segments.length; k++) {
-          if (overlay.path.segments[k].point.x == x) {
-            overlay.path.segments[k].point.x += event.delta.x;
+      } else if (overlay.mode == 'create' || overlay.mode == 'deform') {
+        var idx = -1;
+        for (var l = 0; l < overlay.path.segments.length; l++) {
+          if (overlay.path.segments[l] == overlay.segment) {
+            idx = l;
+            break;
           }
-          if (overlay.path.segments[k].point.y == y) {
-            overlay.path.segments[k].point.y += event.delta.y;
-          }
+        }
+        if (overlay.mode == 'deform' && idx % 2 == 1) {
+          var oldPoint = new Point(overlay.segment.point.x - overlay.path.position.x, overlay.segment.point.y - overlay.path.position.y);
+          var newPoint = new Point(overlay.segment.point.x - overlay.path.position.x + event.delta.x, overlay.segment.point.y - overlay.path.position.y + event.delta.y);
+          var scale = Math.sqrt(newPoint.x * newPoint.x + newPoint.y * newPoint.y) / Math.sqrt(oldPoint.x * oldPoint.x + oldPoint.y * oldPoint.y);
+          var rotation = Math.atan2(newPoint.y, newPoint.x) - Math.atan2(oldPoint.y, oldPoint.x);
+          rotation = rotation * (180 / Math.PI);
+          overlay.path.scale(scale);
+          overlay.path.rotate(rotation, overlay.path.position);
+          overlay.path.data.rotation += rotation;
+        } else {
+          var oldRotPoint = new Point(overlay.segment.point.x - overlay.path.position.x, overlay.segment.point.y - overlay.path.position.y);
+          var newRotPoint = new Point(overlay.segment.point.x - overlay.path.position.x + event.delta.x, overlay.segment.point.y - overlay.path.position.y + event.delta.y);
+          var rot = overlay.path.data.rotation;
+          oldRotPoint = oldRotPoint.rotate(-rot);
+          newRotPoint = newRotPoint.rotate(-rot);
+          var rotScale = new Point(newRotPoint.x / oldRotPoint.x, newRotPoint.y / oldRotPoint.y);
+          overlay.path.rotate(-rot, overlay.path.position);
+          overlay.path.scale(rotScale);
+          overlay.path.rotate(rot, overlay.path.position);
         }
       }
     },
