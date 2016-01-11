@@ -28,6 +28,7 @@
 
     enterEditMode: function() {
       this.osdViewer.setMouseNavEnabled(false);
+      this.svgOverlay.show();
       this.svgOverlay.enable();
     },
 
