@@ -49,8 +49,12 @@
         name: shape.name
       });
       cloned.strokeColor = shape.strokeColor;
-      cloned.fillColor = shape.fillColor;
-      cloned.fillColor.alpha = shape.fillColor.alpha;
+      if (shape.fillColor) {
+        cloned.fillColor = shape.fillColor;
+      }
+      if (shape.fillColor.alpha) {
+        cloned.fillColor.alpha = shape.fillColor.alpha;
+      }
       cloned.closed = shape.closed;
       cloned.data.rotation = 0;
       shape.remove();
