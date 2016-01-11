@@ -42,6 +42,38 @@
       }
     },
 
+    // replaces paper.js objects with the required properties only.
+    replaceShape: function(shape) {
+      var cloned = new Path({
+        segments: shape.segments,
+        name: shape.name
+      });
+      cloned.strokeColor = shape.strokeColor;
+      cloned.fillColor = shape.fillColor;
+      cloned.fillColor.alpha = shape.fillColor.alpha;
+      cloned.closed = shape.closed;
+      cloned.data.rotation = 0;
+      shape.remove();
+    },
+
+    parseSVG: function(svg) {
+      var svgTag = project.importSVG(svg);
+      // removes SVG tag which is the root object of comment SVG segment.
+      var body = svgTag.removeChildren()[0];
+      svgTag.remove();
+      if (body.className == 'Group') {
+        // removes group tag which wraps the set of objects of comment SVG segment.
+        var items = body.removeChildren();
+        for (var itemIdx = 0; itemIdx < items.length; itemIdx++) {
+          this.replaceShape(items[itemIdx]);
+        }
+        body.remove();
+      } else {
+        this.replaceShape(body);
+      }
+      paper.view.update(true);
+    },
+
     getOsdFrame: function(url) {
       var regionString;
       if (typeof url === 'object') {
@@ -49,33 +81,9 @@
       } else {
         regionString = url.split('#')[1];
       }
-      var region = [0, 0, 0, 0];
-
-      var svgTag = project.importSVG(regionString);
-      var body = svgTag.removeChildren();
-      body = body[0];
-      project.addChild(body);
-      svgTag.remove();
-      if (body.className == 'Group') {
-        var items = body.removeChildren();
-        for (var itemIdx = 0; itemIdx < items.length; itemIdx++) {
-          project.addChild(items[itemIdx]);
-          region[0] = items[itemIdx].bounds.x;
-          region[1] = items[itemIdx].bounds.y;
-          region[2] = items[itemIdx].bounds.width;
-          region[3] = items[itemIdx].bounds.height;
-        }
-        body.remove();
-      } else {
-        region[0] = body.bounds.x;
-        region[1] = body.bounds.y;
-        region[2] = body.bounds.width;
-        region[3] = body.bounds.height;
-      }
-      paper.view.update(true);
-
+      var region = [-1000, -1000, 0, 0];
+      this.parseSVG(regionString);
       return this.osdViewer.viewport.imageToViewportRectangle(region[0],region[1],region[2],region[3]);
-
     },
 
     render: function() {
