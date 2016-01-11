@@ -51,9 +51,9 @@
       cloned.strokeColor = shape.strokeColor;
       if (shape.fillColor) {
         cloned.fillColor = shape.fillColor;
-      }
-      if (shape.fillColor.alpha) {
-        cloned.fillColor.alpha = shape.fillColor.alpha;
+        if (shape.fillColor.alpha) {
+          cloned.fillColor.alpha = shape.fillColor.alpha;
+        }
       }
       cloned.closed = shape.closed;
       cloned.data.rotation = 0;
