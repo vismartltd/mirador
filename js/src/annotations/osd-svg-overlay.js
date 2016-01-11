@@ -207,6 +207,7 @@
 
     disable: function() {
       this.disabled = true;
+      jQuery.publish('hideDrawTools.' + this.windowId);
       jQuery.publish('disableBorderColorPicker.' + this.windowId, this.disabled);
       jQuery.publish('disableFillColorPicker.' + this.windowId, this.disabled);
       this.currentTool = null;
@@ -215,6 +216,7 @@
 
     enable: function() {
       this.disabled = false;
+      jQuery.publish('showDrawTools.' + this.windowId);
       jQuery.publish('disableBorderColorPicker.' + this.windowId, this.disabled);
       jQuery.publish('disableFillColorPicker.' + this.windowId, this.disabled);
     },
