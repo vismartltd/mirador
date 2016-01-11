@@ -63,20 +63,6 @@
           ["white", "cyan", "magenta", "yellow"]
         ]
       });
-      jQuery.subscribe('disableBorderColorPicker.'+_this.windowId, function(event, disablePicker) {
-        if(disablePicker) {
-          _this.container.find('.borderColorPicker').spectrum("disable");
-        }else{
-          _this.container.find('.borderColorPicker').spectrum("enable");
-        }
-      });
-      jQuery.subscribe('disableFillColorPicker.'+_this.windowId, function(event, disablePicker) {
-        if(disablePicker) {
-          _this.container.find('.fillColorPicker').spectrum("disable");
-        }else{
-          _this.container.find('.fillColorPicker').spectrum("enable");
-        }
-      });
       this.hide();
       this.bindEvents();
     },
@@ -107,6 +93,27 @@
       for (var value in _this.availableTools) {
         this.container.find('.' + _this.availableTools[value]).on('click', make_handler(_this.availableTools[value]));
       }
+
+      jQuery.subscribe('disableBorderColorPicker.'+_this.windowId, function(event, disablePicker) {
+        if(disablePicker) {
+          _this.container.find('.borderColorPicker').spectrum("disable");
+        }else{
+          _this.container.find('.borderColorPicker').spectrum("enable");
+        }
+      });
+      jQuery.subscribe('disableFillColorPicker.'+_this.windowId, function(event, disablePicker) {
+        if(disablePicker) {
+          _this.container.find('.fillColorPicker').spectrum("disable");
+        }else{
+          _this.container.find('.fillColorPicker').spectrum("enable");
+        }
+      });
+      jQuery.subscribe('showDrawTools.'+_this.windowId, function(event) {
+        _this.container.find('.draw-tool').show();
+      });
+      jQuery.subscribe('hideDrawTools.'+_this.windowId, function(event) {
+        _this.container.find('.draw-tool').hide();
+      });
 
       this.container.find('.mirador-osd-close').on('click', function() {
         _this.parent.annoState.displayOff();
@@ -141,21 +148,21 @@
                                    '<a class="mirador-osd-edit-mode hud-control">',
                                    '<i class="fa fa-lg fa-edit"></i>',
                                    '</a>',
-                                   '<a class="mirador-osd-edit-mode hud-control" style="color:#abcdef;">',
+                                   '<a class="mirador-osd-edit-mode hud-control draw-tool" style="color:#abcdef;">',
                                    '|',
                                    '</a>',
                                    '{{#each tools}}',
-                                   '<a class="mirador-osd-{{this}}-mode hud-control">',
+                                   '<a class="mirador-osd-{{this}}-mode hud-control draw-tool">',
                                    '<i class="fa fa-lg {{this}}"></i>',
                                    '</a>',
                                    '{{/each}}',
-                                   '<a class="mirador-osd-edit-mode hud-control" style="color:#abcdef;">',
+                                   '<a class="mirador-osd-edit-mode hud-control draw-tool" style="color:#abcdef;">',
                                    '|',
                                    '</a>',
-                                   '<a class="mirador-osd-edit-mode hud-control">',
+                                   '<a class="mirador-osd-edit-mode hud-control draw-tool">',
                                    '<input type="text" class="borderColorPicker"/>',
                                    '</a>',
-                                   '<a class="mirador-osd-edit-mode hud-control">',
+                                   '<a class="mirador-osd-edit-mode hud-control draw-tool">',
                                    '<input type="text" class="fillColorPicker"/>',
                                    '</a>',
                                    '{{/if}}',
