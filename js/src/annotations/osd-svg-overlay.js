@@ -192,6 +192,7 @@
       if (paper && paper.view && paper.project) {
         paper.project.deselectAll();
         paper.view.update(true);
+        this.destroyCommentPanel();
       }
     },
 
@@ -223,6 +224,11 @@
 
     refresh: function() {
       paper.view.update(true);
+    },
+
+    destroyCommentPanel: function() {
+      jQuery(this.canvas.parentNode).qtip('destroy', true);
+      this.commentPanel = null;
     },
 
     onDrawFinish: function() {
