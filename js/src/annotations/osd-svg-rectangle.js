@@ -102,7 +102,6 @@
             var segments = hitResult.item.segments;
             for (var idx = 0; idx < segments.length; idx++) {
               if (segments[idx] == hitResult.segment) {
-                console.log(idx % 2 === 0);
                 if (idx % 2 === 0) {
                   document.body.style.cursor = "move";
                 } else {
