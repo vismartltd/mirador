@@ -121,6 +121,8 @@
         } else {
           document.body.style.cursor = "default";
         }
+      } else {
+        document.body.style.cursor = "default";
       }
       if (overlay.mode == 'translate') {
         if (overlay.path) {

@@ -112,18 +112,17 @@ describe('Rectangle', function() {
           'y': 100
         }
       };
-      var overlay = {
+      overlay = {
         'mode': '',
         'path': null
       };
-      var localCenterPoint = {
-        'x': this.initialPoint.x - 1,
-        'y': this.initialPoint.y - 1
-      };
       var expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
-        var point = this.shape.segments[idx].point;
-        expected.push(scalePoint(point, localCenterPoint, 1));
+        var point = {
+          'x': this.shape.segments[idx].point.x,
+          'y': this.shape.segments[idx].point.y
+        };
+        expected.push(point);
       }
       this.rect.onMouseDrag(event, overlay);
 
@@ -140,7 +139,7 @@ describe('Rectangle', function() {
           'y': -3
         }
       };
-      var overlay = {
+      overlay = {
         'mode': 'translate',
         'path': this.shape
       };
@@ -178,7 +177,7 @@ describe('Rectangle', function() {
           'y': -100
         }
       };
-      var overlay = {
+      overlay = {
         'mode': 'deform',
         'path': this.shape,
         'segment': this.shape.segments[2]
@@ -243,7 +242,7 @@ describe('Rectangle', function() {
         'x': this.initialPoint.x - size.x,
         'y': this.initialPoint.y - size.y
       };
-      var overlay = {
+      overlay = {
         'mode': 'deform',
         'path': this.shape,
         'segment': this.shape.segments[1]

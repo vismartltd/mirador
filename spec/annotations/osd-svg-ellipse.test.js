@@ -12,9 +12,7 @@ describe('Ellipse', function() {
     diagonalSize = Math.sqrt(2);
   });
   afterAll(function() {
-    jQuery('canvas').remove();
     delete this.ellipse;
-    delete this.canvas;
   });
 
   it('should create ellipse shape', function() {
@@ -121,14 +119,13 @@ describe('Ellipse', function() {
         'mode': '',
         'path': null
       };
-      var localCenterPoint = {
-        'x': this.initialPoint.x - 1,
-        'y': this.initialPoint.y - 1
-      };
       var expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
-        var point = this.shape.segments[idx].point;
-        expected.push(scalePoint(point, localCenterPoint, 1));
+        var point = {
+          'x': this.shape.segments[idx].point.x,
+          'y': this.shape.segments[idx].point.y
+        };
+        expected.push(point);
       }
       this.ellipse.onMouseDrag(event, overlay);
 
