@@ -1,3 +1,5 @@
+paper.install(window);
+
 describe('Ellipse', function() {
   var diagonalSize;
 
@@ -5,7 +7,6 @@ describe('Ellipse', function() {
     this.canvas = jQuery('<canvas></canvas>');
     this.canvas.attr('id', 'paperId');
     jasmine.getFixtures().set(this.canvas);
-    paper.install(window);
     paper.setup(this.canvas.attr('id'));
     this.ellipse = new Mirador.Ellipse();
     diagonalSize = Math.sqrt(2);

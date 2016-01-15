@@ -1,9 +1,10 @@
+paper.install(window);
+
 describe('Rectangle', function() {
   beforeAll(function() {
     this.canvas = jQuery('<canvas></canvas>');
     this.canvas.attr('id', 'paperId');
     jasmine.getFixtures().set(this.canvas);
-    paper.install(window);
     paper.setup(this.canvas.attr('id'));
     this.rect = new Mirador.Rectangle();
   });
