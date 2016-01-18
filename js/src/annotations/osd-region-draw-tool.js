@@ -44,9 +44,6 @@
 
     // replaces paper.js objects with the required properties only.
     replaceShape: function(shape) {
-      if (shape.name.toString().indexOf('pin_') != -1) { // pin shapes with fixed size
-        shape.scale(1 / this.svgOverlay.currentPinSize);
-      }
       var cloned = new Path({
         segments: shape.segments,
         name: shape.name
@@ -60,6 +57,9 @@
       }
       cloned.closed = shape.closed;
       cloned.data.rotation = 0;
+      if (cloned.name.toString().indexOf('pin_') != -1) { // pin shapes with fixed size.
+        cloned.scale(1 / paper.view.zoom);
+      }
       shape.remove();
     },
 
