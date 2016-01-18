@@ -33,7 +33,6 @@
         showEdit : this.annotationCreationAvailable
       })).appendTo(this.container);
       _this.container.find(".borderColorPicker").spectrum({
-        color: "#f00",
         showInput: true,
         showInitial: true,
         showPalette: true,
@@ -48,7 +47,6 @@
         ]
       });
       _this.container.find(".fillColorPicker").spectrum({
-        color: "#f00",
         showInput: true,
         showInitial: true,
         showAlpha: true,
@@ -94,6 +92,12 @@
         this.container.find('.' + _this.availableTools[value]).on('click', make_handler(_this.availableTools[value]));
       }
 
+      jQuery.subscribe('initBorderColor.' + _this.windowId, function(event, color) {
+        _this.container.find('.borderColorPicker').spectrum('set', color);
+      });
+      jQuery.subscribe('initFillColor.' + _this.windowId, function(event, color, alpha) {
+        _this.container.find('.fillColorPicker').spectrum('set', jQuery.extend(tinycolor(color), {'a': alpha}));
+      });
       jQuery.subscribe('disableBorderColorPicker.'+_this.windowId, function(event, disablePicker) {
         if(disablePicker) {
           _this.container.find('.borderColorPicker').spectrum("disable");

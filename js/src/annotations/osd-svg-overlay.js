@@ -86,6 +86,8 @@
         paper.view.draw();
       }
     });
+    jQuery.publish('initBorderColor.' + _this.windowId, _this.strokeColor);
+    jQuery.publish('initFillColor.' + _this.windowId, [_this.fillColor, _this.fillColorAlpha]);
 
     this.resize();
     this.show();
