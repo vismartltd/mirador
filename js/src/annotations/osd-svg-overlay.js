@@ -248,155 +248,162 @@
       this.mode = '';
       this.draftPaths.push(shape);
       var _this = this;
-      var annoTooltip = new $.AnnotationTooltip({"windowId" : _this.windowId});
+      var annoTooltip = new $.AnnotationTooltip({
+        "windowId": _this.windowId
+      });
       if (!_this.commentPanel) {
         _this.commentPanel = jQuery(_this.canvas.parentNode).qtip({
-            content: {
-              text : annoTooltip.getEditor({})
-            },
-            position: {
-              my: 'center',
-              at: 'center'
-            },
-            style : {
-              classes : 'qtip-bootstrap'
-            },
-            show: {
-              event: false
-            },
-            hide: {
-              fixed: true,
-              delay: 300,
-              event: false
-            },
-            events: {
-              render: function(event, api) {
-                jQuery.publish('annotationEditorAvailable.'+_this.windowId);
-                jQuery.publish('disableTooltips.'+_this.windowId);
+          content: {
+            text: annoTooltip.getEditor({})
+          },
+          position: {
+            my: 'center',
+            at: 'center'
+          },
+          style: {
+            classes: 'qtip-bootstrap'
+          },
+          show: {
+            event: false
+          },
+          hide: {
+            fixed: true,
+            delay: 300,
+            event: false
+          },
+          events: {
+            render: function(event, api) {
+              jQuery.publish('annotationEditorAvailable.' + _this.windowId);
+              jQuery.publish('disableTooltips.' + _this.windowId);
 
-                var selector = '#annotation-editor-'+_this.windowId;
-                jQuery(selector).parent().parent().draggable();
+              var selector = '#annotation-editor-' + _this.windowId;
+              jQuery(selector).parent().parent().draggable();
 
-                tinymce.init({
-                  selector : selector+' textarea',
-                  plugins: "image link media",
-                  menubar: false,
-                  statusbar: false,
-                  toolbar_items_size: 'small',
-                  toolbar: "bold italic | bullist numlist | link image media | removeformat",
-                  setup : function(editor) {
-                    editor.on('init', function(args) {
-                      tinymce.execCommand('mceFocus', false, args.target.id);
-                    });
+              tinymce.init({
+                selector: selector + ' textarea',
+                plugins: "image link media",
+                menubar: false,
+                statusbar: false,
+                toolbar_items_size: 'small',
+                toolbar: "bold italic | bullist numlist | link image media | removeformat",
+                setup: function(editor) {
+                  editor.on('init', function(args) {
+                    tinymce.execCommand('mceFocus', false, args.target.id);
+                  });
+                }
+              });
+
+              jQuery(selector).on("submit", function(event) {
+                event.preventDefault();
+                jQuery(selector + ' a.save').click();
+              });
+
+              jQuery(selector + ' a.cancel').on("click", function(event) {
+                event.preventDefault();
+                var content = tinymce.activeEditor.getContent();
+                if (content) {
+                  if (!window.confirm("Do you want to cancel this annotation?")) {
+                    return false;
                   }
-                });
+                }
+                api.destroy();
 
-                jQuery(selector).on("submit", function(event) {
-                  event.preventDefault();
-                  jQuery(selector+' a.save').click();
-                });
+                // clear draft data.
+                for (var idx = 0; idx < _this.draftPaths.length; idx++) {
+                  _this.draftPaths[idx].remove();
+                }
+                _this.draftPaths = [];
+                paper.view.update(true);
+                project.activeLayer.selected = false;
+                _this.segment = null;
+                _this.path = null;
+                _this.mode = '';
 
-                jQuery(selector+' a.cancel').on("click", function(event) {
-                  event.preventDefault();
-                  var content = tinymce.activeEditor.getContent();
-                  if (content) {
-                    if (!window.confirm("Do you want to cancel this annotation?")) { 
-                      return false;
-                    }
-                  }
-                  api.destroy();
+                //reenable viewer tooltips
+                jQuery.publish('enableTooltips.' + _this.windowId);
+                _this.commentPanel = null;
+              });
 
-                  // clear draft data.
-                  for (var idx = 0; idx < _this.draftPaths.length; idx++) {
-                    _this.draftPaths[idx].remove();
-                  }
-                  _this.draftPaths = [];
-                  paper.view.update(true);
-                  project.activeLayer.selected = false;
-                  _this.segment = null;
-                  _this.path = null;
-                  _this.mode = '';
-
-                  //reenable viewer tooltips
-                  jQuery.publish('enableTooltips.'+_this.windowId);
-                  _this.commentPanel = null;
-                });
-
-                jQuery(selector+' a.save').on("click", function(event) {
-                  event.preventDefault();
-                  var tagText = jQuery(this).parents('.annotation-editor').find('.tags-editor').val(),
+              jQuery(selector + ' a.save').on("click", function(event) {
+                event.preventDefault();
+                var tagText = jQuery(this).parents('.annotation-editor').find('.tags-editor').val(),
                   resourceText = tinymce.activeEditor.getContent(),
                   tags = [];
-                  tagText = $.trimString(tagText);
-                  if (tagText) {
-                    tags = tagText.split(/\s+/);
-                  } 
+                tagText = $.trimString(tagText);
+                if (tagText) {
+                  tags = tagText.split(/\s+/);
+                }
 
-                  var bounds = _this.viewer.viewport.getBounds(true);
-                  var scope = _this.viewer.viewport.viewportToImageRectangle(bounds);
-                  
-                  var motivation = [],
+                var bounds = _this.viewer.viewport.getBounds(true);
+                var scope = _this.viewer.viewport.viewportToImageRectangle(bounds);
+
+                var motivation = [],
                   resource = [],
                   on;
 
-                  var svg = "<svg xmlns='http://www.w3.org/2000/svg'>";
-                  if (_this.draftPaths.length > 1) {
-                    svg+= "<g>";
-                    for (var i = 0; i < _this.draftPaths.length; i++) {
-                      if (_this.draftPaths[i].name.toString().indexOf('pin_') != -1) {
-                        _this.draftPaths[i].scale(_this.currentPinSize);
-                      }
-                      svg+= _this.draftPaths[i].exportSVG({"asString":true});
+                var svg = "<svg xmlns='http://www.w3.org/2000/svg'>";
+                if (_this.draftPaths.length > 1) {
+                  svg += "<g>";
+                  for (var i = 0; i < _this.draftPaths.length; i++) {
+                    if (_this.draftPaths[i].name.toString().indexOf('pin_') != -1) {
+                      _this.draftPaths[i].scale(_this.currentPinSize);
                     }
-                    svg+= "</g>";
-                  } else {
-                    if (_this.draftPaths[0].name.toString().indexOf('pin_') != -1) {
-                      _this.draftPaths[0].scale(_this.currentPinSize);
-                    }
-                    svg+= _this.draftPaths[0].exportSVG({"asString":true});
-                  }
-                  svg+= "</svg>";
-
-                  if (tags && tags.length > 0) {
-                   motivation.push("oa:tagging");
-                   jQuery.each(tags, function(index, value) {
-                    resource.push({      
-                     "@type":"oa:Tag",
-                     "chars":value
+                    svg += _this.draftPaths[i].exportSVG({
+                      "asString": true
                     });
-                   });
                   }
-                  motivation.push("oa:commenting");
-                  on = { "@type" : "oa:SpecificResource",
-                  "source" : _this.window.parent.canvasID, 
-                  "selector" : {
-                    "@type" : "oa:SvgSelector",
-                    "value" : svg
+                  svg += "</g>";
+                } else {
+                  if (_this.draftPaths[0].name.toString().indexOf('pin_') != -1) {
+                    _this.draftPaths[0].scale(_this.currentPinSize);
+                  }
+                  svg += _this.draftPaths[0].exportSVG({
+                    "asString": true
+                  });
+                }
+                svg += "</svg>";
+
+                if (tags && tags.length > 0) {
+                  motivation.push("oa:tagging");
+                  jQuery.each(tags, function(index, value) {
+                    resource.push({
+                      "@type": "oa:Tag",
+                      "chars": value
+                    });
+                  });
+                }
+                motivation.push("oa:commenting");
+                on = {
+                  "@type": "oa:SpecificResource",
+                  "source": _this.window.parent.canvasID,
+                  "selector": {
+                    "@type": "oa:SvgSelector",
+                    "value": svg
                   },
                   "scope": {
-                    "@context" : "http://www.harvard.edu/catch/oa.json",
-                    "@type" : "catch:Viewport",
-                    "value" : "xywh="+Math.round(scope.x)+","+Math.round(scope.y)+","+Math.round(scope.width)+","+Math.round(scope.height) //osd bounds
+                    "@context": "http://www.harvard.edu/catch/oa.json",
+                    "@type": "catch:Viewport",
+                    "value": "xywh=" + Math.round(scope.x) + "," + Math.round(scope.y) + "," + Math.round(scope.width) + "," + Math.round(scope.height) //osd bounds
                   }
                 };
-                resource.push( {
-                  "@type" : "dctypes:Text",
-                  "format" : "text/html",
-                  "chars" : resourceText
+                resource.push({
+                  "@type": "dctypes:Text",
+                  "format": "text/html",
+                  "chars": resourceText
                 });
                 var oaAnno = {
-                 "@context" : "http://iiif.io/api/presentation/2/context.json",
-                 "@type" : "oa:Annotation",
-                 "motivation" : motivation,
-                 "resource" : resource,
-                 "on" : on
+                  "@context": "http://iiif.io/api/presentation/2/context.json",
+                  "@type": "oa:Annotation",
+                  "motivation": motivation,
+                  "resource": resource,
+                  "on": on
                 };
                 //save to endpoint
-                jQuery.publish('annotationCreated.'+_this.windowId, [oaAnno, shape]);
+                jQuery.publish('annotationCreated.' + _this.windowId, [oaAnno, shape]);
 
                 api.destroy();
                 //reenable viewer tooltips
-                jQuery.publish('enableTooltips.'+_this.windowId);
+                jQuery.publish('enableTooltips.' + _this.windowId);
                 _this.commentPanel = null;
                 // clear draft data.
                 for (var idx = 0; idx < _this.draftPaths.length; idx++) {
@@ -408,9 +415,9 @@
                 _this.segment = null;
                 _this.path = null;
                 _this.mode = '';
-                });
-              }
+              });
             }
+          }
         });
         _this.commentPanel.qtip('show');
       }

@@ -3,13 +3,13 @@
     jQuery.extend(this, {
       osdViewer: null,
       parent: null,
-      osd:       null,
-      elements:  null,
-      list:      null,
+      osd: null,
+      elements: null,
+      list: null,
       annoTooltips: {},
-      tooltips:  null,
-      overlays:  [],
-      inEditOrCreateMode:   false
+      tooltips: null,
+      overlays: [],
+      inEditOrCreateMode: false
     }, options);
 
     this.init();
