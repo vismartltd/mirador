@@ -96,7 +96,9 @@
         _this.container.find('.borderColorPicker').spectrum('set', color);
       });
       jQuery.subscribe('initFillColor.' + _this.windowId, function(event, color, alpha) {
-        _this.container.find('.fillColorPicker').spectrum('set', jQuery.extend(tinycolor(color), {'a': alpha}));
+        var colorObj = tinycolor(color);
+        colorObj.setAlpha(alpha);
+        _this.container.find('.fillColorPicker').spectrum('set', colorObj);
       });
       jQuery.subscribe('disableBorderColorPicker.'+_this.windowId, function(event, disablePicker) {
         if(disablePicker) {

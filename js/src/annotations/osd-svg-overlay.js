@@ -42,7 +42,7 @@
     // Default colors.
     this.strokeColor = 'red';
     this.fillColor = 'green';
-    this.fillColorAlpha = 0.0;
+    this.fillColorAlpha = 0.5;
     this.viewer = viewer;
     this.canvas = document.createElement('canvas');
     this.canvas.id = 'draw_canvas_' + this.windowId;
