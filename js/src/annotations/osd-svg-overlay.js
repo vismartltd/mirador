@@ -153,7 +153,7 @@
       }
     },
 
-    resize: function() {
+    resize: function() {console.log('resize');
       var pointZero = this.viewer.viewport.pixelFromPoint(new OpenSeadragon.Point(0, 0), true);
       var scale = this.viewer.viewport.containerSize.x * this.viewer.viewport.getZoom(true);
       this.canvas.width = scale;
@@ -343,10 +343,16 @@
                   if (_this.draftPaths.length > 1) {
                     svg+= "<g>";
                     for (var i = 0; i < _this.draftPaths.length; i++) {
+                      if (_this.draftPaths[i].name.toString().indexOf('pin_') != -1) {
+                        _this.draftPaths[i].scale(_this.currentPinSize);
+                      }
                       svg+= _this.draftPaths[i].exportSVG({"asString":true});
                     }
                     svg+= "</g>";
                   } else {
+                    if (_this.draftPaths[0].name.toString().indexOf('pin_') != -1) {console.log(_this.draftPaths[0].segments);
+                      _this.draftPaths[0].scale(_this.currentPinSize);console.log(_this.draftPaths[0].segments);
+                    }
                     svg+= _this.draftPaths[0].exportSVG({"asString":true});
                   }
                   svg+= "</svg>";

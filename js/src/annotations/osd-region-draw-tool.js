@@ -44,6 +44,9 @@
 
     // replaces paper.js objects with the required properties only.
     replaceShape: function(shape) {
+      if (shape.name.toString().indexOf('pin_') != -1) { // pin shapes with fixed size
+        shape.scale(1 / this.svgOverlay.currentPinSize);
+      }
       var cloned = new Path({
         segments: shape.segments,
         name: shape.name
@@ -64,7 +67,7 @@
       var svgParser = new DOMParser();
       var svgDOM = svgParser.parseFromString(svg, "text/xml");
       if (svgDOM.documentElement.nodeName == "parsererror") {
-        return;// if svg is not valid XML structure - backward compatibility.
+        return; // if svg is not valid XML structure - backward compatibility.
       }
       var svgTag = project.importSVG(svg);
       // removes SVG tag which is the root object of comment SVG segment.
