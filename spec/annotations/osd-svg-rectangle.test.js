@@ -126,6 +126,7 @@ describe('Rectangle', function() {
       }
       this.rect.onMouseDrag(event, overlay);
 
+      expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
         expect(this.shape.segments[idx].point.x).toBeCloseTo(expected[idx].x, 6);
         expect(this.shape.segments[idx].point.y).toBeCloseTo(expected[idx].y, 6);
@@ -256,6 +257,7 @@ describe('Rectangle', function() {
       }
       this.rect.onMouseDrag(event, overlay);
 
+      expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
         expect(this.shape.segments[idx].point.x).toBeCloseTo(expected[idx].x, 6);
         expect(this.shape.segments[idx].point.y).toBeCloseTo(expected[idx].y, 6);

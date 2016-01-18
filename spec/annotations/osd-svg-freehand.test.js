@@ -1,18 +1,18 @@
 paper.install(window);
 
-describe('Polygon', function() {
+describe('Freehand', function() {
   beforeAll(function() {
     this.canvas = jQuery('<canvas></canvas>');
     this.canvas.attr('id', 'paperId');
     jasmine.getFixtures().set(this.canvas);
     paper.setup(this.canvas.attr('id'));
-    this.polygon = new Mirador.Polygon();
+    this.freehand = new Mirador.Freehand();
   });
   afterAll(function() {
-    delete this.polygon;
+    delete this.freehand;
   });
 
-  it('should create polygon shape', function() {
+  it('should create freehand shape', function() {
     var initialPoint = {
       'x': 123,
       'y': 456
@@ -20,7 +20,7 @@ describe('Polygon', function() {
     var overlay = {
       'strokeColor': '#ff0000'
     };
-    var shape = this.polygon.createShape(initialPoint, overlay);
+    var shape = this.freehand.createShape(initialPoint, overlay);
 
     expect(overlay.mode).toBe('create');
 
@@ -32,7 +32,7 @@ describe('Polygon', function() {
 
     expect(shape.fullySelected).toBe(true);
 
-    expect(shape.name).toBe(this.polygon.idPrefix + '1');
+    expect(shape.name).toBe(this.freehand.idPrefix + '1');
 
     expect(shape.segments.length).toBe(1);
 
@@ -40,7 +40,7 @@ describe('Polygon', function() {
     expect(shape.segments[0].point.y).toBe(initialPoint.y);
   });
 
-  describe('Polygon Mouse Tool', function() {
+  describe('Freehand Mouse Tool', function() {
     var overlay;
 
     beforeEach(function() {
@@ -59,12 +59,12 @@ describe('Polygon', function() {
         },
         onDrawFinish: function() {}
       };
-      this.polygon = new Mirador.Polygon();
+      this.freehand = new Mirador.Freehand();
       this.initialPoint = {
         'x': 987,
         'y': 654
       };
-      this.shape = this.polygon.createShape(this.initialPoint, overlay);
+      this.shape = this.freehand.createShape(this.initialPoint, overlay);
       var point = {
         'x': this.initialPoint.x + 5,
         'y': this.initialPoint.y
@@ -79,7 +79,7 @@ describe('Polygon', function() {
 
     afterEach(function() {
       delete this.shape;
-      delete this.polygon;
+      delete this.freehand;
     });
 
     it('should do nothing', function() {
@@ -106,7 +106,7 @@ describe('Polygon', function() {
         };
         expected.push(point);
       }
-      this.polygon.onMouseDrag(event, overlay);
+      this.freehand.onMouseDrag(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -119,7 +119,7 @@ describe('Polygon', function() {
         'path': null,
         'segment': null
       };
-      this.polygon.onMouseDrag(event, overlay);
+      this.freehand.onMouseDrag(event, overlay);
 
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
         expect(this.shape.segments[idx].point.x).toBeCloseTo(expected[idx].x, 6);
@@ -127,7 +127,7 @@ describe('Polygon', function() {
       }
     });
 
-    it('should edit the whole polygon shape', function() {
+    it('should edit the whole freehand shape', function() {
       var event = {
         'delta': {
           'x': 3,
@@ -147,7 +147,7 @@ describe('Polygon', function() {
         };
         expected.push(point);
       }
-      this.polygon.onMouseDrag(event, overlay);
+      this.freehand.onMouseDrag(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -177,29 +177,26 @@ describe('Polygon', function() {
           expected.push(point);
         }
       }
-      this.polygon.onMouseDrag(event, overlay);
+      this.freehand.onMouseDrag(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
         expect(this.shape.segments[idx].point.x).toBeCloseTo(expected[idx].x, 6);
         expect(this.shape.segments[idx].point.y).toBeCloseTo(expected[idx].y, 6);
       }
-    });
 
-    it('should finish generation of polygon shape', function() {
-      var event = {
-        'delta': {
+      event = {
+        'point': {
           'x': 100,
           'y': 100
         }
       };
       overlay = {
-        'mode': '',
-        'path': null,
-        'segment': null,
-        onDrawFinish: function() {}
+        'mode': 'create',
+        'path': this.shape,
+        'segment': null
       };
-      var expected = [];
+      expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
         var point = {
           'x': this.shape.segments[idx].point.x,
@@ -207,73 +204,17 @@ describe('Polygon', function() {
         };
         expected.push(point);
       }
-      this.polygon.onDoubleClick(event, overlay);
+      expected.push(event.point);
+      this.freehand.onMouseDrag(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
         expect(this.shape.segments[idx].point.x).toBeCloseTo(expected[idx].x, 6);
         expect(this.shape.segments[idx].point.y).toBeCloseTo(expected[idx].y, 6);
       }
-
-      overlay = {
-        'mode': '',
-        'path': this.shape,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {}
-      };
-      this.polygon.onDoubleClick(event, overlay);
-
-      for (var idx = 0; idx < this.shape.segments.length; idx++) {
-        expect(this.shape.segments[idx].point.x).toBeCloseTo(expected[idx].x, 6);
-        expect(this.shape.segments[idx].point.y).toBeCloseTo(expected[idx].y, 6);
-      }
-
-      event = {
-        'delta': {
-          'x': this.initialPoint.x,
-          'y': this.initialPoint.y
-        }
-      };
-      overlay = {
-        'strokeColor': '#ff0000',
-        'fillColor': '#00ff00',
-        'fillColorAlpha': 1.0,
-        'mode': '',
-        'path': this.shape,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 5
-        },
-        onDrawFinish: function() {}
-      };
-      expected.push(this.initialPoint);
-      this.shape.add(this.initialPoint);
-      this.polygon.onDoubleClick(event, overlay);
-
-      for (var idx = 0; idx < this.shape.segments.length; idx++) {
-        expect(this.shape.segments[idx].point.x).toBeCloseTo(expected[idx].x, 6);
-        expect(this.shape.segments[idx].point.y).toBeCloseTo(expected[idx].y, 6);
-      }
-
-      expect(this.shape.closed).toBe(true);
-
-      expect(this.shape.fillColor.red).toBe(0);
-      expect(this.shape.fillColor.green).toBe(1);
-      expect(this.shape.fillColor.blue).toBe(0);
-
-      expect(this.shape.fillColor.alpha).toBe(overlay.fillColorAlpha);
     });
 
-    it('should select polygon shape', function() {
+    it('should select freehand shape', function() {
       var event = {
         'point': {
           'x': this.initialPoint.x - 100,
@@ -292,7 +233,7 @@ describe('Polygon', function() {
         },
         onDrawFinish: function() {}
       };
-      this.polygon.onMouseDown(event, overlay);
+      this.freehand.onMouseDown(event, overlay);
 
       expect(overlay.mode).toBe('create');
       expect(overlay.segment).toBeNull();
@@ -328,8 +269,7 @@ describe('Polygon', function() {
         };
         expected.push(point);
       }
-      expected.push(event.point);
-      this.polygon.onMouseDown(event, overlay);
+      this.freehand.onMouseDown(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -351,7 +291,7 @@ describe('Polygon', function() {
         },
         onDrawFinish: function() {}
       };
-      this.polygon.onMouseDown(event, overlay);
+      this.freehand.onMouseDown(event, overlay);
 
       expect(overlay.segment.point.x).toBe(event.point.x);
       expect(overlay.segment.point.y).toBe(event.point.y);
@@ -371,7 +311,7 @@ describe('Polygon', function() {
         },
         onDrawFinish: function() {}
       };
-      this.polygon.onMouseDown(event, overlay);
+      this.freehand.onMouseDown(event, overlay);
 
       event = {
         'point': {
@@ -404,7 +344,7 @@ describe('Polygon', function() {
           expected.push(point);
         }
       }
-      this.polygon.onMouseDown(event, overlay);
+      this.freehand.onMouseDown(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -441,7 +381,7 @@ describe('Polygon', function() {
         };
         expected.push(point);
       }
-      this.polygon.onMouseDown(event, overlay);
+      this.freehand.onMouseDown(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -478,7 +418,7 @@ describe('Polygon', function() {
         };
         expected.push(point);
       }
-      this.polygon.onMouseDown(event, overlay);
+      this.freehand.onMouseDown(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -515,7 +455,7 @@ describe('Polygon', function() {
         };
         expected.push(point);
       }
-      this.polygon.onMouseDown(event, overlay);
+      this.freehand.onMouseDown(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -540,7 +480,7 @@ describe('Polygon', function() {
         };
         expected.push(point);
       }
-      this.polygon.onMouseDown(event, overlay);
+      this.freehand.onMouseDown(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -565,7 +505,7 @@ describe('Polygon', function() {
           'fill': true,
           'stroke': false,
           'segments': false,
-          'tolerance': 0
+          'tolerance': 5
         },
         onDrawFinish: function() {}
       };
@@ -579,7 +519,7 @@ describe('Polygon', function() {
         };
         expected.push(point);
       }
-      this.polygon.onMouseDown(event, overlay);
+      this.freehand.onMouseDown(event, overlay);
 
       expect(this.shape.segments.length).toBe(expected.length);
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
