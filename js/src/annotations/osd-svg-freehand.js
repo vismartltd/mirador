@@ -77,9 +77,7 @@
             }
           } else if (overlay.path) {
             project.activeLayer.selected = false;
-            overlay.segment = null;
-            overlay.path = null;
-            overlay.mode = '';
+            overlay.onDrawFinish();
           } else {
             overlay.path = hitResult.item;
             if (hitResult.type == 'segment') {
