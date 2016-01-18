@@ -61,6 +61,11 @@
     },
 
     parseSVG: function(svg) {
+      var svgParser = new DOMParser();
+      var svgDOM = svgParser.parseFromString(svg, "text/xml");
+      if (svgDOM.documentElement.nodeName == "parsererror") {
+        return;// if svg is not valid XML structure - backward compatibility.
+      }
       var svgTag = project.importSVG(svg);
       // removes SVG tag which is the root object of comment SVG segment.
       var body = svgTag.removeChildren()[0];
