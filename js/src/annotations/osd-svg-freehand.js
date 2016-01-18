@@ -73,6 +73,7 @@
           if (event.modifiers.shift) {
             if (hitResult.type == 'segment') {
               hitResult.segment.remove();
+              hitResult.item.smooth();
             }
           } else if (overlay.path) {
             project.activeLayer.selected = false;
