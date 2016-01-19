@@ -8,11 +8,7 @@
   };
 
   OpenSeadragon.Viewer.prototype.svgOverlay = function(windowObj) {
-    if (this.svgOverlayInfo) {
-      return this.svgOverlayInfo;
-    }
-    this.svgOverlayInfo = new $.Overlay(this, windowObj);
-    return this.svgOverlayInfo;
+    return new $.Overlay(this, windowObj);
   };
 
   $.Overlay = function(viewer, windowObj) {
@@ -99,6 +95,11 @@
       // Initialization of Paper.js overlay.
       var _this = this;
       paper.install(window);
+      var tools = paper.tools;
+      // remove used mouse tools.
+      for (var toolIdx = 0; toolIdx < tools.length; toolIdx++) {
+        tools[toolIdx].remove();
+      }
       paper.setup('draw_canvas_' + _this.windowId);
       var mouseTool = new Tool();
       mouseTool.overlay = this;
@@ -229,7 +230,7 @@
     },
 
     destroyCommentPanel: function() {
-      jQuery(this.canvas.parentNode).qtip('destroy', true);
+      jQuery(this.canvas).parents('.mirador-osd').qtip('destroy', true);
       this.commentPanel = null;
     },
 
@@ -252,7 +253,7 @@
         "windowId": _this.windowId
       });
       if (!_this.commentPanel) {
-        _this.commentPanel = jQuery(_this.canvas.parentNode).qtip({
+        _this.commentPanel = jQuery(_this.canvas).parents('.mirador-osd').qtip({
           content: {
             text: annoTooltip.getEditor({})
           },

@@ -19,9 +19,7 @@
   $.OsdRegionDrawTool.prototype = {
 
     init: function() {
-      if (!this.svgOverlay) {
-        this.svgOverlay = this.osdViewer.svgOverlay(this.parent);
-      }
+      this.svgOverlay = this.osdViewer.svgOverlay(this.parent);
       this.svgOverlay.show();
       this.svgOverlay.disable();
     },
