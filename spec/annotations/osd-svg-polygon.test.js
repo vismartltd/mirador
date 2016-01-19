@@ -18,6 +18,7 @@ describe('Polygon', function() {
       'y': 456
     };
     var overlay = {
+      'paperScope': paper,
       'strokeColor': '#ff0000'
     };
     var shape = this.polygon.createShape(initialPoint, overlay);
@@ -45,6 +46,7 @@ describe('Polygon', function() {
 
     beforeEach(function() {
       overlay = {
+        'paperScope': paper,
         'strokeColor': '#ff0000',
         'fillColor': '#00ff00',
         'fillColorAlpha': 1.0,
@@ -90,6 +92,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': '',
         'path': null,
         'segment': null
@@ -115,6 +118,7 @@ describe('Polygon', function() {
       }
 
       overlay = {
+        'paperScope': paper,
         'mode': 'edit',
         'path': null,
         'segment': null
@@ -135,6 +139,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': 'edit',
         'path': this.shape,
         'segment': null
@@ -157,6 +162,7 @@ describe('Polygon', function() {
 
       var selectedPointIndex = 1;
       overlay = {
+        'paperScope': paper,
         'mode': 'edit',
         'path': this.shape,
         'segment': this.shape.segments[selectedPointIndex]
@@ -194,6 +200,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': '',
         'path': null,
         'segment': null,
@@ -216,6 +223,7 @@ describe('Polygon', function() {
       }
 
       overlay = {
+        'paperScope': paper,
         'mode': '',
         'path': this.shape,
         'segment': null,
@@ -241,6 +249,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'strokeColor': '#ff0000',
         'fillColor': '#00ff00',
         'fillColorAlpha': 1.0,
@@ -281,6 +290,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': '',
         'path': null,
         'segment': null,
@@ -309,6 +319,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': 'create',
         'path': this.shape,
         'segment': null,
@@ -340,6 +351,7 @@ describe('Polygon', function() {
       expect(document.body.style.cursor).toBe('default');
 
       overlay = {
+        'paperScope': paper,
         'mode': 'edit',
         'path': null,
         'segment': null,
@@ -360,6 +372,7 @@ describe('Polygon', function() {
       expect(document.body.style.cursor).toBe('move');
 
       overlay = {
+        'paperScope': paper,
         'mode': 'translate',
         'path': this.shape,
         'segment': null,
@@ -383,6 +396,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': '',
         'path': null,
         'segment': null,
@@ -422,6 +436,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': '',
         'path': null,
         'segment': null,
@@ -459,6 +474,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': 'edit',
         'path': this.shape,
         'segment': null,
@@ -496,6 +512,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': 'edit',
         'path': null,
         'segment': null,
@@ -558,6 +575,7 @@ describe('Polygon', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': 'edit',
         'path': null,
         'segment': null,

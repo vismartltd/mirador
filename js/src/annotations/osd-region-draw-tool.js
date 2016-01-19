@@ -42,7 +42,7 @@
 
     // replaces paper.js objects with the required properties only.
     replaceShape: function(shape) {
-      var cloned = new Path({
+      var cloned = new this.svgOverlay.paperScope.Path({
         segments: shape.segments,
         name: shape.name
       });
@@ -56,7 +56,7 @@
       cloned.closed = shape.closed;
       cloned.data.rotation = 0;
       if (cloned.name.toString().indexOf('pin_') != -1) { // pin shapes with fixed size.
-        cloned.scale(1 / paper.view.zoom);
+        cloned.scale(1 / this.svgOverlay.paperScope.view.zoom);
       }
       shape.remove();
     },
@@ -67,7 +67,7 @@
       if (svgDOM.documentElement.nodeName == "parsererror") {
         return; // if svg is not valid XML structure - backward compatibility.
       }
-      var svgTag = project.importSVG(svg);
+      var svgTag = this.svgOverlay.paperScope.project.importSVG(svg);
       // removes SVG tag which is the root object of comment SVG segment.
       var body = svgTag.removeChildren()[0];
       svgTag.remove();
@@ -81,7 +81,7 @@
       } else {
         this.replaceShape(body);
       }
-      paper.view.update(true);
+      this.svgOverlay.paperScope.view.update(true);
     },
 
     getOsdFrame: function(url) {
@@ -100,7 +100,7 @@
       var _this = this;
       this.overlays = [];
 
-      project.clear();
+      this.svgOverlay.paperScope.project.clear();
 
       var deferreds = jQuery.map(this.list, function(annotation) {
         var deferred = jQuery.Deferred(),

@@ -21,6 +21,7 @@ describe('Ellipse', function() {
       'y': 456
     };
     var overlay = {
+      'paperScope': paper,
       'strokeColor': '#ff0000',
       'fillColor': '#00ff00',
       'fillColorAlpha': 1.0
@@ -81,6 +82,7 @@ describe('Ellipse', function() {
 
     beforeEach(function() {
       overlay = {
+        'paperScope': paper,
         'strokeColor': '#ff0000',
         'fillColor': '#00ff00',
         'fillColorAlpha': 1.0,
@@ -116,6 +118,7 @@ describe('Ellipse', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': '',
         'path': null
       };
@@ -144,6 +147,7 @@ describe('Ellipse', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': 'translate',
         'path': this.shape
       };
@@ -182,6 +186,7 @@ describe('Ellipse', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': 'deform',
         'path': this.shape,
         'segment': this.shape.segments[2]
@@ -247,6 +252,7 @@ describe('Ellipse', function() {
         'y': this.initialPoint.y - size.y
       };
       overlay = {
+        'paperScope': paper,
         'mode': 'deform',
         'path': this.shape,
         'segment': this.shape.segments[1]
@@ -275,6 +281,7 @@ describe('Ellipse', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': '',
         'path': null,
         'segment': null,
@@ -306,6 +313,7 @@ describe('Ellipse', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'mode': '',
         'path': null,
         'segment': null,
@@ -350,6 +358,7 @@ describe('Ellipse', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'strokeColor': '#ff0000',
         'fillColor': '#00ff00',
         'fillColorAlpha': 1.0,
@@ -375,6 +384,7 @@ describe('Ellipse', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'strokeColor': '#ff0000',
         'fillColor': '#00ff00',
         'fillColorAlpha': 1.0,
@@ -400,6 +410,7 @@ describe('Ellipse', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'strokeColor': '#ff0000',
         'fillColor': '#00ff00',
         'fillColorAlpha': 1.0,

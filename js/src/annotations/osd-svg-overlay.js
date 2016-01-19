@@ -70,7 +70,7 @@
       _this.strokeColor = color;
       if (_this.hoveredPath) {
         _this.hoveredPath.strokeColor = color;
-        paper.view.draw();
+        _this.paperScope.view.draw();
       }
     });
     jQuery.subscribe('changeFillColor.' + _this.windowId, function(event, color, alpha) {
@@ -79,7 +79,7 @@
       if (_this.hoveredPath && _this.hoveredPath.closed) {
         _this.hoveredPath.fillColor = color;
         _this.hoveredPath.fillColor.alpha = alpha;
-        paper.view.draw();
+        _this.paperScope.view.draw();
       }
     });
     jQuery.publish('initBorderColor.' + _this.windowId, _this.strokeColor);
@@ -94,14 +94,9 @@
     init: function() {
       // Initialization of Paper.js overlay.
       var _this = this;
-      paper.install(window);
-      var tools = paper.tools;
-      // remove used mouse tools.
-      for (var toolIdx = 0; toolIdx < tools.length; toolIdx++) {
-        tools[toolIdx].remove();
-      }
-      paper.setup('draw_canvas_' + _this.windowId);
-      var mouseTool = new Tool();
+      this.paperScope = new paper.PaperScope();
+      this.paperScope.setup('draw_canvas_' + _this.windowId);
+      var mouseTool = new this.paperScope.Tool();
       mouseTool.overlay = this;
       mouseTool.onMouseUp = _this.onMouseUp;
       mouseTool.onMouseDrag = _this.onMouseDrag;
@@ -121,7 +116,7 @@
       if (this.overlay.currentTool) {
         this.overlay.currentTool.onMouseDrag(event, this.overlay);
       }
-      paper.view.draw();
+      this.overlay.paperScope.view.draw();
     },
 
     onMouseMove: function(event) {
@@ -129,7 +124,7 @@
       if (this.overlay.currentTool) {
         this.overlay.currentTool.onMouseMove(event, this.overlay);
       }
-      paper.view.draw();
+      this.overlay.paperScope.view.draw();
     },
 
     onMouseDown: function(event) {
@@ -145,7 +140,7 @@
           this.overlay.currentTool.onMouseDown(event, this.overlay);
         }
       }
-      paper.view.draw();
+      this.overlay.paperScope.view.draw();
     },
 
     onDoubleClick: function(event) {
@@ -165,19 +160,19 @@
       this.canvas.style.transform = transform;
       this.canvas.style.marginLeft = pointZero.x + "px";
       this.canvas.style.marginTop = pointZero.y + "px";
-      if (paper && paper.view) {
-        paper.view.viewSize = new Size(this.canvas.width, this.canvas.height);
-        paper.view.zoom = this.viewer.viewport.getZoom(true) / this.initialZoom;
-        paper.view.center = new Size(paper.view.bounds.width / 2, paper.view.bounds.height / 2);
-        paper.view.update(true);
+      if (this.paperScope && this.paperScope.view) {
+        this.paperScope.view.viewSize = new this.paperScope.Size(this.canvas.width, this.canvas.height);
+        this.paperScope.view.zoom = this.viewer.viewport.getZoom(true) / this.initialZoom;
+        this.paperScope.view.center = new this.paperScope.Size(this.paperScope.view.bounds.width / 2, this.paperScope.view.bounds.height / 2);
+        this.paperScope.view.update(true);
         // Fit pins to the current zoom level.
-        var items = project.getItems({
+        var items = this.paperScope.project.getItems({
           name: /^pin_/
         });
         for (var i = 0; i < items.length; i++) {
-          items[i].scale(this.currentPinSize / paper.view.zoom);
+          items[i].scale(this.currentPinSize / this.paperScope.view.zoom);
         }
-        this.currentPinSize = paper.view.zoom;
+        this.currentPinSize = this.paperScope.view.zoom;
       }
     },
 
@@ -192,9 +187,9 @@
     },
 
     deselectAll: function() {
-      if (paper && paper.view && paper.project) {
-        paper.project.deselectAll();
-        paper.view.update(true);
+      if (this.paperScope && this.paperScope.view && this.paperScope.project) {
+        this.paperScope.project.deselectAll();
+        this.paperScope.view.update(true);
         this.destroyCommentPanel();
       }
     },
@@ -226,7 +221,7 @@
     },
 
     refresh: function() {
-      paper.view.update(true);
+      this.paperScope.view.update(true);
     },
 
     destroyCommentPanel: function() {
@@ -314,8 +309,8 @@
                   _this.draftPaths[idx].remove();
                 }
                 _this.draftPaths = [];
-                paper.view.update(true);
-                project.activeLayer.selected = false;
+                _this.paperScope.view.update(true);
+                _this.paperScope.project.activeLayer.selected = false;
                 _this.segment = null;
                 _this.path = null;
                 _this.mode = '';
@@ -411,8 +406,8 @@
                   _this.draftPaths[idx].remove();
                 }
                 _this.draftPaths = [];
-                paper.view.update(true);
-                project.activeLayer.selected = false;
+                _this.paperScope.view.update(true);
+                _this.paperScope.project.activeLayer.selected = false;
                 _this.segment = null;
                 _this.path = null;
                 _this.mode = '';

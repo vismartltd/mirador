@@ -23,19 +23,19 @@
       //     \   /    
       //   6   ─   4  
       //       5      
-      segments.push(new Point(initialPoint.x - 2, initialPoint.y - 2));
-      segments.push(new Point(initialPoint.x - 1, initialPoint.y - Math.sqrt(2) - 1));
-      segments.push(new Point(initialPoint.x, initialPoint.y - 2));
-      segments.push(new Point(initialPoint.x + Math.sqrt(2) - 1, initialPoint.y - 1));
-      segments.push(new Point(initialPoint.x, initialPoint.y));
-      segments.push(new Point(initialPoint.x - 1, initialPoint.y + Math.sqrt(2) - 1));
-      segments.push(new Point(initialPoint.x - 2, initialPoint.y));
-      segments.push(new Point(initialPoint.x - Math.sqrt(2) - 1, initialPoint.y - 1));
+      segments.push(new overlay.paperScope.Point(initialPoint.x - 2, initialPoint.y - 2));
+      segments.push(new overlay.paperScope.Point(initialPoint.x - 1, initialPoint.y - Math.sqrt(2) - 1));
+      segments.push(new overlay.paperScope.Point(initialPoint.x, initialPoint.y - 2));
+      segments.push(new overlay.paperScope.Point(initialPoint.x + Math.sqrt(2) - 1, initialPoint.y - 1));
+      segments.push(new overlay.paperScope.Point(initialPoint.x, initialPoint.y));
+      segments.push(new overlay.paperScope.Point(initialPoint.x - 1, initialPoint.y + Math.sqrt(2) - 1));
+      segments.push(new overlay.paperScope.Point(initialPoint.x - 2, initialPoint.y));
+      segments.push(new overlay.paperScope.Point(initialPoint.x - Math.sqrt(2) - 1, initialPoint.y - 1));
       var _this = this;
-      var shape = new Path({
+      var shape = new overlay.paperScope.Path({
         segments: segments,
         fullySelected: true,
-        name: _this.idPrefix + (project.getItems({
+        name: _this.idPrefix + (overlay.paperScope.project.getItems({
           name: /_/
         }).length + 1)
       });
@@ -68,8 +68,8 @@
           }
         }
         if (overlay.mode == 'deform' && idx % 2 == 1) {
-          var oldPoint = new Point(overlay.segment.point.x - overlay.path.position.x, overlay.segment.point.y - overlay.path.position.y);
-          var newPoint = new Point(overlay.segment.point.x - overlay.path.position.x + event.delta.x, overlay.segment.point.y - overlay.path.position.y + event.delta.y);
+          var oldPoint = new overlay.paperScope.Point(overlay.segment.point.x - overlay.path.position.x, overlay.segment.point.y - overlay.path.position.y);
+          var newPoint = new overlay.paperScope.Point(overlay.segment.point.x - overlay.path.position.x + event.delta.x, overlay.segment.point.y - overlay.path.position.y + event.delta.y);
           var scale = Math.sqrt(newPoint.x * newPoint.x + newPoint.y * newPoint.y) / Math.sqrt(oldPoint.x * oldPoint.x + oldPoint.y * oldPoint.y);
           var rotation = Math.atan2(newPoint.y, newPoint.x) - Math.atan2(oldPoint.y, oldPoint.x);
           rotation = rotation * (180 / Math.PI);
@@ -77,12 +77,12 @@
           overlay.path.rotate(rotation, overlay.path.position);
           overlay.path.data.rotation += rotation;
         } else {
-          var oldRotPoint = new Point(overlay.segment.point.x - overlay.path.position.x, overlay.segment.point.y - overlay.path.position.y);
-          var newRotPoint = new Point(overlay.segment.point.x - overlay.path.position.x + event.delta.x, overlay.segment.point.y - overlay.path.position.y + event.delta.y);
+          var oldRotPoint = new overlay.paperScope.Point(overlay.segment.point.x - overlay.path.position.x, overlay.segment.point.y - overlay.path.position.y);
+          var newRotPoint = new overlay.paperScope.Point(overlay.segment.point.x - overlay.path.position.x + event.delta.x, overlay.segment.point.y - overlay.path.position.y + event.delta.y);
           var rot = overlay.path.data.rotation;
           oldRotPoint = oldRotPoint.rotate(-rot);
           newRotPoint = newRotPoint.rotate(-rot);
-          var rotScale = new Point(newRotPoint.x / oldRotPoint.x, newRotPoint.y / oldRotPoint.y);
+          var rotScale = new overlay.paperScope.Point(newRotPoint.x / oldRotPoint.x, newRotPoint.y / oldRotPoint.y);
           overlay.path.rotate(-rot, overlay.path.position);
           overlay.path.scale(rotScale);
           overlay.path.rotate(rot, overlay.path.position);
@@ -95,7 +95,7 @@
     },
 
     onMouseDown: function(event, overlay) {
-      var hitResult = project.hitTest(event.point, overlay.hitOptions);
+      var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
       if (hitResult && hitResult.item._name.toString().indexOf(this.idPrefix) != -1) {
         if (overlay.mode != 'deform' && overlay.mode != 'translate' && overlay.mode != 'create') {
           if (hitResult.type == 'segment') {
@@ -126,7 +126,7 @@
       }
       if (overlay.mode == 'translate') {
         if (overlay.path) {
-          project.activeLayer.selected = false;
+          overlay.paperScope.project.activeLayer.selected = false;
           overlay.segment = null;
           overlay.path = null;
           overlay.mode = '';
@@ -135,7 +135,7 @@
         }
       } else if (overlay.mode == 'deform') {
         if (overlay.path) {
-          project.activeLayer.selected = false;
+          overlay.paperScope.project.activeLayer.selected = false;
           overlay.segment = null;
           overlay.path = null;
           overlay.mode = '';
@@ -144,7 +144,7 @@
           overlay.segment = hitResult.segment;
         }
       } else if (overlay.path) {
-        project.activeLayer.selected = false;
+        overlay.paperScope.project.activeLayer.selected = false;
         overlay.onDrawFinish();
       } else {
         overlay.path = this.createShape(event.point, overlay);

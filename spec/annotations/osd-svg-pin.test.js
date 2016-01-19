@@ -18,6 +18,7 @@ describe('Pin', function() {
       'y': 456
     };
     var overlay = {
+      'paperScope': paper,
       'strokeColor': '#ff0000',
       'fillColor': '#00ff00',
       'fillColorAlpha': 1.0,
@@ -67,6 +68,7 @@ describe('Pin', function() {
 
     beforeEach(function() {
       overlay = {
+        'paperScope': paper,
         'strokeColor': '#ff0000',
         'fillColor': '#00ff00',
         'fillColorAlpha': 1.0,
@@ -103,6 +105,7 @@ describe('Pin', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'currentPinSize': 1.0,
         'mode': '',
         'path': null
@@ -136,6 +139,7 @@ describe('Pin', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'currentPinSize': 1.0,
         'mode': 'translate',
         'path': this.shape
@@ -157,6 +161,7 @@ describe('Pin', function() {
       }
 
       overlay = {
+        'paperScope': paper,
         'currentPinSize': 1.0,
         'mode': 'translate',
         'path': null
@@ -177,6 +182,7 @@ describe('Pin', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'currentPinSize': 1.0,
         'mode': '',
         'path': null,
@@ -209,6 +215,7 @@ describe('Pin', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'strokeColor': '#ff0000',
         'fillColor': '#00ff00',
         'fillColorAlpha': 1.0,
@@ -231,6 +238,7 @@ describe('Pin', function() {
       expect(overlay.path).toBeNull();
 
       overlay = {
+        'paperScope': paper,
         'strokeColor': '#ff0000',
         'fillColor': '#00ff00',
         'fillColorAlpha': 1.0,
@@ -259,6 +267,7 @@ describe('Pin', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'currentPinSize': 1.0,
         'mode': 'translate',
         'path': this.shape,
@@ -285,6 +294,7 @@ describe('Pin', function() {
         }
       };
       overlay = {
+        'paperScope': paper,
         'strokeColor': '#ff0000',
         'fillColor': '#00ff00',
         'fillColorAlpha': 1.0,

@@ -15,11 +15,11 @@
     createShape: function(initialPoint, overlay) {
       overlay.mode = 'create';
       var _this = this;
-      var shape = new Path({
+      var shape = new overlay.paperScope.Path({
         segments: [initialPoint],
         strokeColor: overlay.strokeColor,
         fullySelected: true,
-        name: _this.idPrefix + (project.getItems({
+        name: _this.idPrefix + (overlay.paperScope.project.getItems({
           name: /_/
         }).length + 1)
       });
@@ -50,7 +50,7 @@
     },
 
     onMouseDown: function(event, overlay) {
-      var hitResult = project.hitTest(event.point, overlay.hitOptions);
+      var hitResult = overlay.paperScope.project.hitTest(event.point, overlay.hitOptions);
       if (hitResult && hitResult.item._name.toString().indexOf(this.idPrefix) != -1) {
         if (!overlay.path) {
           overlay.mode = 'edit';
@@ -66,7 +66,7 @@
       if (overlay.mode === '') {
         overlay.path = this.createShape(event.point, overlay);
       } else if (overlay.mode === 'create') {
-        project.activeLayer.selected = false;
+        overlay.paperScope.project.activeLayer.selected = false;
         overlay.onDrawFinish();
       } else if (overlay.mode === 'edit') {
         if (hitResult) {
@@ -76,14 +76,14 @@
               hitResult.item.smooth();
             }
           } else if (overlay.path) {
-            project.activeLayer.selected = false;
+            overlay.paperScope.project.activeLayer.selected = false;
             overlay.onDrawFinish();
           } else {
             overlay.path = hitResult.item;
             if (hitResult.type == 'segment') {
               overlay.segment = hitResult.segment;
             } else if (hitResult.type == 'fill') {
-              project.activeLayer.addChild(hitResult.item);
+              overlay.paperScope.project.activeLayer.addChild(hitResult.item);
             }
           }
         }
