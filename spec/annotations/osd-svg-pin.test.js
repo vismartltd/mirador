@@ -82,7 +82,8 @@ describe('Pin', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.pin = new Mirador.Pin();
       this.initialPoint = {
@@ -193,7 +194,8 @@ describe('Pin', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.pin.onMouseDown(event, overlay);
 
@@ -229,7 +231,8 @@ describe('Pin', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.pin.onMouseDown(event, overlay);
 
@@ -252,7 +255,8 @@ describe('Pin', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.pin.onMouseDown(event, overlay);
 
@@ -278,7 +282,8 @@ describe('Pin', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.pin.onMouseDown(event, overlay);
 
@@ -308,7 +313,8 @@ describe('Pin', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.pin.onMouseDown(event, overlay);
 

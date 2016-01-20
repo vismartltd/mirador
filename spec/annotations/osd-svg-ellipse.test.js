@@ -95,7 +95,8 @@ describe('Ellipse', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.ellipse = new Mirador.Ellipse();
       this.initialPoint = {
@@ -291,7 +292,8 @@ describe('Ellipse', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.ellipse.onMouseDown(event, overlay);
 
@@ -323,7 +325,8 @@ describe('Ellipse', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.ellipse.onMouseDown(event, overlay);
 
@@ -371,7 +374,8 @@ describe('Ellipse', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.ellipse.onMouseDown(event, overlay);
 
@@ -397,7 +401,8 @@ describe('Ellipse', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.ellipse.onMouseDown(event, overlay);
 
@@ -423,7 +428,8 @@ describe('Ellipse', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.ellipse.onMouseDown(event, overlay);
 

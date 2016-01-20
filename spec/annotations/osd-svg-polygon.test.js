@@ -59,7 +59,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.polygon = new Mirador.Polygon();
       this.initialPoint = {
@@ -204,7 +205,8 @@ describe('Polygon', function() {
         'mode': '',
         'path': null,
         'segment': null,
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       var expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -233,7 +235,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.polygon.onDoubleClick(event, overlay);
 
@@ -262,7 +265,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 5
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       expected.push(this.initialPoint);
       this.shape.add(this.initialPoint);
@@ -300,7 +304,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.polygon.onMouseDown(event, overlay);
 
@@ -329,7 +334,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       var expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -361,7 +367,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.polygon.onMouseDown(event, overlay);
 
@@ -382,7 +389,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.polygon.onMouseDown(event, overlay);
 
@@ -406,7 +414,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -446,7 +455,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -484,7 +494,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -522,7 +533,8 @@ describe('Polygon', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -585,7 +597,8 @@ describe('Polygon', function() {
           'segments': false,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.shape.closed = true;
       this.shape.fillColor = '#0000ff';

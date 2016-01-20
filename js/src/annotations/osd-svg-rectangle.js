@@ -10,7 +10,8 @@
   };
 
   $.Rectangle.prototype = {
-    init: function() {},
+    init: function() {
+    },
 
     createShape: function(initialPoint, overlay) {
       overlay.mode = 'create';

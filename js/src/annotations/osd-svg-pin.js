@@ -10,7 +10,8 @@
   };
 
   $.Pin.prototype = {
-    init: function() {},
+    init: function() {
+    },
 
     createShape: function(initialPoint, overlay) {
       overlay.mode = 'create';
@@ -26,8 +27,8 @@
       pathData += ' ' + initialPoint.x + ',' + initialPoint.y;
       var shape = new overlay.paperScope.Path(pathData);
       shape.name = _this.idPrefix + (overlay.paperScope.project.getItems({
-        name: /_/
-      }).length + 1);
+          name: /_/
+        }).length + 1);
       shape.strokeColor = overlay.strokeColor;
       shape.fillColor = overlay.fillColor;
       shape.fillColor.alpha = overlay.fillColorAlpha;

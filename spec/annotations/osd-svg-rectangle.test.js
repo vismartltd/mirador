@@ -92,7 +92,8 @@ describe('Rectangle', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.rect = new Mirador.Rectangle();
       this.initialPoint = {
@@ -288,7 +289,8 @@ describe('Rectangle', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.rect.onMouseDown(event, overlay);
 
@@ -320,7 +322,8 @@ describe('Rectangle', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.rect.onMouseDown(event, overlay);
 
@@ -368,7 +371,8 @@ describe('Rectangle', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.rect.onMouseDown(event, overlay);
 
@@ -394,7 +398,8 @@ describe('Rectangle', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.rect.onMouseDown(event, overlay);
 
@@ -420,7 +425,8 @@ describe('Rectangle', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.rect.onMouseDown(event, overlay);
 

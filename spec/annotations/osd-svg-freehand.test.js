@@ -59,7 +59,8 @@ describe('Freehand', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.freehand = new Mirador.Freehand();
       this.initialPoint = {
@@ -239,7 +240,8 @@ describe('Freehand', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.freehand.onMouseDown(event, overlay);
 
@@ -268,7 +270,8 @@ describe('Freehand', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       var expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -299,7 +302,8 @@ describe('Freehand', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.freehand.onMouseDown(event, overlay);
 
@@ -320,7 +324,8 @@ describe('Freehand', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.freehand.onMouseDown(event, overlay);
 
@@ -344,7 +349,8 @@ describe('Freehand', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -384,7 +390,8 @@ describe('Freehand', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -422,7 +429,8 @@ describe('Freehand', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -460,7 +468,8 @@ describe('Freehand', function() {
           'segments': true,
           'tolerance': 0
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -523,7 +532,8 @@ describe('Freehand', function() {
           'segments': false,
           'tolerance': 5
         },
-        onDrawFinish: function() {}
+        onDrawFinish: function() {
+        }
       };
       this.shape.closed = true;
       this.shape.fillColor = '#0000ff';
