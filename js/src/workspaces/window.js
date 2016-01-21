@@ -283,7 +283,6 @@
         _this.endpoint.deleteAnnotation(annoId, function() {
           _this.annotationsList = jQuery.grep(_this.annotationsList, function(e){ return e['@id'] !== annoId; });
           jQuery.publish(('annotationListLoaded.' + _this.id));
-          jQuery.publish(('removeOverlay.' + _this.id), annoId);
         }, 
         function() {
           // console.log("There was an error deleting this annotation");

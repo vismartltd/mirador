@@ -123,6 +123,8 @@
       this.overlay.hover(event);
       if (this.overlay.currentTool) {
         this.overlay.currentTool.onMouseMove(event, this.overlay);
+      } else {
+        jQuery.publish('updateTooltips.' + this.overlay.windowId, event.point);
       }
       this.overlay.paperScope.view.draw();
     },
@@ -209,6 +211,7 @@
       jQuery.publish('hideDrawTools.' + this.windowId);
       jQuery.publish('disableBorderColorPicker.' + this.windowId, this.disabled);
       jQuery.publish('disableFillColorPicker.' + this.windowId, this.disabled);
+      jQuery.publish('enableTooltips.' + this.windowId);
       this.currentTool = null;
       this.deselectAll();
     },
@@ -218,6 +221,7 @@
       jQuery.publish('showDrawTools.' + this.windowId);
       jQuery.publish('disableBorderColorPicker.' + this.windowId, this.disabled);
       jQuery.publish('disableFillColorPicker.' + this.windowId, this.disabled);
+      jQuery.publish('disableTooltips.' + this.windowId);
     },
 
     refresh: function() {
