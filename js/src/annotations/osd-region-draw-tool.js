@@ -107,8 +107,8 @@
         },
         position: {
           target: 'mouse',
-          my: 'center',
-          at: 'center',
+          my: 'bottom left',
+          at: 'top right',
           adjust: {
             mouse: false,
             method: 'shift'
@@ -117,7 +117,8 @@
           viewport: _this.parent.parent.parent.element
         },
         style: {
-          classes: 'qtip-bootstrap qtip-viewer'
+          classes: 'qtip-bootstrap qtip-viewer',
+          tip: false
         },
         show: {
           event: false
@@ -156,21 +157,25 @@
       }
       var api = jQuery(this.osdViewer.element).qtip('api');
       if (api) {
-        if (annotations.length === 0) {
+        //track whether the cursor is within the tooltip (with the specified tolerance) and disables show/hide/update functionality.
+        if (api.elements.tooltip) {
           var cursorWithinTooltip = true;
-          if (api.elements.tooltip) {
-            var leftSide = api.elements.tooltip.offset().left;
-            var rightSide = api.elements.tooltip.offset().left + api.elements.tooltip.width();
-            if (absoluteLocation.x < leftSide || rightSide < absoluteLocation.x) {
-              cursorWithinTooltip = false;
-            }
-            var topSide = api.elements.tooltip.offset().top;
-            var bottomSide = api.elements.tooltip.offset().top + api.elements.tooltip.height();
-            if (absoluteLocation.y < topSide || bottomSide < absoluteLocation.y) {
-              cursorWithinTooltip = false;
-            }
+          var leftSide = api.elements.tooltip.offset().left - _this.svgOverlay.hitOptions.tolerance;
+          var rightSide = api.elements.tooltip.offset().left + api.elements.tooltip.width() + _this.svgOverlay.hitOptions.tolerance;
+          if (absoluteLocation.x < leftSide || rightSide < absoluteLocation.x) {
+            cursorWithinTooltip = false;
           }
-          if (!api.cache.hidden && !cursorWithinTooltip) {
+          var topSide = api.elements.tooltip.offset().top - _this.svgOverlay.hitOptions.tolerance;
+          var bottomSide = api.elements.tooltip.offset().top + api.elements.tooltip.height() + _this.svgOverlay.hitOptions.tolerance;
+          if (absoluteLocation.y < topSide || bottomSide < absoluteLocation.y) {
+            cursorWithinTooltip = false;
+          }
+          if (cursorWithinTooltip) {
+            return;
+          }
+        }
+        if (annotations.length === 0) {
+          if (!api.cache.hidden) {
             api.disable(false);
             api.hide(event);
             api.cache.annotations = [];
