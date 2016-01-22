@@ -106,11 +106,18 @@
           text: ''
         },
         position: {
+          target: 'mouse',
           my: 'center',
-          at: 'center'
+          at: 'center',
+          adjust: {
+            mouse: false,
+            method: 'shift'
+          },
+          container: _this.parent.parent.parent.element,
+          viewport: _this.parent.parent.parent.element
         },
         style: {
-          classes: 'qtip-bootstrap'
+          classes: 'qtip-bootstrap qtip-viewer'
         },
         show: {
           event: false
@@ -121,6 +128,9 @@
           event: false
         }
       });
+      var api = jQuery(this.osdViewer.element).qtip('api');
+      api.cache.annotations = [];
+      api.cache.hidden = true;
     },
 
     setTooltipContent: function(api, annotations) {
@@ -130,7 +140,7 @@
       jQuery.publish('tooltipViewerSet.' + _this.parent.windowId);
     },
 
-    showTooltipsFromMousePosition: function(event, location) {
+    showTooltipsFromMousePosition: function(event, location, absoluteLocation) {
       var _this = this;
       var annotations = [];
       for (var key in _this.annotationsToShapesMap) {
@@ -147,13 +157,47 @@
       var api = jQuery(this.osdViewer.element).qtip('api');
       if (api) {
         if (annotations.length === 0) {
-          api.hide(event);
-        } else if (api.elements.tooltip && api.elements.tooltip.is(':visible')) {
-          this.setTooltipContent(api, annotations);
-          api.cache.origin = event;
-          api.reposition(event, true);
+          var cursorWithinTooltip = true;
+          if (api.elements.tooltip) {
+            var leftSide = api.elements.tooltip.offset().left;
+            var rightSide = api.elements.tooltip.offset().left + api.elements.tooltip.width();
+            if (absoluteLocation.x < leftSide || rightSide < absoluteLocation.x) {
+              cursorWithinTooltip = false;
+            }
+            var topSide = api.elements.tooltip.offset().top;
+            var bottomSide = api.elements.tooltip.offset().top + api.elements.tooltip.height();
+            if (absoluteLocation.y < topSide || bottomSide < absoluteLocation.y) {
+              cursorWithinTooltip = false;
+            }
+          }
+          if (!api.cache.hidden && !cursorWithinTooltip) {
+            api.disable(false);
+            api.hide(event);
+            api.cache.annotations = [];
+            api.cache.hidden = true;
+            api.disable(true);
+          }
         } else {
-          api.show(event);
+          var oldAnnotations = api.cache.annotations;
+          var isTheSame = oldAnnotations.length == annotations.length;
+          if (isTheSame) {
+            for (var i = 0; i < annotations.length; i++) {
+              if (oldAnnotations[i] != annotations[i]) {
+                isTheSame = false;
+                break;
+              }
+            }
+          }
+          if (api.cache.hidden || !isTheSame) {
+            api.disable(false);
+            this.setTooltipContent(api, annotations);
+            api.cache.origin = event;
+            api.reposition(event, true);
+            api.show(event);
+            api.cache.annotations = annotations;
+            api.cache.hidden = false;
+            api.disable(true);
+          }
         }
       }
     },
@@ -161,9 +205,9 @@
     bindEvents: function() {
       var _this = this;
 
-      jQuery.subscribe('updateTooltips.' + _this.parent.windowId, function(event, location) {
+      jQuery.subscribe('updateTooltips.' + _this.parent.windowId, function(event, location, absoluteLocation) {
         if (!_this.inEditOrCreateMode) {
-          _this.showTooltipsFromMousePosition(event, location);
+          _this.showTooltipsFromMousePosition(event, location, absoluteLocation);
         }
       });
 

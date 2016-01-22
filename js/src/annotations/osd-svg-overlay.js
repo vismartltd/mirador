@@ -124,7 +124,11 @@
       if (this.overlay.currentTool) {
         this.overlay.currentTool.onMouseMove(event, this.overlay);
       } else {
-        jQuery.publish('updateTooltips.' + this.overlay.windowId, event.point);
+        var absolutePoint = {
+          'x': event.event.clientX,
+          'y': event.event.clientY
+        };
+        jQuery.publish('updateTooltips.' + this.overlay.windowId, [event.point, absolutePoint]);
       }
       this.overlay.paperScope.view.draw();
     },
