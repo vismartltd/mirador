@@ -237,6 +237,37 @@
       this.commentPanel = null;
     },
 
+    getSVGString: function(shapes) {
+      var svg = "<svg xmlns='http://www.w3.org/2000/svg'>";
+      if (shapes.length > 1) {
+        svg += "<g>";
+        for (var i = 0; i < shapes.length; i++) {
+          if (shapes[i].name.toString().indexOf('pin_') != -1) {
+            shapes[i].scale(_this.currentPinSize);
+          }
+          var anno = shapes[i].data.annotation;
+          shapes[i].data.annotation = null;
+          svg += shapes[i].exportSVG({
+            "asString": true
+          });
+          shapes[i].data.annotation = anno;
+        }
+        svg += "</g>";
+      } else {
+        if (shapes[0].name.toString().indexOf('pin_') != -1) {
+          shapes[0].scale(_this.currentPinSize);
+        }
+        var annoSingle = shapes[0].data.annotation;
+        shapes[0].data.annotation = null;
+        svg += shapes[0].exportSVG({
+          "asString": true
+        });
+        shapes[0].data.annotation = annoSingle;
+      }
+      svg += "</svg>";
+      return svg;
+    },
+
     onDrawFinish: function() {
       var shape = this.path;
       if (!shape) {
@@ -345,27 +376,7 @@
                   resource = [],
                   on;
 
-                var svg = "<svg xmlns='http://www.w3.org/2000/svg'>";
-                if (_this.draftPaths.length > 1) {
-                  svg += "<g>";
-                  for (var i = 0; i < _this.draftPaths.length; i++) {
-                    if (_this.draftPaths[i].name.toString().indexOf('pin_') != -1) {
-                      _this.draftPaths[i].scale(_this.currentPinSize);
-                    }
-                    svg += _this.draftPaths[i].exportSVG({
-                      "asString": true
-                    });
-                  }
-                  svg += "</g>";
-                } else {
-                  if (_this.draftPaths[0].name.toString().indexOf('pin_') != -1) {
-                    _this.draftPaths[0].scale(_this.currentPinSize);
-                  }
-                  svg += _this.draftPaths[0].exportSVG({
-                    "asString": true
-                  });
-                }
-                svg += "</svg>";
+                var svg = _this.getSVGString(_this.draftPaths);
 
                 if (tags && tags.length > 0) {
                   motivation.push("oa:tagging");

@@ -85,6 +85,62 @@
       return paperItems;
     },
 
+    deleteShape: function() {
+      if (this.svgOverlay.hoveredPath) {
+        var _this = this;
+        var oaAnno = null;
+        for (var key in _this.annotationsToShapesMap) {
+          if (_this.annotationsToShapesMap.hasOwnProperty(key)) {
+            var shapeArray = _this.annotationsToShapesMap[key];
+            for (var idx = 0; idx < shapeArray.length; idx++) {
+              if (shapeArray[idx].name == _this.svgOverlay.hoveredPath.name) {
+                oaAnno = shapeArray[idx].data.annotation;
+                if (shapeArray.length == 1) {
+                  if (!window.confirm("Do you want to delete this shape and annotation?")) {
+                    return false;
+                  }
+                  jQuery.publish('annotationDeleted.' + _this.parent.windowId, [oaAnno['@id']]);
+                } else {
+                  if (!window.confirm("Do you want to delete this shape?")) {
+                    return false;
+                  }
+                  shapeArray.splice(idx, 1);
+                  oaAnno.on.selector.value = _this.svgOverlay.getSVGString(shapeArray);
+                  jQuery.publish('annotationUpdated.' + _this.parent.windowId, [oaAnno]);
+                }
+                break;
+              }
+            }
+          }
+        }
+        this.svgOverlay.hoveredPath.selected = false;
+        this.svgOverlay.hoveredPath = null;
+      }
+    },
+
+    saveEditedShape: function() {
+      if (this.svgOverlay.hoveredPath) {
+        var _this = this;
+        var oaAnno = null;
+        for (var key in _this.annotationsToShapesMap) {
+          if (_this.annotationsToShapesMap.hasOwnProperty(key)) {
+            var shapeArray = _this.annotationsToShapesMap[key];
+            for (var idx = 0; idx < shapeArray.length; idx++) {
+              if (shapeArray[idx].name == _this.svgOverlay.hoveredPath.name) {
+                oaAnno = shapeArray[idx].data.annotation;
+                shapeArray[idx] = _this.svgOverlay.hoveredPath;
+                oaAnno.on.selector.value = _this.svgOverlay.getSVGString(shapeArray);
+                break;
+              }
+            }
+          }
+        }
+        jQuery.publish('annotationUpdated.' + _this.parent.windowId, [oaAnno]);
+        this.svgOverlay.hoveredPath.selected = false;
+        this.svgOverlay.hoveredPath = null;
+      }
+    },
+
     render: function() {
       this.svgOverlay.paperScope.project.clear();
       var _this = this;
@@ -220,6 +276,13 @@
 
     bindEvents: function() {
       var _this = this;
+
+      jQuery.subscribe('deleteShape.' + _this.parent.windowId, function(event) {
+        _this.deleteShape();
+      });
+      jQuery.subscribe('updateEditedShape.' + _this.parent.windowId, function(event) {
+        _this.saveEditedShape();
+      });
 
       jQuery.subscribe('updateTooltips.' + _this.parent.windowId, function(event, location, absoluteLocation) {
         if (!_this.inEditOrCreateMode) {

@@ -76,6 +76,12 @@
     bindEvents: function() {
       var _this = this;
 
+      this.container.find('.fa-trash-o').on('click', function() {
+        jQuery.publish('deleteShape.'+_this.windowId, '');
+      });
+      this.container.find('.fa-save').on('click', function() {
+        jQuery.publish('updateEditedShape.'+_this.windowId, '');
+      });
       this.container.find('.fa-times').on('click', function() {
         jQuery.publish('toggleDrawingTool.'+_this.windowId, 'default');
       });
