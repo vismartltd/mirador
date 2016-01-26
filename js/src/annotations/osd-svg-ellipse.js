@@ -36,9 +36,7 @@
       var shape = new overlay.paperScope.Path({
         segments: segments,
         fullySelected: true,
-        name: _this.idPrefix + (overlay.paperScope.project.getItems({
-          name: /_/
-        }).length + 1)
+        name: overlay.getName(_this)
       });
       shape.strokeColor = overlay.strokeColor;
       shape.fillColor = overlay.fillColor;
@@ -127,7 +125,6 @@
       }
       if (overlay.mode == 'translate') {
         if (overlay.path) {
-          overlay.paperScope.project.activeLayer.selected = false;
           overlay.segment = null;
           overlay.path = null;
           overlay.mode = '';
@@ -136,7 +133,6 @@
         }
       } else if (overlay.mode == 'deform') {
         if (overlay.path) {
-          overlay.paperScope.project.activeLayer.selected = false;
           overlay.segment = null;
           overlay.path = null;
           overlay.mode = '';
@@ -145,7 +141,6 @@
           overlay.segment = hitResult.segment;
         }
       } else if (overlay.path) {
-        overlay.paperScope.project.activeLayer.selected = false;
         overlay.onDrawFinish();
       } else {
         overlay.path = this.createShape(event.point, overlay);

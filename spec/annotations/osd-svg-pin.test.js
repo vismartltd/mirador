@@ -1,12 +1,47 @@
 paper.install(window);
 
 describe('Pin', function() {
+  var pinNumber;
+
+  function getEvent(delta, point) {
+    return {
+      'delta': delta,
+      'point': point
+    };
+  }
+
+  function getOverlay(paperScope, strokeColor, fillColor, fillColorAlpha, mode, path, segment) {
+    return {
+      'currentPinSize': 1.0,
+      'paperScope': paperScope,
+      'strokeColor': strokeColor,
+      'fillColor': fillColor,
+      'fillColorAlpha': fillColorAlpha,
+      'mode': mode,
+      'path': path,
+      'segment': segment,
+      'hitOptions': {
+        'fill': true,
+        'stroke': true,
+        'segments': true,
+        'tolerance': 0
+      },
+      onDrawFinish: function() {
+      },
+      getName: function(tool) {
+        pinNumber++;
+        return tool.idPrefix + pinNumber;
+      }
+    };
+  }
+
   beforeAll(function() {
     this.canvas = jQuery('<canvas></canvas>');
     this.canvas.attr('id', 'paperId');
     jasmine.getFixtures().set(this.canvas);
     paper.setup(this.canvas.attr('id'));
     this.pin = new Mirador.Pin();
+    pinNumber = 0;
   });
   afterAll(function() {
     delete this.pin;
@@ -17,13 +52,7 @@ describe('Pin', function() {
       'x': 123,
       'y': 456
     };
-    var overlay = {
-      'paperScope': paper,
-      'strokeColor': '#ff0000',
-      'fillColor': '#00ff00',
-      'fillColorAlpha': 1.0,
-      'currentPinSize': 1.0
-    };
+    var overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0);
     var pinScale = 5 / overlay.currentPinSize;
     var shape = this.pin.createShape(initialPoint, overlay);
 
@@ -67,24 +96,7 @@ describe('Pin', function() {
     var overlay;
 
     beforeEach(function() {
-      overlay = {
-        'paperScope': paper,
-        'strokeColor': '#ff0000',
-        'fillColor': '#00ff00',
-        'fillColorAlpha': 1.0,
-        'currentPinSize': 1.0,
-        'mode': '',
-        'path': null,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, '', null, null);
       this.pin = new Mirador.Pin();
       this.initialPoint = {
         'x': 987,
@@ -99,18 +111,11 @@ describe('Pin', function() {
     });
 
     it('should do nothing', function() {
-      var event = {
-        'delta': {
-          'x': 100,
-          'y': 100
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'currentPinSize': 1.0,
-        'mode': '',
-        'path': null
-      };
+      var event = getEvent({
+        'x': 100,
+        'y': 100
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, '', null, null);
       var localCenterPoint = {
         'x': this.initialPoint.x - 1,
         'y': this.initialPoint.y - 1
@@ -133,18 +138,11 @@ describe('Pin', function() {
     });
 
     it('should translate the whole pin shape', function() {
-      var event = {
-        'delta': {
-          'x': 3,
-          'y': -3
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'currentPinSize': 1.0,
-        'mode': 'translate',
-        'path': this.shape
-      };
+      var event = getEvent({
+        'x': 3,
+        'y': -3
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, 'translate', this.shape, null);
       var expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
         var point = {
@@ -161,12 +159,7 @@ describe('Pin', function() {
         expect(this.shape.segments[idx].point.y).toBeCloseTo(expected[idx].y, 6);
       }
 
-      overlay = {
-        'paperScope': paper,
-        'currentPinSize': 1.0,
-        'mode': 'translate',
-        'path': null
-      };
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, 'translate', null, null);
       this.pin.onMouseDrag(event, overlay);
 
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
@@ -176,27 +169,11 @@ describe('Pin', function() {
     });
 
     it('should select pin shape', function() {
-      var event = {
-        'point': {
-          'x': this.initialPoint.x,
-          'y': this.initialPoint.y
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'currentPinSize': 1.0,
-        'mode': '',
-        'path': null,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      var event = getEvent({}, {
+        'x': this.initialPoint.x,
+        'y': this.initialPoint.y
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, '', null, null);
       this.pin.onMouseDown(event, overlay);
 
       expect(overlay.mode).toBe('translate');
@@ -210,81 +187,29 @@ describe('Pin', function() {
       expect(overlay.segment).toBeNull();
       expect(overlay.path).toBeNull();
 
-      event = {
-        'point': {
-          'x': this.initialPoint.x + 100,
-          'y': this.initialPoint.y + 100
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'strokeColor': '#ff0000',
-        'fillColor': '#00ff00',
-        'fillColorAlpha': 1.0,
-        'currentPinSize': 1.0,
-        'mode': 'translate',
-        'path': null,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      event = getEvent({}, {
+        'x': this.initialPoint.x + 100,
+        'y': this.initialPoint.y + 100
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, 'translate', null, null);
       this.pin.onMouseDown(event, overlay);
 
       expect(overlay.mode).toBe('translate');
       expect(overlay.segment).toBeNull();
       expect(overlay.path).toBeNull();
 
-      overlay = {
-        'paperScope': paper,
-        'strokeColor': '#ff0000',
-        'fillColor': '#00ff00',
-        'fillColorAlpha': 1.0,
-        'currentPinSize': 1.0,
-        'mode': 'deform',
-        'path': null,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, 'deform', null, null);
       this.pin.onMouseDown(event, overlay);
 
       expect(overlay.mode).toBe('deform');
       expect(overlay.segment).toBeNull();
       expect(overlay.path).toBeNull();
 
-      event = {
-        'point': {
-          'x': this.initialPoint.x,
-          'y': this.initialPoint.y
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'currentPinSize': 1.0,
-        'mode': 'translate',
-        'path': this.shape,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      event = getEvent({}, {
+        'x': this.initialPoint.x,
+        'y': this.initialPoint.y
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, 'translate', this.shape, null);
       this.pin.onMouseDown(event, overlay);
 
       expect(overlay.mode).toBe('');
@@ -292,30 +217,11 @@ describe('Pin', function() {
       expect(overlay.path).toBeNull();
       expect(document.body.style.cursor).toBe('default');
 
-      event = {
-        'point': {
-          'x': this.initialPoint.x + 100,
-          'y': this.initialPoint.y + 100
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'strokeColor': '#ff0000',
-        'fillColor': '#00ff00',
-        'fillColorAlpha': 1.0,
-        'currentPinSize': 1.0,
-        'mode': '',
-        'path': null,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      event = getEvent({}, {
+        'x': this.initialPoint.x + 100,
+        'y': this.initialPoint.y + 100
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, '', null, null);
       this.pin.onMouseDown(event, overlay);
 
       expect(overlay.mode).toBe('create');

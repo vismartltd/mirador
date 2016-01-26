@@ -20,9 +20,7 @@
         segments: [initialPoint],
         strokeColor: overlay.strokeColor,
         fullySelected: true,
-        name: _this.idPrefix + (overlay.paperScope.project.getItems({
-          name: /_/
-        }).length + 1)
+        name: overlay.getName(_this)
       });
       return shape;
     },
@@ -72,7 +70,6 @@
               hitResult.segment.remove();
             }
           } else if (overlay.path) {
-            overlay.paperScope.project.activeLayer.selected = false;
             overlay.onDrawFinish();
           } else {
             overlay.path = hitResult.item;
@@ -94,7 +91,6 @@
           overlay.path.fillColor.alpha = overlay.fillColorAlpha;
         }
       }
-      overlay.paperScope.project.activeLayer.selected = false;
       overlay.onDrawFinish();
     }
   };

@@ -112,7 +112,6 @@
     },
 
     onMouseDrag: function(event) {
-      this.overlay.hover(event);
       if (this.overlay.currentTool) {
         this.overlay.currentTool.onMouseDrag(event, this.overlay);
       }
@@ -120,7 +119,6 @@
     },
 
     onMouseMove: function(event) {
-      this.overlay.hover(event);
       if (this.overlay.currentTool) {
         this.overlay.currentTool.onMouseMove(event, this.overlay);
       } else {
@@ -237,13 +235,17 @@
       this.commentPanel = null;
     },
 
+    getName: function(tool) {
+      return tool.idPrefix + $.genUUID();
+    },
+
     getSVGString: function(shapes) {
       var svg = "<svg xmlns='http://www.w3.org/2000/svg'>";
       if (shapes.length > 1) {
         svg += "<g>";
         for (var i = 0; i < shapes.length; i++) {
           if (shapes[i].name.toString().indexOf('pin_') != -1) {
-            shapes[i].scale(_this.currentPinSize);
+            shapes[i].scale(this.currentPinSize);
           }
           var anno = shapes[i].data.annotation;
           shapes[i].data.annotation = null;
@@ -255,7 +257,7 @@
         svg += "</g>";
       } else {
         if (shapes[0].name.toString().indexOf('pin_') != -1) {
-          shapes[0].scale(_this.currentPinSize);
+          shapes[0].scale(this.currentPinSize);
         }
         var annoSingle = shapes[0].data.annotation;
         shapes[0].data.annotation = null;

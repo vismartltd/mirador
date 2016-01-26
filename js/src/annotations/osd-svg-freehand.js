@@ -20,9 +20,7 @@
         segments: [initialPoint],
         strokeColor: overlay.strokeColor,
         fullySelected: true,
-        name: _this.idPrefix + (overlay.paperScope.project.getItems({
-          name: /_/
-        }).length + 1)
+        name: overlay.getName(_this)
       });
       return shape;
     },
@@ -67,7 +65,6 @@
       if (overlay.mode === '') {
         overlay.path = this.createShape(event.point, overlay);
       } else if (overlay.mode === 'create') {
-        overlay.paperScope.project.activeLayer.selected = false;
         overlay.onDrawFinish();
       } else if (overlay.mode === 'edit') {
         if (hitResult) {
@@ -77,7 +74,6 @@
               hitResult.item.smooth();
             }
           } else if (overlay.path) {
-            overlay.paperScope.project.activeLayer.selected = false;
             overlay.onDrawFinish();
           } else {
             overlay.path = hitResult.item;

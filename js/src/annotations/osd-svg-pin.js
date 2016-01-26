@@ -26,9 +26,7 @@
       pathData += ' Q' + initialPoint.x + ',' + (initialPoint.y - size);
       pathData += ' ' + initialPoint.x + ',' + initialPoint.y;
       var shape = new overlay.paperScope.Path(pathData);
-      shape.name = _this.idPrefix + (overlay.paperScope.project.getItems({
-          name: /_/
-        }).length + 1);
+      shape.name = overlay.getName(_this);
       shape.strokeColor = overlay.strokeColor;
       shape.fillColor = overlay.fillColor;
       shape.fillColor.alpha = overlay.fillColorAlpha;
@@ -70,12 +68,10 @@
       }
       if (overlay.mode === '') {
         overlay.path = this.createShape(event.point, overlay);
-        overlay.paperScope.project.activeLayer.selected = false;
         overlay.onDrawFinish();
       } else if (overlay.mode === 'translate') {
         if (hitResult) {
           if (overlay.path) {
-            overlay.paperScope.project.activeLayer.selected = false;
             overlay.segment = null;
             overlay.path = null;
             overlay.mode = '';

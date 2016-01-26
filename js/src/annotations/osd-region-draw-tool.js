@@ -100,6 +100,9 @@
                     return false;
                   }
                   jQuery.publish('annotationDeleted.' + _this.parent.windowId, [oaAnno['@id']]);
+                  this.svgOverlay.hoveredPath.selected = false;
+                  this.svgOverlay.hoveredPath = null;
+                  break;
                 } else {
                   if (!window.confirm("Do you want to delete this shape?")) {
                     return false;
@@ -107,14 +110,14 @@
                   shapeArray.splice(idx, 1);
                   oaAnno.on.selector.value = _this.svgOverlay.getSVGString(shapeArray);
                   jQuery.publish('annotationUpdated.' + _this.parent.windowId, [oaAnno]);
+                  this.svgOverlay.hoveredPath.selected = false;
+                  this.svgOverlay.hoveredPath = null;
+                  break;
                 }
-                break;
               }
             }
           }
         }
-        this.svgOverlay.hoveredPath.selected = false;
-        this.svgOverlay.hoveredPath = null;
       }
     },
 
@@ -135,9 +138,11 @@
             }
           }
         }
-        jQuery.publish('annotationUpdated.' + _this.parent.windowId, [oaAnno]);
-        this.svgOverlay.hoveredPath.selected = false;
-        this.svgOverlay.hoveredPath = null;
+        if (oaAnno) {
+          jQuery.publish('annotationUpdated.' + _this.parent.windowId, [oaAnno]);
+          this.svgOverlay.hoveredPath.selected = false;
+          this.svgOverlay.hoveredPath = null;
+        }
       }
     },
 

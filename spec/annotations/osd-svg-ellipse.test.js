@@ -3,6 +3,36 @@ paper.install(window);
 describe('Ellipse', function() {
   var diagonalSize;
 
+  function getEvent(delta, point) {
+    return {
+      'delta': delta,
+      'point': point
+    };
+  }
+
+  function getOverlay(paperScope, strokeColor, fillColor, fillColorAlpha, mode, path, segment) {
+    return {
+      'paperScope': paperScope,
+      'strokeColor': strokeColor,
+      'fillColor': fillColor,
+      'fillColorAlpha': fillColorAlpha,
+      'mode': mode,
+      'path': path,
+      'segment': segment,
+      'hitOptions': {
+        'fill': true,
+        'stroke': true,
+        'segments': true,
+        'tolerance': 0
+      },
+      onDrawFinish: function() {
+      },
+      getName: function(tool) {
+        return tool.idPrefix + '1';
+      }
+    };
+  }
+
   beforeAll(function() {
     this.canvas = jQuery('<canvas></canvas>');
     this.canvas.attr('id', 'paperId');
@@ -20,12 +50,7 @@ describe('Ellipse', function() {
       'x': 123,
       'y': 456
     };
-    var overlay = {
-      'paperScope': paper,
-      'strokeColor': '#ff0000',
-      'fillColor': '#00ff00',
-      'fillColorAlpha': 1.0
-    };
+    var overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, null, null, null);
     var shape = this.ellipse.createShape(initialPoint, overlay);
 
     expect(overlay.mode).toBe('create');
@@ -81,23 +106,7 @@ describe('Ellipse', function() {
     var overlay;
 
     beforeEach(function() {
-      overlay = {
-        'paperScope': paper,
-        'strokeColor': '#ff0000',
-        'fillColor': '#00ff00',
-        'fillColorAlpha': 1.0,
-        'mode': '',
-        'path': null,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, '', null, null);
       this.ellipse = new Mirador.Ellipse();
       this.initialPoint = {
         'x': 987,
@@ -112,17 +121,11 @@ describe('Ellipse', function() {
     });
 
     it('should do nothing', function() {
-      var event = {
-        'delta': {
-          'x': 100,
-          'y': 100
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'mode': '',
-        'path': null
-      };
+      var event = getEvent({
+        'x': 100,
+        'y': 100
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, '', null, null);
       var expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
         var point = {
@@ -141,17 +144,11 @@ describe('Ellipse', function() {
     });
 
     it('should translate the whole ellipse shape', function() {
-      var event = {
-        'delta': {
-          'x': 3,
-          'y': -3
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'mode': 'translate',
-        'path': this.shape
-      };
+      var event = getEvent({
+        'x': 3,
+        'y': -3
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, 'translate', this.shape, null);
       this.ellipse.onMouseDrag(event, overlay);
 
       expect(this.shape.segments[0].point.x - event.delta.x).toBe(this.initialPoint.x - 2);
@@ -180,18 +177,11 @@ describe('Ellipse', function() {
     });
 
     it('should resize the whole ellipse shape', function() {
-      var event = {
-        'delta': {
-          'x': 10,
-          'y': -100
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'mode': 'deform',
-        'path': this.shape,
-        'segment': this.shape.segments[2]
-      };
+      var event = getEvent({
+        'x': 10,
+        'y': -100
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, 'deform', this.shape, this.shape.segments[2]);
       this.ellipse.onMouseDrag(event, overlay);
 
       expect(this.shape.segments[0].point.x + event.delta.x).toBeCloseTo(this.initialPoint.x - 2, 1);
@@ -242,22 +232,15 @@ describe('Ellipse', function() {
       var scale = 2;
       var rotationAngle = -90;
       // -90 degrees rotation + scale
-      var event = {
-        'delta': {
-          'x': -size.x * diagonalSize * scale,
-          'y': size.y * diagonalSize
-        }
-      };
+      var event = getEvent({
+        'x': -size.x * diagonalSize * scale,
+        'y': size.y * diagonalSize
+      });
       var localCenterPoint = {
         'x': this.initialPoint.x - size.x,
         'y': this.initialPoint.y - size.y
       };
-      overlay = {
-        'paperScope': paper,
-        'mode': 'deform',
-        'path': this.shape,
-        'segment': this.shape.segments[1]
-      };
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, 'deform', this.shape, this.shape.segments[1]);
       var expected = [];
       for (var idx = 0; idx < this.shape.segments.length; idx++) {
         var point = this.shape.segments[idx].point;
@@ -275,26 +258,11 @@ describe('Ellipse', function() {
     });
 
     it('should select ellipse shape', function() {
-      var event = {
-        'point': {
-          'x': this.initialPoint.x - 1,
-          'y': this.initialPoint.y - 1
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'mode': '',
-        'path': null,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      var event = getEvent({}, {
+        'x': this.initialPoint.x - 1,
+        'y': this.initialPoint.y - 1
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, '', null, null);
       this.ellipse.onMouseDown(event, overlay);
 
       expect(overlay.mode).toBe('translate');
@@ -308,26 +276,11 @@ describe('Ellipse', function() {
       expect(overlay.segment).toBeNull();
       expect(overlay.path).toBeNull();
 
-      event = {
-        'point': {
-          'x': this.initialPoint.x,
-          'y': this.initialPoint.y
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'mode': '',
-        'path': null,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      event = getEvent({}, {
+        'x': this.initialPoint.x,
+        'y': this.initialPoint.y
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, '', null, null);
       this.ellipse.onMouseDown(event, overlay);
 
       expect(overlay.mode).toBe('deform');
@@ -341,12 +294,10 @@ describe('Ellipse', function() {
       expect(overlay.segment).toBeNull();
       expect(overlay.path).toBeNull();
 
-      event = {
-        'point': {
-          'x': this.initialPoint.x,
-          'y': this.initialPoint.y - 1
-        }
-      };
+      event = getEvent({}, {
+        'x': this.initialPoint.x,
+        'y': this.initialPoint.y - 1
+      });
       this.ellipse.onMouseDown(event, overlay);
 
       expect(overlay.mode).toBe('deform');
@@ -354,83 +305,29 @@ describe('Ellipse', function() {
       expect(overlay.path).toBe(this.shape);
       expect(document.body.style.cursor).toContain('rotate.png');
 
-      event = {
-        'point': {
-          'x': this.initialPoint.x - 1,
-          'y': this.initialPoint.y - 1
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'strokeColor': '#ff0000',
-        'fillColor': '#00ff00',
-        'fillColorAlpha': 1.0,
-        'mode': 'translate',
-        'path': null,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      event = getEvent({}, {
+        'x': this.initialPoint.x - 1,
+        'y': this.initialPoint.y - 1
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, 'translate', null, null);
       this.ellipse.onMouseDown(event, overlay);
 
       expect(document.body.style.cursor).toBe('default');
 
-      event = {
-        'point': {
-          'x': this.initialPoint.x + 100,
-          'y': this.initialPoint.y + 100
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'strokeColor': '#ff0000',
-        'fillColor': '#00ff00',
-        'fillColorAlpha': 1.0,
-        'mode': '',
-        'path': null,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      event = getEvent({}, {
+        'x': this.initialPoint.x + 100,
+        'y': this.initialPoint.y + 100
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, '', null, null);
       this.ellipse.onMouseDown(event, overlay);
 
       expect(document.body.style.cursor).toBe('default');
 
-      event = {
-        'point': {
-          'x': this.initialPoint.x - 100,
-          'y': this.initialPoint.y - 100
-        }
-      };
-      overlay = {
-        'paperScope': paper,
-        'strokeColor': '#ff0000',
-        'fillColor': '#00ff00',
-        'fillColorAlpha': 1.0,
-        'mode': '',
-        'path': this.shape,
-        'segment': null,
-        'hitOptions': {
-          'fill': true,
-          'stroke': true,
-          'segments': true,
-          'tolerance': 0
-        },
-        onDrawFinish: function() {
-        }
-      };
+      event = getEvent({}, {
+        'x': this.initialPoint.x - 100,
+        'y': this.initialPoint.y - 100
+      });
+      overlay = getOverlay(paper, '#ff0000', '#00ff00', 1.0, '', this.shape, null);
       this.ellipse.onMouseDown(event, overlay);
 
       expect(document.body.style.cursor).toBe('default');
