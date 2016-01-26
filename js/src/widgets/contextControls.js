@@ -76,6 +76,9 @@
     bindEvents: function() {
       var _this = this;
 
+      this.container.find('.fa-refresh').on('click', function() {
+        jQuery.publish('refreshOverlay.'+_this.windowId, '');
+      });
       this.container.find('.fa-trash-o').on('click', function() {
         jQuery.publish('deleteShape.'+_this.windowId, '');
       });
@@ -185,6 +188,9 @@
                                    '</a>',
                                    '<a class="hud-control draw-tool">',
                                    '<i class="fa fa-lg fa-save"></i>',
+                                   '</a>',
+                                   '<a class="hud-control draw-tool">',
+                                   '<i class="fa fa-lg fa-refresh"></i>',
                                    '</a>',
                                    '{{/if}}',
                                    /*'<a class="mirador-osd-list hud-control">',

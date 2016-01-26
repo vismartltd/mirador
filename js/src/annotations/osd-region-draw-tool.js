@@ -282,6 +282,9 @@
     bindEvents: function() {
       var _this = this;
 
+      jQuery.subscribe('refreshOverlay.' + _this.parent.windowId, function(event) {
+        _this.render();
+      });
       jQuery.subscribe('deleteShape.' + _this.parent.windowId, function(event) {
         _this.deleteShape();
       });
