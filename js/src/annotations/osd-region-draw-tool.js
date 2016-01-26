@@ -37,54 +37,6 @@
       }
     },
 
-    // replaces paper.js objects with the required properties only.
-    replaceShape: function(shape, annotation) {
-      var cloned = new this.svgOverlay.paperScope.Path({
-        segments: shape.segments,
-        name: shape.name
-      });
-      cloned.strokeColor = shape.strokeColor;
-      if (shape.fillColor) {
-        cloned.fillColor = shape.fillColor;
-        if (shape.fillColor.alpha) {
-          cloned.fillColor.alpha = shape.fillColor.alpha;
-        }
-      }
-      cloned.closed = shape.closed;
-      cloned.data.rotation = shape.data.rotation;
-      cloned.data.annotation = annotation;
-      if (cloned.name.toString().indexOf('pin_') != -1) { // pin shapes with fixed size.
-        cloned.scale(1 / this.svgOverlay.paperScope.view.zoom);
-      }
-      shape.remove();
-      return cloned;
-    },
-
-    parseSVG: function(svg, annotation) {
-      var paperItems = [];
-      var svgParser = new DOMParser();
-      var svgDOM = svgParser.parseFromString(svg, "text/xml");
-      if (svgDOM.documentElement.nodeName == "parsererror") {
-        return; // if svg is not valid XML structure - backward compatibility.
-      }
-      var svgTag = this.svgOverlay.paperScope.project.importSVG(svg);
-      // removes SVG tag which is the root object of comment SVG segment.
-      var body = svgTag.removeChildren()[0];
-      svgTag.remove();
-      if (body.className == 'Group') {
-        // removes group tag which wraps the set of objects of comment SVG segment.
-        var items = body.removeChildren();
-        for (var itemIdx = 0; itemIdx < items.length; itemIdx++) {
-          paperItems.push(this.replaceShape(items[itemIdx], annotation));
-        }
-        body.remove();
-      } else {
-        paperItems.push(this.replaceShape(body, annotation));
-      }
-      this.svgOverlay.paperScope.view.update(true);
-      return paperItems;
-    },
-
     deleteShape: function() {
       var _this = this;
       if (_this.svgOverlay.hoveredPath) {
@@ -127,9 +79,8 @@
           var shapeArray = _this.annotationsToShapesMap[key];
           var annotationShapesAreEdited = false;
           for (var i = 0; i < _this.svgOverlay.editedPaths.length; i++) {
-            var edited = _this.svgOverlay.editedPaths[i];
             for (var idx = 0; idx < shapeArray.length; idx++) {
-              if (shapeArray[idx].name == edited.name) {
+              if (shapeArray[idx].name == _this.svgOverlay.editedPaths[i].name) {
                 oaAnnos.push(shapeArray[idx].data.annotation);
                 oaAnnos[oaAnnos.length - 1].on.selector.value = _this.svgOverlay.getSVGString(shapeArray);
                 annotationShapesAreEdited = true;
@@ -155,7 +106,9 @@
       var deferreds = jQuery.map(this.list, function(annotation) {
         var deferred = jQuery.Deferred();
         if (typeof annotation.on === 'object') {
-          _this.annotationsToShapesMap[$.genUUID()] = _this.parseSVG(annotation.on.selector.value, annotation);
+          var shapeArray = _this.svgOverlay.parseSVG(annotation.on.selector.value, annotation);
+          _this.svgOverlay.restoreLastView(shapeArray);
+          _this.annotationsToShapesMap[$.genUUID()] = shapeArray;
         }
         return deferred;
       });

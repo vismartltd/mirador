@@ -215,6 +215,79 @@
       this.removeFocus();
     },
 
+    // replaces paper.js objects with the required properties only.
+    replaceShape: function(shape, annotation) {
+      var cloned = new this.paperScope.Path({
+        segments: shape.segments,
+        name: shape.name
+      });
+      cloned.strokeColor = shape.strokeColor;
+      if (shape.fillColor) {
+        cloned.fillColor = shape.fillColor;
+        if (shape.fillColor.alpha) {
+          cloned.fillColor.alpha = shape.fillColor.alpha;
+        }
+      }
+      cloned.closed = shape.closed;
+      cloned.data.rotation = shape.data.rotation;
+      cloned.data.annotation = annotation;
+      if (cloned.name.toString().indexOf('pin_') != -1) { // pin shapes with fixed size.
+        cloned.scale(1 / this.paperScope.view.zoom);
+      }
+      shape.remove();
+      return cloned;
+    },
+
+    parseSVG: function(svg, annotation) {
+      var paperItems = [];
+      var svgParser = new DOMParser();
+      var svgDOM = svgParser.parseFromString(svg, "text/xml");
+      if (svgDOM.documentElement.nodeName == "parsererror") {
+        return; // if svg is not valid XML structure - backward compatibility.
+      }
+      var svgTag = this.paperScope.project.importSVG(svg);
+      // removes SVG tag which is the root object of comment SVG segment.
+      var body = svgTag.removeChildren()[0];
+      svgTag.remove();
+      if (body.className == 'Group') {
+        // removes group tag which wraps the set of objects of comment SVG segment.
+        var items = body.removeChildren();
+        for (var itemIdx = 0; itemIdx < items.length; itemIdx++) {
+          paperItems.push(this.replaceShape(items[itemIdx], annotation));
+        }
+        body.remove();
+      } else {
+        paperItems.push(this.replaceShape(body, annotation));
+      }
+      this.paperScope.view.update(true);
+      return paperItems;
+    },
+
+    // Restore latest view before rendering.
+    restoreLastView: function(shapeArray) {
+      for (var i = 0; i < this.editedPaths.length; i++) {
+        for (var idx = 0; idx < shapeArray.length; idx++) {
+          if (shapeArray[idx].name == this.editedPaths[i].name) {
+            shapeArray[idx].segments = this.editedPaths[i].segments;
+            shapeArray[idx].name = this.editedPaths[i].name;
+            shapeArray[idx].strokeColor = this.editedPaths[i].strokeColor;
+            if (this.editedPaths[i].fillColor) {
+              shapeArray[idx].fillColor = this.editedPaths[i].fillColor;
+              if (this.editedPaths[i].fillColor.alpha) {
+                shapeArray[idx].fillColor.alpha = this.editedPaths[i].fillColor.alpha;
+              }
+            }
+            shapeArray[idx].closed = this.editedPaths[i].closed;
+            shapeArray[idx].data.rotation = this.editedPaths[i].data.rotation;
+            shapeArray[idx].data.annotation = this.editedPaths[i].data.annotation;
+            if (shapeArray[idx].name.toString().indexOf('pin_') != -1) { // pin shapes with fixed size.
+              shapeArray[idx].scale(1 / this.paperScope.view.zoom);
+            }
+          }
+        }
+      }
+    },
+
     deselectAll: function() {
       if (this.paperScope && this.paperScope.view && this.paperScope.project) {
         this.paperScope.project.deselectAll();
