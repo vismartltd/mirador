@@ -51,7 +51,7 @@
         }
       }
       cloned.closed = shape.closed;
-      cloned.data.rotation = 0;
+      cloned.data.rotation = shape.data.rotation;
       cloned.data.annotation = annotation;
       if (cloned.name.toString().indexOf('pin_') != -1) { // pin shapes with fixed size.
         cloned.scale(1 / this.svgOverlay.paperScope.view.zoom);
@@ -86,8 +86,8 @@
     },
 
     deleteShape: function() {
-      if (this.svgOverlay.hoveredPath) {
-        var _this = this;
+      var _this = this;
+      if (_this.svgOverlay.hoveredPath) {
         var oaAnno = null;
         for (var key in _this.annotationsToShapesMap) {
           if (_this.annotationsToShapesMap.hasOwnProperty(key)) {
@@ -100,9 +100,8 @@
                     return false;
                   }
                   jQuery.publish('annotationDeleted.' + _this.parent.windowId, [oaAnno['@id']]);
-                  this.svgOverlay.hoveredPath.selected = false;
-                  this.svgOverlay.hoveredPath = null;
-                  break;
+                  this.svgOverlay.removeFocus();
+                  return true;
                 } else {
                   if (!window.confirm("Do you want to delete this shape?")) {
                     return false;
@@ -110,9 +109,8 @@
                   shapeArray.splice(idx, 1);
                   oaAnno.on.selector.value = _this.svgOverlay.getSVGString(shapeArray);
                   jQuery.publish('annotationUpdated.' + _this.parent.windowId, [oaAnno]);
-                  this.svgOverlay.hoveredPath.selected = false;
-                  this.svgOverlay.hoveredPath = null;
-                  break;
+                  this.svgOverlay.removeFocus();
+                  return true;
                 }
               }
             }
@@ -122,28 +120,32 @@
     },
 
     saveEditedShape: function() {
-      if (this.svgOverlay.hoveredPath) {
-        var _this = this;
-        var oaAnno = null;
-        for (var key in _this.annotationsToShapesMap) {
-          if (_this.annotationsToShapesMap.hasOwnProperty(key)) {
-            var shapeArray = _this.annotationsToShapesMap[key];
+      var _this = this;
+      var oaAnnos = [];
+      for (var key in _this.annotationsToShapesMap) {
+        if (_this.annotationsToShapesMap.hasOwnProperty(key)) {
+          var shapeArray = _this.annotationsToShapesMap[key];
+          var annotationShapesAreEdited = false;
+          for (var i = 0; i < _this.svgOverlay.editedPaths.length; i++) {
+            var edited = _this.svgOverlay.editedPaths[i];
             for (var idx = 0; idx < shapeArray.length; idx++) {
-              if (shapeArray[idx].name == _this.svgOverlay.hoveredPath.name) {
-                oaAnno = shapeArray[idx].data.annotation;
-                shapeArray[idx] = _this.svgOverlay.hoveredPath;
-                oaAnno.on.selector.value = _this.svgOverlay.getSVGString(shapeArray);
+              if (shapeArray[idx].name == edited.name) {
+                oaAnnos.push(shapeArray[idx].data.annotation);
+                oaAnnos[oaAnnos.length - 1].on.selector.value = _this.svgOverlay.getSVGString(shapeArray);
+                annotationShapesAreEdited = true;
                 break;
               }
             }
+            if (annotationShapesAreEdited) {
+              break;
+            }
           }
         }
-        if (oaAnno) {
-          jQuery.publish('annotationUpdated.' + _this.parent.windowId, [oaAnno]);
-          this.svgOverlay.hoveredPath.selected = false;
-          this.svgOverlay.hoveredPath = null;
-        }
       }
+      for (var j = 0; j < oaAnnos.length; j++) {
+        jQuery.publish('annotationUpdated.' + _this.parent.windowId, [oaAnnos[j]]);
+      }
+      this.svgOverlay.restoreEditedShapes();
     },
 
     render: function() {
@@ -283,6 +285,7 @@
       var _this = this;
 
       jQuery.subscribe('refreshOverlay.' + _this.parent.windowId, function(event) {
+        _this.svgOverlay.restoreEditedShapes();
         _this.render();
       });
       jQuery.subscribe('deleteShape.' + _this.parent.windowId, function(event) {

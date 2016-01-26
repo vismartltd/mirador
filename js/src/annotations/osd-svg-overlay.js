@@ -19,6 +19,7 @@
       commentPanel: null,
       mode: '', // Possible modes: 'create', 'translate', 'deform', 'edit' and '' as default.
       draftPaths: [],
+      editedPaths: [],
       hoveredPath: null,
       path: null,
       segment: null,
@@ -142,6 +143,20 @@
         this.overlay.hover(event);
         if (this.overlay.currentTool) {
           this.overlay.currentTool.onMouseDown(event, this.overlay);
+          if (this.overlay.mode == 'translate' || this.overlay.mode == 'deform' || this.overlay.mode == 'edit') {
+            if (this.overlay.path && this.overlay.path.data.annotation) {
+              var inArray = false;
+              for (var i = 0; i < this.overlay.editedPaths.length; i++) {
+                if (this.overlay.editedPaths[i].name == this.overlay.path.name) {
+                  inArray = true;
+                  break;
+                }
+              }
+              if (!inArray) {
+                this.overlay.editedPaths.push(this.overlay.path);
+              }
+            }
+          }
         }
       }
       this.overlay.paperScope.view.draw();
@@ -182,12 +197,22 @@
 
     hover: function(event) {
       if (this.currentTool && event.item && event.item._name.toString().indexOf(this.currentTool.idPrefix) != -1) {
-        if (this.hoveredPath) {
-          this.hoveredPath.selected = false;
-        }
+        this.removeFocus();
         event.item.selected = true;
         this.hoveredPath = event.item;
       }
+    },
+
+    removeFocus: function() {
+      if (this.hoveredPath) {
+        this.hoveredPath.selected = false;
+        this.hoveredPath = null;
+      }
+    },
+
+    restoreEditedShapes: function() {
+      this.editedPaths = [];
+      this.removeFocus();
     },
 
     deselectAll: function() {
