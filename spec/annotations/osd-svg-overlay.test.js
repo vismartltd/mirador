@@ -44,7 +44,12 @@ describe('Overlay', function() {
     this.canvas = jQuery('<canvas></canvas>');
     this.canvas.attr('id', 'draw_canvas_' + id);
     jasmine.getFixtures().set(this.canvas);
-    this.windowObjMock = {'windowId': id};
+    this.windowObjMock = {
+      'windowId': id,
+      'viewer': {
+        'id': 'viewerId'
+      }
+    };
     this.viewerMock = {
       'canvas': {
         'appendChild': function() {

@@ -57,15 +57,16 @@
       _this.resize();
     });
     jQuery.subscribe('toggleDrawingTool.' + _this.windowId, function(event, tool) {
+      jQuery('#' + _this.window.viewer.id).parent().find('.hud-container').find('.draw-tool').css('opacity', '');
       if (_this.disabled) {
+        jQuery('.qtip' + _this.windowId).qtip('hide');
         return;
       }
       _this.currentTool = null;
-      jQuery(_this.viewer.canvas).parents('.slot').find('.draw-tool').css('opacity', '');
       for (var i = 0; i < _this.tools.length; i++) {
         if (_this.tools[i].logoClass == tool) {
           _this.currentTool = _this.tools[i];
-          jQuery(_this.viewer.canvas).parents('.slot').find('.' + tool).parent('.draw-tool').css('opacity', '1');
+          jQuery('#' + _this.window.viewer.id).parent().find('.hud-container').find('.' + tool).parent('.draw-tool').css('opacity', '1');
         }
       }
     });
@@ -398,7 +399,7 @@
             at: 'center'
           },
           style: {
-            classes: 'qtip-bootstrap'
+            classes: 'qtip-bootstrap qtip' + _this.windowId
           },
           show: {
             event: false
