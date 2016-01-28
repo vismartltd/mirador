@@ -61,9 +61,11 @@
         return;
       }
       _this.currentTool = null;
+      jQuery(_this.viewer.canvas).parents('.slot').find('.draw-tool').css('opacity', '');
       for (var i = 0; i < _this.tools.length; i++) {
         if (_this.tools[i].logoClass == tool) {
           _this.currentTool = _this.tools[i];
+          jQuery(_this.viewer.canvas).parents('.slot').find('.' + tool).parent('.draw-tool').css('opacity', '1');
         }
       }
     });
@@ -298,7 +300,7 @@
 
     hide: function() {
       this.canvas.style.display = 'none';
-      this.currentTool = null;
+      jQuery.publish('toggleDrawingTool.' + this.windowId, '');
       this.deselectAll();
     },
 
@@ -312,7 +314,7 @@
       jQuery.publish('disableBorderColorPicker.' + this.windowId, this.disabled);
       jQuery.publish('disableFillColorPicker.' + this.windowId, this.disabled);
       jQuery.publish('enableTooltips.' + this.windowId);
-      this.currentTool = null;
+      jQuery.publish('toggleDrawingTool.' + this.windowId, '');
       this.deselectAll();
     },
 
