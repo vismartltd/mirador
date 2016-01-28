@@ -37,6 +37,7 @@
         showInitial: true,
         showPalette: true,
         showSelectionPalette: true,
+        containerClassName: 'borderColorPickerPop'+_this.windowId,
         preferredFormat: "rgb",
         change: function(color) {
           jQuery.publish('changeBorderColor.'+_this.windowId, color.toHexString());
@@ -46,12 +47,17 @@
           ["white", "cyan", "magenta", "yellow"]
         ]
       });
+      jQuery('.borderColorPickerPop'+_this.windowId).find('.sp-choose').on('click',function(){
+        var color = _this.container.find(".borderColorPicker").spectrum("get");
+        jQuery.publish('changeBorderColor.'+_this.windowId, color.toHexString());
+      });
       _this.container.find(".fillColorPicker").spectrum({
         showInput: true,
         showInitial: true,
         showAlpha: true,
         showPalette: true,
         showSelectionPalette: true,
+        containerClassName: 'fillColorPickerPop'+_this.windowId,
         preferredFormat: "rgb",
         change: function(color) {
           jQuery.publish('changeFillColor.'+_this.windowId, [color.toHexString(), color.getAlpha()]);
@@ -60,6 +66,10 @@
           ["black", "red", "green", "blue"],
           ["white", "cyan", "magenta", "yellow"]
         ]
+      });
+      jQuery('.fillColorPickerPop'+_this.windowId).find('.sp-choose').on('click',function(){
+        var color = _this.container.find(".fillColorPicker").spectrum("get");
+        jQuery.publish('changeFillColor.'+_this.windowId, [color.toHexString(), color.getAlpha()]);
       });
       this.hide();
       this.bindEvents();
