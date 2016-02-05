@@ -22,7 +22,7 @@
         'optionsPanelVisible': false,
         'bookmarkPanelVisible': false
       },
-      manifests:             [] 
+      manifests:             []
     }, $.DEFAULT_SETTINGS, options);
 
     // get initial manifests
@@ -41,10 +41,10 @@
       //add background and positioning information on the root element that is provided in config
       var backgroundImage = _this.buildPath + _this.imagesPath + 'debut_dark.png';
       this.element.css('background-color', '#333').css('background-image','url('+backgroundImage+')').css('background-position','left top')
-      .css('background-repeat','repeat').css('position','fixed');
+      .css('background-repeat','repeat');//.css('position','fixed'); //fixing the position works badly when Mirador is used withing other dynamic widgets
 
-      //initialize i18next  
-      i18n.init({debug: false, getAsync: false, resGetPath: _this.buildPath + _this.i18nPath+'__lng__/__ns__.json'}); 
+      //initialize i18next
+      i18n.init({debug: false, getAsync: false, resGetPath: _this.buildPath + _this.i18nPath+'__lng__/__ns__.json'});
 
       //register Handlebars helper
       Handlebars.registerHelper('t', function(i18n_key) {
@@ -79,11 +79,11 @@
       // add workspace configuration
       this.layout = typeof this.layout !== 'string' ? JSON.stringify(this.layout) : this.layout;
       this.workspace = new $.Workspace({
-        layoutDescription: this.layout.charAt(0) === '{' ? JSON.parse(this.layout) : $.layoutDescriptionFromGridString(this.layout), 
-        parent: this, 
+        layoutDescription: this.layout.charAt(0) === '{' ? JSON.parse(this.layout) : $.layoutDescriptionFromGridString(this.layout),
+        parent: this,
         appendTo: this.element.find('.mirador-viewer')
       });
-      
+
       this.workspacePanel = new $.WorkspacePanel({
         appendTo: this.element.find('.mirador-viewer'),
         parent: this,
@@ -92,7 +92,7 @@
         preserveWindows: this.workspacePanelSettings.preserveWindows,
         workspace: this.workspace
       });
-     
+
       this.manifestsPanel = new $.ManifestsPanel({ parent: this, appendTo: this.element.find('.mirador-viewer') });
       this.bookmarkPanel = new $.BookmarkPanel({ parent: this, appendTo: this.element.find('.mirador-viewer'), jsonStorageEndpoint: this.jsonStorageEndpoint });
 
@@ -165,7 +165,7 @@
     toggleBookmarkPanel: function() {
       this.toggleOverlay('bookmarkPanelVisible');
     },
-    
+
     enterFullscreen: function() {
       var el = this.element[0];
       if (el.requestFullscreen) {
