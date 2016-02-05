@@ -5,7 +5,7 @@
     jQuery.extend(true, this, {
       currentConfig: null,
       originalConfig: null, // Don't know if we really need this.
-      shareEndpoint: null, // the place where POST requests for new saved sessions will go 
+      shareEndpoint: null, // the place where POST requests for new saved sessions will go
       historySize: null, // wishful thinking for later.
       sessionID: null
     });
@@ -18,13 +18,15 @@
 
     init: function(config) {
       var _this = this;
-      
+
+      //just failsave so we won't come with nothing in currentConfig
+      this.currentConfig = config;
+
       // Don't want to save session, therefore don't set up save controller
       if (config.saveSession === false) {
-        this.currentConfig = config;
         return false;
       }
-      
+
       saveModule = config.jsonStorageEndpoint.module,
       saveOptions = config.jsonStorageEndpoint.options;
       _this.storageModule = new $[saveModule](saveOptions);
@@ -45,7 +47,7 @@
           //get json from JSON storage and set currentConfig to it
           var params = paramURL.split('=');
           var jsonblob = params[1];
-	  this.currentConfig = this.storageModule.readSync(jsonblob);
+	        this.currentConfig = this.storageModule.readSync(jsonblob) || this.currentConfig;
         } else {
           this.currentConfig = config;
         }
@@ -94,8 +96,8 @@
 
     bindEvents: function() {
       var _this = this;
-      // listen to existing events and use the 
-      // available data to update the appropriate 
+      // listen to existing events and use the
+      // available data to update the appropriate
       // field in the stored config.
 
       jQuery.subscribe('windowUpdated', function(event, options) {
@@ -112,19 +114,19 @@
         _this.set("windowObjects", windowObjects, {parent: "currentConfig"} );
       });
 
-      jQuery.subscribe("imageBoundsUpdated", function(event, options) {   
-        var windowObjects = _this.currentConfig.windowObjects;   
-        if (windowObjects && windowObjects.length > 0) {   
-          jQuery.each(windowObjects, function(index, window){    
-            if (window.id === options.id) {    
-              if (!windowObjects[index].windowOptions) {   
-                windowObjects[index].windowOptions = {};   
-              }    
-              windowObjects[index].windowOptions.osdBounds = options.osdBounds;    
-            }    
-          });    
-        }    
-        _this.set("windowObjects", windowObjects, {parent: "currentConfig"} );   
+      jQuery.subscribe("imageBoundsUpdated", function(event, options) {
+        var windowObjects = _this.currentConfig.windowObjects;
+        if (windowObjects && windowObjects.length > 0) {
+          jQuery.each(windowObjects, function(index, window){
+            if (window.id === options.id) {
+              if (!windowObjects[index].windowOptions) {
+                windowObjects[index].windowOptions = {};
+              }
+              windowObjects[index].windowOptions.osdBounds = options.osdBounds;
+            }
+          });
+        }
+        _this.set("windowObjects", windowObjects, {parent: "currentConfig"} );
       });
 
       jQuery.subscribe('windowSlotAddressUpdated', function(event, options) {
@@ -192,8 +194,8 @@
       });
 
       jQuery.subscribe('etc...', function(junk) {
-        // handle adding the property in the appropriate place 
-        // in this.currentConfig by passing to the _this.set(), 
+        // handle adding the property in the appropriate place
+        // in this.currentConfig by passing to the _this.set(),
         // which "saves" to localstore as a side effect.
 
       });
@@ -202,21 +204,21 @@
       // would have been emitted by objects when their models were
       // updated and sent the results to a parser function that
       // would extract the calling object's properties in the config
-      // and updated them if they were different, but we can't 
-      // currently do that the way the app is written, since we 
-      // didn't actually follow that patttern almost anywhere. 
-      // 
+      // and updated them if they were different, but we can't
+      // currently do that the way the app is written, since we
+      // didn't actually follow that patttern almost anywhere.
+      //
       // jQuery.subscribe('set', function(junk) {
       //  // 1.) send the junk to a parser function
       //  // 2.) use this.set(parsedJunk) to update
       //  // this.currentConfig, with the side effect of
-      //  // saving to localStorage. 
+      //  // saving to localStorage.
       //
       // });
 
       // you may need to bind another event here that responds to the
-      // user navigating history, for the purpose of popping the 
-      // history entry back off. 
+      // user navigating history, for the purpose of popping the
+      // history entry back off.
 
     },
 
