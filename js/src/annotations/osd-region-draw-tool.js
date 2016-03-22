@@ -99,6 +99,10 @@
                 }
 
                 oaAnnos[oaAnnos.length - 1].on.selector.value = _this.svgOverlay.getSVGString(shapeArray);
+                ///////////////////////////////////////////
+                _this.svgOverlay.addViewportAndBoundingBoxToAnnotation(
+                    oaAnnos[oaAnnos.length - 1], shapeArray);
+                //////////////////////////////////////////
                 annotationShapesAreEdited = true;
                 break;
               }

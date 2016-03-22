@@ -42,7 +42,9 @@
         .prepend(this.editorMarkup);
       tinymce.init({
         selector: selector + ' textarea',
-        plugins: "image link media",
+        //plugins: "image link media",
+        theme_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.1.7/themes/modern/theme.min.js',
+        skin_url: 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.1.7/skins/lightgray',
         menubar: false,
         statusbar: false,
         toolbar_items_size: 'small',

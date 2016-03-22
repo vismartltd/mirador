@@ -610,6 +610,10 @@
             }
           };
 
+          //////////////////////////////
+          _this.addViewportAndBoundingBoxToAnnotation(oaAnno, _this.draftPaths);
+          //////////////////////////////
+
           //save to endpoint
           jQuery.publish('annotationCreated.' + _this.windowId, [oaAnno, shape]);
         },
@@ -637,6 +641,34 @@
       _this.segment = null;
       _this.path = null;
       _this.mode = '';
+    },
+
+    addViewportAndBoundingBoxToAnnotation: function (oaAnnotation, annotationShapePaths) {
+      var viewportBounds = this.viewer.viewport.getBounds(true);
+      var scope = this.viewer.viewport.viewportToImageRectangle(viewportBounds);
+      var pathBounds = this.computeOuterBounds(annotationShapePaths);
+      oaAnnotation.on['http://www.researchspace.org/ontology/viewport'] =
+        this.rectangleToFragmentString(scope); // osd viewport bounds
+      oaAnnotation.on['http://www.researchspace.org/ontology/boundingBox'] =
+        this.rectangleToFragmentString(pathBounds); // paths outer bbox
+    },
+
+    computeOuterBounds: function (paperPaths) {
+      if (paperPaths.length === 0) {
+        return new _this.paperScope.Rectangle(0, 0, 0, 0);
+      }
+      var bounds = paperPaths[0].getBounds();
+      for (var i = 1; i < paperPaths.length; i++) {
+        bounds = bounds.unite(paperPaths[i].getBounds());
+      }
+      return bounds;
+    },
+
+    rectangleToFragmentString: function (paperRectangle) {
+      return "xywh=" + Math.round(paperRectangle.x) + "," +
+        Math.round(paperRectangle.y) + "," +
+        Math.round(paperRectangle.width) + "," +
+        Math.round(paperRectangle.height);
     }
   };
 }(Mirador));
