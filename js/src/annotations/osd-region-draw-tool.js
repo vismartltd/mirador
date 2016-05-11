@@ -203,22 +203,9 @@
         annotations: annotations,
         triggerEvent: event,
         shouldDisplayTooltip: function(api) {
-          //track whether the cursor is within the tooltip (with the specified tolerance) and disables show/hide/update functionality.
-          if (api.elements.tooltip) {
-            var cursorWithinTooltip = true;
-            var leftSide = api.elements.tooltip.offset().left - _this.svgOverlay.hitOptions.tolerance;
-            var rightSide = api.elements.tooltip.offset().left + api.elements.tooltip.width() + _this.svgOverlay.hitOptions.tolerance;
-            if (absoluteLocation.x < leftSide || rightSide < absoluteLocation.x) {
-              cursorWithinTooltip = false;
-            }
-            var topSide = api.elements.tooltip.offset().top - _this.svgOverlay.hitOptions.tolerance;
-            var bottomSide = api.elements.tooltip.offset().top + api.elements.tooltip.height() + _this.svgOverlay.hitOptions.tolerance;
-            if (absoluteLocation.y < topSide || bottomSide < absoluteLocation.y) {
-              cursorWithinTooltip = false;
-            }
-            return !cursorWithinTooltip;
-          }
-          return true;
+          // track whether the cursor is within the tooltip and disables show/hide/update functionality
+          return !_this.annoTooltip.isWithinTooltip(
+            api, absoluteLocation, _this.svgOverlay.hitOptions.tolerance);
         }
       });
     },
