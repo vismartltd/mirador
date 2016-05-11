@@ -6,6 +6,7 @@
       targetElement: null,
       annotations: [],
       windowId: "",
+      withinTooltipTolerance: 20
     }, options);
 
     this.init();
@@ -248,15 +249,19 @@
      * @param params: {
      *   annotations: any[]
      *   triggerEvent: MouseEvent
+     *   absoluteLocation: {x: number; y: number}
      *   shouldDisplayTooltip: (api: QTipAPI) => boolean
      * }
      */
     showViewer: function(params) {
-      var _this = this;
-      var api = jQuery(_this.targetElement).qtip('api');
+      var api = jQuery(this.targetElement).qtip('api');
       if (!api) { return; }
       if (params.shouldDisplayTooltip && !params.shouldDisplayTooltip(api)) {
         return;
+      }
+      // track whether the cursor is within the tooltip and disables show/hide/update functionality
+      if (this.isWithinTooltip(api, params.absoluteLocation, this.withinTooltipTolerance)) {
+          return;
       }
       if (params.annotations.length === 0) {
         if (!api.cache.hidden) {
@@ -267,19 +272,10 @@
           api.disable(true);
         }
       } else {
-        var oldAnnotations = api.cache.annotations;
-        var isTheSame = oldAnnotations.length == params.annotations.length;
-        if (isTheSame) {
-          for (var i = 0; i < params.annotations.length; i++) {
-            if (oldAnnotations[i] != params.annotations[i]) {
-              isTheSame = false;
-              break;
-            }
-          }
-        }
+        var isTheSame = sameAnnotations(api.cache.annotations, params.annotations);
         if (api.cache.hidden || !isTheSame) {
           api.disable(false);
-          _this.setTooltipContent(params.annotations);
+          this.setTooltipContent(params.annotations);
           api.cache.origin = params.triggerEvent;
           api.reposition(params.triggerEvent, true);
           api.show(params.triggerEvent);
@@ -287,6 +283,14 @@
           api.cache.hidden = false;
           api.disable(true);
         }
+      }
+      
+      function sameAnnotations(oldAnnotations, newAnnotations) {
+        if (oldAnnotations.length !== newAnnotations.length) { return false; }
+        for (var i = 0; i < newAnnotations.length; i++) {
+          if (oldAnnotations[i] !== newAnnotations[i]) { return false; }
+        }
+        return true;
       }
     },
 
@@ -398,14 +402,21 @@
      */
     isWithinTooltip: function(api, absoluteLocation, tolerance) {
       if (!api.elements.tooltip) { return false; }
-      var cursorWithinTooltip = true;
-      var leftSide = api.elements.tooltip.offset().left - tolerance;
-      var rightSide = api.elements.tooltip.offset().left + api.elements.tooltip.width() + tolerance;
+      var tooltip = api.elements.tooltip;
+      var bounds = {
+        left: tooltip.offset().left,
+        top: tooltip.offset().top,
+        width: tooltip.width(),
+        height: tooltip.height()
+      };
+      
+      var leftSide = bounds.left - tolerance;
+      var rightSide = bounds.left + bounds.width + tolerance;
       if (absoluteLocation.x < leftSide || rightSide < absoluteLocation.x) {
         return false;
       }
-      var topSide = api.elements.tooltip.offset().top - tolerance;
-      var bottomSide = api.elements.tooltip.offset().top + api.elements.tooltip.height() + tolerance;
+      var topSide = bounds.top - tolerance;
+      var bottomSide = bounds.top + bounds.height + tolerance;
       if (absoluteLocation.y < topSide || bottomSide < absoluteLocation.y) {
         return false;
       }

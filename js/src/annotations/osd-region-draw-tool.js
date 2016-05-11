@@ -185,11 +185,7 @@
       _this.annoTooltip.showViewer({
         annotations: annotations,
         triggerEvent: event,
-        shouldDisplayTooltip: function(api) {
-          // track whether the cursor is within the tooltip and disables show/hide/update functionality
-          return !_this.annoTooltip.isWithinTooltip(
-            api, absoluteLocation, _this.svgOverlay.hitOptions.tolerance);
-        }
+        absoluteLocation: absoluteLocation
       });
     },
 
