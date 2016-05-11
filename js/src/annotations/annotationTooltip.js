@@ -388,6 +388,29 @@
         viewerParams.onExitEditMode(api, oaAnno);
       }
     },
+    
+    /**
+     * Is specified screen location within the tooltip (with the specified tolerance)
+     * 
+     * @param api: QTipAPI
+     * @param absoluteLocation: {x: number; y: number}
+     * @param tolerance: number
+     */
+    isWithinTooltip: function(api, absoluteLocation, tolerance) {
+      if (!api.elements.tooltip) { return false; }
+      var cursorWithinTooltip = true;
+      var leftSide = api.elements.tooltip.offset().left - tolerance;
+      var rightSide = api.elements.tooltip.offset().left + api.elements.tooltip.width() + tolerance;
+      if (absoluteLocation.x < leftSide || rightSide < absoluteLocation.x) {
+        return false;
+      }
+      var topSide = api.elements.tooltip.offset().top - tolerance;
+      var bottomSide = api.elements.tooltip.offset().top + api.elements.tooltip.height() + tolerance;
+      if (absoluteLocation.y < topSide || bottomSide < absoluteLocation.y) {
+        return false;
+      }
+      return true;
+    },
 
     //when this is being used to edit an existing annotation, insert them into the inputs
     editorTemplate: Handlebars.compile([
