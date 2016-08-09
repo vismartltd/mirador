@@ -6,6 +6,7 @@
       targetElement: null,
       annotations: [],
       windowId: "",
+      withinTooltipTolerance: 20,
       eventEmitter: null
     }, options);
 
@@ -249,15 +250,19 @@
      * @param params: {
      *   annotations: any[]
      *   triggerEvent: MouseEvent
+     *   absoluteLocation: {x: number; y: number}
      *   shouldDisplayTooltip: (api: QTipAPI) => boolean
      * }
      */
     showViewer: function(params) {
-      var _this = this;
-      var api = jQuery(_this.targetElement).qtip('api');
+      var api = jQuery(this.targetElement).qtip('api');
       if (!api) { return; }
       if (params.shouldDisplayTooltip && !params.shouldDisplayTooltip(api)) {
         return;
+      }
+      // track whether the cursor is within the tooltip and disables show/hide/update functionality
+      if (this.isWithinTooltip(api, params.absoluteLocation, this.withinTooltipTolerance)) {
+          return;
       }
       if (params.annotations.length === 0) {
         if (!api.cache.hidden) {
@@ -268,19 +273,10 @@
           api.disable(true);
         }
       } else {
-        var oldAnnotations = api.cache.annotations;
-        var isTheSame = oldAnnotations.length == params.annotations.length;
-        if (isTheSame) {
-          for (var i = 0; i < params.annotations.length; i++) {
-            if (oldAnnotations[i] != params.annotations[i]) {
-              isTheSame = false;
-              break;
-            }
-          }
-        }
+        var isTheSame = sameAnnotations(api.cache.annotations, params.annotations);
         if (api.cache.hidden || !isTheSame) {
           api.disable(false);
-          _this.setTooltipContent(params.annotations);
+          this.setTooltipContent(params.annotations);
           api.cache.origin = params.triggerEvent;
           api.reposition(params.triggerEvent, true);
           api.show(params.triggerEvent);
@@ -288,6 +284,14 @@
           api.cache.hidden = false;
           api.disable(true);
         }
+      }
+      
+      function sameAnnotations(oldAnnotations, newAnnotations) {
+        if (oldAnnotations.length !== newAnnotations.length) { return false; }
+        for (var i = 0; i < newAnnotations.length; i++) {
+          if (oldAnnotations[i] !== newAnnotations[i]) { return false; }
+        }
+        return true;
       }
     },
 
@@ -391,6 +395,36 @@
       if (viewerParams.onExitEditMode) {
         viewerParams.onExitEditMode(api, oaAnno);
       }
+    },
+    
+    /**
+     * Is specified screen location within the tooltip (with the specified tolerance)
+     * 
+     * @param api: QTipAPI
+     * @param absoluteLocation: {x: number; y: number}
+     * @param tolerance: number
+     */
+    isWithinTooltip: function(api, absoluteLocation, tolerance) {
+      if (!api.elements.tooltip) { return false; }
+      var tooltip = api.elements.tooltip;
+      var bounds = {
+        left: tooltip.offset().left,
+        top: tooltip.offset().top,
+        width: tooltip.width(),
+        height: tooltip.height()
+      };
+      
+      var leftSide = bounds.left - tolerance;
+      var rightSide = bounds.left + bounds.width + tolerance;
+      if (absoluteLocation.x < leftSide || rightSide < absoluteLocation.x) {
+        return false;
+      }
+      var topSide = bounds.top - tolerance;
+      var bottomSide = bounds.top + bounds.height + tolerance;
+      if (absoluteLocation.y < topSide || bottomSide < absoluteLocation.y) {
+        return false;
+      }
+      return true;
     },
 
     //when this is being used to edit an existing annotation, insert them into the inputs
